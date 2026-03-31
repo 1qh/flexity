@@ -78,7 +78,9 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
     reset = () => {
       setState({
         config: { ...state.initialConfig },
-        selectedWidget: null
+        selectedWidget: null,
+        showDebugBg: false,
+        showDebugBorders: false
       })
       if (onResetCb) onResetCb()
     },

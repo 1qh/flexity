@@ -1,8 +1,7 @@
-/** biome-ignore-all lint/style/noProcessEnv: env check */
 /* eslint-disable no-console */
 import type { GridConfig } from './types'
+import { isDev } from './validation'
 const STORAGE_PREFIX = 'ogrid-',
-  isDev = () => typeof process !== 'undefined' && process.env.NODE_ENV === 'development',
   loadConfig = <K extends string>(id: string): GridConfig<K> | null => {
     try {
       const raw = localStorage.getItem(`${STORAGE_PREFIX}${id}`)

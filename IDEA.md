@@ -330,11 +330,6 @@ type Mod = '' | '!' | '-' | '!-'
 type Sep = '' | ' ' | ':'
 type Before = `${Sep}${Mod}` | `${string}${Sep}${Mod}`
 
-type Banned<
-  S extends string,
-  B extends string
-> = S extends `${Before}${B}${string}` ? never : S
-
 // Intersection ensures ONE banned prefix match makes the whole string `never`
 // When C is generic `string` (inference failed), fall back to string (allow anything, rely on runtime)
 type BannedClass<S extends string> = string extends S
@@ -828,7 +823,7 @@ Every violation produces a clear, actionable message:
 
 | Violation                       | Message                                                                                                                                |
 | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Intrinsic element in items      | `[ogrid] Item 'kpi': intrinsic elements (<div>) not allowed. Pass a component directly.`                                               |
+| Intrinsic element in items      | TypeScript type error (compile time only — no runtime check)                                                                           |
 | Root wrapper with no attributes | `[ogrid] Item 'kpi': root <div> has no attributes and has children. Use a fragment (<>...</>) instead.`                                |
 | Root single-child wrapper       | `[ogrid] Item 'kpi': root <div> wraps a single child. Remove the wrapper and pass content directly. Move styling to layout.className.` |
 | Root bare text wrapper          | `[ogrid] Item 'kpi': root <div> wraps only text with no attributes. Pass the text directly as a string.`                               |
@@ -895,8 +890,10 @@ export type {
   WidgetLayoutEntry,
   GridConfig,
   AllowedContent,
+  BannedClass,
   GridProps,
-  PanelProps
+  PanelProps,
+  PanelRenderProps
 } from 'ogrid'
 
 // Panel is not exported standalone — it's bound to a store via createGrid()
@@ -1001,7 +998,7 @@ ogrid/
         grid.tsx        # Grid component
         panel.tsx       # Panel component (dev only)
         store.ts        # plain JS store (Zustand-like)
-        types.ts        # WidgetLayout, AllowedContent, BannedClass, GridConfig
+        types.ts        # WidgetLayoutEntry, AllowedContent, BannedClass, GridConfig
         validation.ts   # runtime DOM checks + class checks
         storage.ts      # localStorage persistence
         cn.ts           # tailwind-merge wrapper
@@ -1060,6 +1057,7 @@ ogrid/
 
 - @dnd-kit/core
 - @dnd-kit/sortable
+- @dnd-kit/utilities
 - re-resizable
 - tailwind-merge
 

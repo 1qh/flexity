@@ -127,6 +127,7 @@ const GridItemInner = memo(
     } else {
       wrapperStyle.flex = '1 1 0%'
       wrapperStyle.minWidth = 0
+      wrapperStyle.overflow = 'visible'
     }
     if (typeof h === 'number') {
       wrapperStyle.maxHeight = h
@@ -222,7 +223,7 @@ const GridItemInner = memo(
             onResizeStart={handleResizeStart}
             onResizeStop={handleResizeStop}
             size={{ height: 'auto', width: '100%' }}
-            snap={{ x: Array.from({ length: 200 }, (_, i) => (i + 1) * snap) }}>
+            snap={{ x: Array.from({ length: Math.ceil(10_000 / snap) }, (_, i) => (i + 1) * snap) }}>
             {inner}
           </Resizable>
         )}
@@ -298,11 +299,11 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
       snap = state.config.snap ?? 1,
       layout = state.config.layout ?? [],
       itemKeys = Object.keys(items) as K[],
-      layoutKeyStr = layout.map(e => e.key).join(','),
-      itemKeyStr = itemKeys.join(','),
+      layoutKeyStr = layout.map(e => e.key).join('\0'),
+      itemKeyStr = itemKeys.join('\0'),
       orderedKeys = useMemo(() => {
-        const lKeys = layoutKeyStr.split(',').filter(Boolean),
-          iKeys = itemKeyStr.split(',').filter(Boolean) as K[],
+        const lKeys = layoutKeyStr.split('\0').filter(Boolean),
+          iKeys = itemKeyStr.split('\0').filter(Boolean) as K[],
           result: K[] = []
         for (const key of lKeys) if (iKeys.includes(key as K)) result.push(key as K)
         for (const key of iKeys) if (!result.includes(key)) result.push(key)

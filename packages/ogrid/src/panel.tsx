@@ -8,7 +8,7 @@ import { useSyncExternalStore } from 'react'
 import type { Store } from './store'
 import type { GridConfig, PanelProps, WidgetLayoutEntry } from './types'
 import { cn } from './cn'
-import { isDev } from './validation'
+import { isDev, validateClassName } from './validation'
 const formatConfigForCopy = <K extends string>(config: GridConfig<K>, itemKeys: K[]): string => {
   const parts: string[] = ['{']
   if (config.gap !== undefined && config.gap !== 0) parts.push(`  gap: ${String(config.gap)},`)
@@ -263,6 +263,7 @@ const createPanelComponent = <K extends string>({ store, getItemKeys }: CreatePa
       snap = config.snap ?? 1,
       getLayoutEntry = (key: K): WidgetLayoutEntry<K> => layout.find(e => e.key === key) ?? { key },
       handleWidgetChange = (key: K, updates: Partial<WidgetLayoutEntry<K>>) => {
+        if (updates.className) validateClassName(key, updates.className, false)
         store.updateWidgetLayout(key, updates)
         store.userChange()
       },
