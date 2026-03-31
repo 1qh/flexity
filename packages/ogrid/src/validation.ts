@@ -165,8 +165,8 @@ const isDev = () => typeof process !== 'undefined' && process.env.NODE_ENV === '
     let current = element.parentElement
     while (current) {
       if (current.classList.contains('ogrid')) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-        const itemKey: string = element.closest('[data-ogrid-key]').dataset.ogridKey ?? 'unknown'
+        const closest = element.closest<HTMLElement>('[data-ogrid-key]'),
+          itemKey = closest?.dataset.ogridKey ?? 'unknown'
         throw new Error(`[ogrid] Nested grids are not supported. Remove the inner <Grid> from item '${itemKey}'.`)
       }
       current = current.parentElement

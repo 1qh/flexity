@@ -1,5 +1,4 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: demo page */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
 /* oxlint-disable react-perf/jsx-no-new-object-as-prop, react-perf/jsx-no-new-array-as-prop */
 'use client'
 import { createGrid } from 'ogrid'

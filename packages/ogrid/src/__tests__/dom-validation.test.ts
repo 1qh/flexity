@@ -1,6 +1,6 @@
 /** biome-ignore-all lint/suspicious/noEmptyBlockStatements: mock implementations */
 /** biome-ignore-all lint/nursery/useImportsFirst: HTMLElement polyfill must run before validation import */
-/* eslint-disable @typescript-eslint/no-extraneous-class, @typescript-eslint/no-empty-function, @typescript-eslint/max-params, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-extraneous-class, @typescript-eslint/no-empty-function, @typescript-eslint/max-params, @typescript-eslint/no-unnecessary-condition */
 /* oxlint-disable import/first */
 import { describe, expect, it, spyOn } from 'bun:test'
 if (globalThis.HTMLElement === undefined) {
@@ -37,9 +37,8 @@ const makeAttrs = (attrs: Record<string, string>) => {
         querySelector: (selector: string) => {
           if (selector === '[data-ogrid-content]')
             for (const child of childElements) {
-              if ((child as { dataset?: Record<string, string> }).dataset?.ogridContent !== undefined) return child
-              const found = (child as { getAttribute?: (n: string) => null | string }).dataset.ogridContent
-              if (found !== null && found !== undefined) return child
+              const childData = (child as { dataset?: Record<string, string> }).dataset
+              if (childData?.ogridContent !== undefined) return child
             }
           return null
         },

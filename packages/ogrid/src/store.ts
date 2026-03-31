@@ -1,4 +1,3 @@
-/* oxlint-disable promise/prefer-await-to-callbacks */
 import type { GridConfig, WidgetLayoutEntry } from './types'
 type ChangeCallback<K extends string> = (config: GridConfig<K>) => void
 type Listener = () => void
@@ -7,8 +6,8 @@ interface Store<K extends string = string> {
   reorderKeys: (orderedKeys: K[]) => void
   reset: () => void
   setConfig: (config: GridConfig<K>) => void
-  setOnReset: (cb: (() => void) | null) => void
-  setOnUserChange: (cb: ChangeCallback<K> | null) => void
+  setOnReset: (handler: (() => void) | null) => void
+  setOnUserChange: (handler: ChangeCallback<K> | null) => void
   setState: (partial: Partial<StoreState<K>>) => void
   subscribe: (listener: Listener) => () => void
   updateGridConfig: (updates: Partial<GridConfig<K>>) => void
@@ -83,11 +82,11 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
       })
       if (onResetCb) onResetCb()
     },
-    setOnUserChange = (cb: ChangeCallback<K> | null) => {
-      onUserChangeCb = cb
+    setOnUserChange = (handler: ChangeCallback<K> | null) => {
+      onUserChangeCb = handler
     },
-    setOnReset = (cb: (() => void) | null) => {
-      onResetCb = cb
+    setOnReset = (handler: (() => void) | null) => {
+      onResetCb = handler
     },
     userChange = () => {
       if (onUserChangeCb) onUserChangeCb(state.config)

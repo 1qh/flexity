@@ -1,5 +1,4 @@
 /** biome-ignore-all lint/nursery/noIncrementDecrement: test counters */
-/* eslint-disable no-plusplus */
 import { describe, expect, it } from 'bun:test'
 import { createStore } from '../store'
 describe('edge cases', () => {
@@ -51,10 +50,10 @@ describe('edge cases', () => {
     let count1 = 0,
       count2 = 0
     store.subscribe(() => {
-      count1++
+      count1 += 1
     })
     store.subscribe(() => {
-      count2++
+      count2 += 1
     })
     store.setState({ containerWidth: 500 })
     expect(count1).toBe(1)

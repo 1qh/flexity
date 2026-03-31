@@ -1,5 +1,4 @@
 /** biome-ignore-all lint/nursery/noIncrementDecrement: test counters */
-/* eslint-disable no-plusplus */
 import { describe, expect, it } from 'bun:test'
 import { createStore } from '../store'
 describe('createStore', () => {
@@ -12,7 +11,7 @@ describe('createStore', () => {
     const store = createStore({})
     let called = 0
     store.subscribe(() => {
-      called++
+      called += 1
     })
     store.setState({ containerWidth: 100 })
     expect(called).toBe(1)
@@ -21,7 +20,7 @@ describe('createStore', () => {
     const store = createStore({})
     let called = 0
     const unsub = store.subscribe(() => {
-      called++
+      called += 1
     })
     store.setState({ containerWidth: 100 })
     expect(called).toBe(1)
