@@ -26,6 +26,14 @@ describe('validateConfig', () => {
     expect(() => validateConfig({ layout: [{ key: 'a', w: 0 }] })).toThrow('w must be > 0')
     expect(() => validateConfig({ layout: [{ key: 'a', w: -5 }] })).toThrow('w must be > 0')
   })
+  it('throws on fractional w that snaps to 0', () => {
+    expect(() => validateConfig({ snap: 1, layout: [{ key: 'a', w: 0.4 }] })).toThrow('snaps to 0')
+    expect(() => validateConfig({ snap: 10, layout: [{ key: 'a', w: 4 }] })).toThrow('snaps to 0')
+  })
+  it('allows fractional w that snaps to positive', () => {
+    expect(() => validateConfig({ snap: 1, layout: [{ key: 'a', w: 0.6 }] })).not.toThrow()
+    expect(() => validateConfig({ snap: 8, layout: [{ key: 'a', w: 5 }] })).not.toThrow()
+  })
   it('allows w: auto', () => {
     expect(() => validateConfig({ layout: [{ key: 'a', w: 'auto' }] })).not.toThrow()
   })

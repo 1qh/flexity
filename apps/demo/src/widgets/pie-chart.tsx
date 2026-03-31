@@ -1,6 +1,13 @@
 'use client'
 import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
-import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@a/ui/chart'
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent
+} from '@a/ui/chart'
 import { Pie, PieChart } from 'recharts'
 const data = [
     { name: 'Chrome', value: 275, fill: 'var(--chart-1)' },
@@ -25,6 +32,7 @@ const data = [
         <ChartContainer config={chartConfig}>
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent />} />
+            <ChartLegend content={<ChartLegendContent />} />
             <Pie cx='50%' cy='50%' data={data} dataKey='value' innerRadius={60} label nameKey='name' outerRadius={80} />
           </PieChart>
         </ChartContainer>

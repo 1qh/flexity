@@ -1,6 +1,13 @@
 'use client'
 import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
-import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@a/ui/chart'
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent
+} from '@a/ui/chart'
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 const data = [
     { month: 'Jan', users: 2400, sessions: 4000 },
@@ -26,6 +33,7 @@ const data = [
             <XAxis axisLine={false} dataKey='month' tickLine={false} />
             <YAxis axisLine={false} tickLine={false} />
             <ChartTooltip content={<ChartTooltipContent />} />
+            <ChartLegend content={<ChartLegendContent />} />
             <Area
               dataKey='users'
               fill='var(--color-users)'

@@ -6,9 +6,10 @@
 /** biome-ignore-all lint/a11y/useAriaPropsForRole: re-resizable handles aria */
 /** biome-ignore-all lint/nursery/noInlineStyles: dynamic layout styles required */
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: intentional dep control */
-/* eslint-disable complexity, react-hooks/exhaustive-deps, @eslint-react/no-unnecessary-use-callback, @typescript-eslint/max-params */
+/* eslint-disable complexity, react-hooks/exhaustive-deps, @eslint-react/no-unnecessary-use-callback, @typescript-eslint/max-params, @eslint-react/web-api/no-leaked-event-listener */
 'use client'
 import {
+  type Announcements,
   closestCenter,
   DndContext,
   type DragEndEvent,
@@ -40,7 +41,7 @@ import {
 import type { Store } from './store'
 import type { AllowedContent, GridConfig, GridProps, WidgetLayoutEntry } from './types'
 import { cn } from './cn'
-import { loadConfig, saveConfig } from './storage'
+import { clearConfig, loadConfig, saveConfig } from './storage'
 import { isDev, validateClassName, validateConfig, validateDom, validateNoNestedGrid } from './validation'
 const GridContext = createContext(false),
   DefaultDragHandle = ({
@@ -68,6 +69,7 @@ const GridContext = createContext(false),
 interface GridItemInnerProps {
   content: AllowedContent
   devMode: boolean
+  dragHandle?: string
   itemKey: string
   layout: undefined | WidgetLayoutEntry
   onResizeStop: (key: string, width: number) => void
@@ -89,6 +91,7 @@ const GridItemInner = memo(
     onSelect,
     onResizeStop,
     resizeHandle,
+    dragHandle,
     selected,
     showDebugBorders,
     showDebugBg,
@@ -103,6 +106,20 @@ const GridItemInner = memo(
       h = layout?.h,
       isHidden = layout?.hidden === true,
       userClassName = layout?.className
+    useEffect(() => {
+      if (!(dragHandle && wrapperRef.current)) return
+      const handle = wrapperRef.current.querySelector(dragHandle)
+      if (!handle) return
+      if (listeners)
+        for (const [event, handler] of Object.entries(listeners)) handle.addEventListener(event, handler as EventListener)
+      for (const [attr, value] of Object.entries(attributes)) handle.setAttribute(attr, String(value))
+      handle.setAttribute('style', `${handle.getAttribute('style') ?? ''}; cursor: grab;`)
+      return () => {
+        if (listeners)
+          for (const [event, handler] of Object.entries(listeners))
+            handle.removeEventListener(event, handler as EventListener)
+      }
+    }, [dragHandle, listeners, attributes, content])
     useEffect(() => {
       if (!(devMode && wrapperRef.current)) return
       validateDom(itemKey, wrapperRef.current, strict)
@@ -119,7 +136,7 @@ const GridItemInner = memo(
       opacity: isDragging ? 0.5 : isHidden && devMode ? 0.4 : undefined
     }
     if (typeof w === 'number') {
-      wrapperStyle.width = w
+      wrapperStyle.width = Math.round(w / snap) * snap
       wrapperStyle.maxWidth = '100%'
       wrapperStyle.flexShrink = 0
       wrapperStyle.overflowX = 'auto'
@@ -182,12 +199,12 @@ const GridItemInner = memo(
         }}
         ref={setNodeRef}
         style={wrapperStyle}>
-        {devMode ? (
+        {dragHandle ? null : (
           <DefaultDragHandle
             attributes={attributes as Record<string, unknown>}
             listeners={listeners as Record<string, unknown>}
           />
-        ) : null}
+        )}
         {isHidden ? (
           inner
         ) : (
@@ -231,7 +248,7 @@ interface CreateGridComponentProps<K extends string> {
 }
 const createGridComponent = <K extends string>({ store }: CreateGridComponentProps<K>) => {
   const GridComponent = (props: GridProps<K>): ReactElement => {
-    const { items, config: configProp, id, onConfigChange, resizeHandle, className, strict = false } = props,
+    const { items, config: configProp, id, onConfigChange, dragHandle, resizeHandle, className, strict = false } = props,
       isNested = use(GridContext),
       gridRef = useRef<HTMLDivElement>(null),
       initializedRef = useRef(false),
@@ -275,8 +292,15 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
         if (onConfigChange) onConfigChange(newConfig)
         else if (id) saveConfig(id, newConfig)
       })
-      return () => store.setOnUserChange(null)
-    }, [id, onConfigChange])
+      store.setOnReset(() => {
+        if (onConfigChange && configProp) onConfigChange(configProp)
+        else if (id) clearConfig(id)
+      })
+      return () => {
+        store.setOnUserChange(null)
+        store.setOnReset(null)
+      }
+    }, [id, onConfigChange, configProp])
     const gap = state.config.gap ?? 0,
       snap = state.config.snap ?? 1,
       layout = state.config.layout ?? [],
@@ -313,6 +337,16 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
         },
         [orderedKeys]
       ),
+      announcements: Announcements = {
+        onDragStart: ({ active }) => `Picked up widget ${String(active.id)}.`,
+        onDragOver: ({ active, over }) =>
+          over
+            ? `Widget ${String(active.id)} over ${String(over.id)}.`
+            : `Widget ${String(active.id)} is no longer over a drop target.`,
+        onDragEnd: ({ active, over }) =>
+          over ? `Widget ${String(active.id)} dropped on ${String(over.id)}.` : `Widget ${String(active.id)} dropped.`,
+        onDragCancel: ({ active }) => `Dragging cancelled. Widget ${String(active.id)} returned.`
+      },
       containerStyle: CSSProperties = {
         display: 'flex',
         flexWrap: 'wrap',
@@ -322,7 +356,11 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
     return (
       <GridContext value>
         <div className={cn('ogrid', className)} ref={gridRef} style={containerStyle}>
-          <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd} sensors={sensors}>
+          <DndContext
+            accessibility={{ announcements }}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+            sensors={sensors}>
             <SortableContext items={orderedKeys} strategy={horizontalListSortingStrategy}>
               {orderedKeys.map(key => {
                 const entry = layout.find(e => e.key === key)
@@ -330,6 +368,7 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
                   <GridItemInner
                     content={items[key]}
                     devMode={devMode}
+                    dragHandle={dragHandle}
                     itemKey={key}
                     key={key}
                     layout={entry}

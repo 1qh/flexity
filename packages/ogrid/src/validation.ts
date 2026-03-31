@@ -62,14 +62,20 @@ const isDev = () => typeof process !== 'undefined' && process.env.NODE_ENV === '
     if (config.gap !== undefined && config.gap < 0)
       throw new Error(`[ogrid] gap must be >= 0. Received: ${String(config.gap)}`)
     if (config.layout) {
-      const seen = new Set<string>()
+      const snap = config.snap ?? 1,
+        seen = new Set<string>()
       for (const entry of config.layout) {
         if (entry.key === '') throw new Error('[ogrid] Item key must be a non-empty string. Found empty string key.')
         if (seen.has(entry.key))
           throw new Error(`[ogrid] Duplicate key '${entry.key}' in layout array. Each key must appear once.`)
         seen.add(entry.key)
-        if (typeof entry.w === 'number' && entry.w <= 0)
-          throw new Error(`[ogrid] Item '${entry.key}': w must be > 0 or 'auto'. Received: ${String(entry.w)}`)
+        if (typeof entry.w === 'number') {
+          const snapped = Math.round(entry.w / snap) * snap
+          if (snapped <= 0)
+            throw new Error(
+              `[ogrid] Item '${entry.key}': w must be > 0 or 'auto'. Received: ${String(entry.w)} (snaps to ${String(snapped)})`
+            )
+        }
       }
     }
   },
@@ -125,8 +131,17 @@ const isDev = () => typeof process !== 'undefined' && process.env.NODE_ENV === '
       const match = className.match(BANNED_REGEX),
         matched = match ? match[0].trim() : className,
         isVariant = matched.includes(':'),
-        reason = getBannedReason(matched.split(':').pop() ?? matched),
-        suffix = isVariant ? ' Size classes are banned even with variant prefixes.' : ''
+        bare = matched.split(':').pop() ?? matched,
+        reason = getBannedReason(bare),
+        suffix = isVariant
+          ? bare.startsWith('w-') ||
+            bare.startsWith('h-') ||
+            bare.startsWith('size-') ||
+            bare.startsWith('min-') ||
+            bare.startsWith('max-')
+            ? ' Size classes are banned even with variant prefixes.'
+            : ' This class is banned even with variant prefixes.'
+          : ''
       report(`[ogrid] Item '${key}': '${matched}' is not allowed in layout.className. ${reason}${suffix}`, strict)
     }
     if (CONTAINER_EXACT.test(className))
@@ -156,4 +171,4 @@ const isDev = () => typeof process !== 'undefined' && process.env.NODE_ENV === '
       current = current.parentElement
     }
   }
-export { isDev, report, validateClassName, validateConfig, validateDom, validateNoNestedGrid }
+export { isDev, report, validateClassName, validateConfig, validateDom, validateNoNestedGrid, validateRootElement }

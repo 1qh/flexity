@@ -1,6 +1,13 @@
 'use client'
 import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
-import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@a/ui/chart'
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent
+} from '@a/ui/chart'
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from 'recharts'
 const data = [
     { subject: 'Math', a: 120, b: 110 },
@@ -25,6 +32,7 @@ const data = [
             <PolarGrid />
             <PolarAngleAxis dataKey='subject' />
             <ChartTooltip content={<ChartTooltipContent />} />
+            <ChartLegend content={<ChartLegendContent />} />
             <Radar dataKey='a' fill='var(--color-a)' fillOpacity={0.3} stroke='var(--color-a)' />
             <Radar dataKey='b' fill='var(--color-b)' fillOpacity={0.3} stroke='var(--color-b)' />
           </RadarChart>

@@ -1,10 +1,33 @@
 'use client'
 import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
+import { type ChartConfig, ChartContainer } from '@a/ui/chart'
+import { Area, AreaChart } from 'recharts'
 const kpis = [
-    { label: 'Total Revenue', value: '$45,231', change: '+20.1%', up: true },
-    { label: 'Subscriptions', value: '+2,350', change: '+180.1%', up: true },
-    { label: 'Active Now', value: '573', change: '+201', up: true }
+    {
+      label: 'Total Revenue',
+      value: '$45,231',
+      change: '+20.1%',
+      up: true,
+      data: [{ v: 30 }, { v: 35 }, { v: 28 }, { v: 40 }, { v: 38 }, { v: 45 }]
+    },
+    {
+      label: 'Subscriptions',
+      value: '+2,350',
+      change: '+180.1%',
+      up: true,
+      data: [{ v: 10 }, { v: 15 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 35 }]
+    },
+    {
+      label: 'Active Now',
+      value: '573',
+      change: '+201',
+      up: true,
+      data: [{ v: 50 }, { v: 48 }, { v: 55 }, { v: 52 }, { v: 58 }, { v: 57 }]
+    }
   ],
+  chartConfig = {
+    v: { label: 'Value', color: 'var(--chart-1)' }
+  } satisfies ChartConfig,
   KpiCard = () => (
     <Card>
       <CardHeader>
@@ -17,7 +40,21 @@ const kpis = [
               <span className='text-sm text-muted-foreground'>{k.label}</span>
               <span className='text-2xl font-bold'>{k.value}</span>
             </div>
-            <span className='text-sm text-primary'>{k.change}</span>
+            <div className='flex items-center gap-2'>
+              <ChartContainer className='h-8 w-16' config={chartConfig}>
+                <AreaChart data={k.data}>
+                  <Area
+                    dataKey='v'
+                    fill='var(--color-v)'
+                    fillOpacity={0.2}
+                    stroke='var(--color-v)'
+                    strokeWidth={1.5}
+                    type='monotone'
+                  />
+                </AreaChart>
+              </ChartContainer>
+              <span className='text-sm text-primary'>{k.change}</span>
+            </div>
           </div>
         ))}
       </CardContent>

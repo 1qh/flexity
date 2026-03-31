@@ -1,4 +1,5 @@
 /** biome-ignore-all lint/nursery/noIncrementDecrement: test counters */
+/* eslint-disable no-plusplus */
 import { describe, expect, it } from 'bun:test'
 import { createStore } from '../store'
 describe('createStore', () => {

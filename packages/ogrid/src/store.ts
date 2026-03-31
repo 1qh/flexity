@@ -6,6 +6,7 @@ interface Store<K extends string = string> {
   reorderKeys: (orderedKeys: K[]) => void
   reset: () => void
   setConfig: (config: GridConfig<K>) => void
+  setOnReset: (cb: (() => void) | null) => void
   setOnUserChange: (cb: ChangeCallback<K> | null) => void
   setState: (partial: Partial<StoreState<K>>) => void
   subscribe: (listener: Listener) => () => void
@@ -31,7 +32,8 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
       showDebugBorders: false,
       showDebugBg: false
     },
-    onUserChangeCb: ChangeCallback<K> | null = null
+    onUserChangeCb: ChangeCallback<K> | null = null,
+    onResetCb: (() => void) | null = null
   const notify = () => {
       for (const listener of listeners) listener()
     },
@@ -78,9 +80,13 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
         config: { ...state.initialConfig },
         selectedWidget: null
       })
+      if (onResetCb) onResetCb()
     },
     setOnUserChange = (cb: ChangeCallback<K> | null) => {
       onUserChangeCb = cb
+    },
+    setOnReset = (cb: (() => void) | null) => {
+      onResetCb = cb
     },
     userChange = () => {
       if (onUserChangeCb) onUserChangeCb(state.config)
@@ -94,6 +100,7 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
     updateGridConfig,
     reorderKeys,
     reset,
+    setOnReset,
     setOnUserChange,
     userChange
   }

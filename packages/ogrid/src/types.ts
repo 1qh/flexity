@@ -1,4 +1,4 @@
-import type { JSXElementConstructor, ReactElement } from 'react'
+import type { ComponentType, Fragment, ReactElement } from 'react'
 const BANNED_PREFIXES = [
   'w-',
   'h-',
@@ -69,10 +69,11 @@ const BANNED_PREFIXES = [
 ] as const
 type AllowedContent =
   | boolean
-  | Iterable<AllowedContent>
   | null
   | number
-  | ReactElement<unknown, JSXElementConstructor<unknown>>
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+  | ReactElement<unknown, ComponentType<never>>
+  | ReactElement<unknown, typeof Fragment>
   | string
   | undefined
 type BannedClass<S extends string> = string extends S
