@@ -123,7 +123,7 @@ Before writing any new code, verify:
 ### Cross-linter rules
 
 - 2 linters with the same rule = double enforcement, NOT a conflict. Never disable one because the other covers it.
-- To suppress a shared eslint/oxlint rule: suppress eslint's version — oxlint auto-picks up eslint rules and is faster.
+- To suppress a shared eslint/oxlint rule: suppress eslint’s version — oxlint auto-picks up eslint rules and is faster.
 
 ### Safe-to-ignore rules
 
@@ -137,14 +137,14 @@ Before writing any new code, verify:
 
 ## Minimal DOM (React + Tailwind)
 
-Same UI, fewest DOM nodes. Every element must earn its place. If you can delete it and nothing breaks → it shouldn't exist.
+Same UI, fewest DOM nodes. Every element must earn its place. If you can delete it and nothing breaks → it shouldn’t exist.
 
 **A node is allowed only if it provides:**
 
 - **Semantics/a11y** — correct elements (`ul/li`, `button`, `label`, `form`, `nav`), ARIA patterns, focus behavior
 - **Layout constraint** — needs its own containing block / positioning / clipping / scroll / stacking context
 - **Behavior** — measurement refs, observers, portals, event boundary
-- **Component API** — can't pass props/classes to the real root
+- **Component API** — can’t pass props/classes to the real root
 
 **Before adding wrappers:**
 
@@ -169,4 +169,4 @@ Same UI, fewest DOM nodes. Every element must earn its place. If you can delete 
 - `packages/ogrid/` is the npm package. `apps/demo/` is the demo app.
 - `lib/ui/` is read-only — copied from `~/z/noboil/lib/ui`, used by the demo app
 - `BANNED_PREFIXES` is the single source of truth for both compile-time and runtime class validation
-- Every violation pattern must have a test. Every valid pattern must have a test proving it doesn't throw.
+- Every violation pattern must have a test. Every valid pattern must have a test proving it doesn’t throw.
