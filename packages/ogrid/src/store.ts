@@ -18,6 +18,7 @@ interface StoreState<K extends string = string> {
   config: GridConfig<K>
   containerWidth: number
   initialConfig: GridConfig<K>
+  itemKeys: K[]
   selectedWidget: K | null
   showDebugBg: boolean
   showDebugBorders: boolean
@@ -28,6 +29,7 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
       config: { ...initialConfig },
       containerWidth: 0,
       initialConfig: { ...initialConfig },
+      itemKeys: [],
       selectedWidget: null,
       showDebugBg: false,
       showDebugBorders: false

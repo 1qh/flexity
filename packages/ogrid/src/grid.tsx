@@ -260,7 +260,8 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
       initializedRef.current = true
       if (configProp) {
         validateConfig(configProp)
-        store.setState({ config: { ...configProp }, initialConfig: { ...configProp } })
+        store.setState({ initialConfig: { ...configProp } })
+        if (!onConfigChange) store.setState({ config: { ...configProp } })
       }
       if (id && !onConfigChange) {
         const saved = loadConfig<K>(id)
@@ -295,12 +296,15 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
         store.setOnReset(null)
       }
     }, [id, onConfigChange, configProp])
+    const itemKeys = Object.keys(items) as K[],
+      itemKeyStr = itemKeys.join('\0')
+    useEffect(() => {
+      store.setState({ itemKeys })
+    }, [itemKeyStr])
     const gap = state.config.gap ?? 0,
       snap = state.config.snap ?? 1,
       layout = state.config.layout ?? [],
-      itemKeys = Object.keys(items) as K[],
       layoutKeyStr = layout.map(e => e.key).join('\0'),
-      itemKeyStr = itemKeys.join('\0'),
       orderedKeys = useMemo(() => {
         const lKeys = layoutKeyStr.split('\0').filter(Boolean),
           iKeys = itemKeyStr.split('\0').filter(Boolean) as K[],

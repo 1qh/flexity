@@ -243,10 +243,9 @@ const VisualControls = ({ className: cls, onChange }: VisualControlsProps) => {
   )
 }
 interface CreatePanelComponentProps<K extends string> {
-  getItemKeys: () => K[]
   store: Store<K>
 }
-const createPanelComponent = <K extends string>({ store, getItemKeys }: CreatePanelComponentProps<K>) => {
+const createPanelComponent = <K extends string>({ store }: CreatePanelComponentProps<K>) => {
   const PanelComponent = ({
     children,
     renderWidgetControl,
@@ -256,8 +255,7 @@ const createPanelComponent = <K extends string>({ store, getItemKeys }: CreatePa
     const devMode = isDev(),
       state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
     if (!devMode) return null
-    const { config, selectedWidget, showDebugBorders, showDebugBg, containerWidth } = state,
-      itemKeys = getItemKeys(),
+    const { config, selectedWidget, showDebugBorders, showDebugBg, containerWidth, itemKeys } = state,
       layout = config.layout ?? [],
       gap = config.gap ?? 0,
       snap = config.snap ?? 1,

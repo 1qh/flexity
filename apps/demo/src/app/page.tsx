@@ -64,7 +64,7 @@ const { Grid, Panel } = createGrid(),
       { key: 'prose', w: 500 }
     ],
     snap: 8
-  } as const,
+  },
   Page = () => (
     <div className='flex gap-4 p-4'>
       <div className='min-w-0 flex-1'>
