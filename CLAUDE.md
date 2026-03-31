@@ -21,7 +21,7 @@
 - Short map callback names: `t`, `m`, `i`
 - Max 3 positional args — use destructured object for 4+
 - Co-locate components with their page; only move to shared when reused
-- Explicit imports from exact file paths — no barrel `index.ts` files
+- Explicit imports from exact file paths — no barrel `index.ts` files (exception: npm package entry point)
 - Prefer existing libraries over new dependencies
 - Scripts: silent on success, verbose on failure. Prefer `q ...` for noisy commands.
 

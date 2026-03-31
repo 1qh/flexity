@@ -215,7 +215,7 @@ const { Grid, Panel } = createGrid()
 - Must be in a `'use client'` file (frameworks with RSC like Next.js App Router)
 - Takes no arguments — all config via `<Grid>` props (keeps copy/paste in one place)
 - Store persists for app lifetime (module-level). No cleanup needed — dashboards are typically long-lived. For SPAs with many route-level grids, the memory cost is negligible (store is a small JS object per grid)
-- For testing: `createGrid()` returns a `reset()` function that clears the store to initial state. Useful in test `beforeEach`/`afterEach`. In controlled mode, `reset()` is a no-op (state is driven by `config` prop). In uncontrolled mode, it clears localStorage and reverts to `config` prop defaults.
+- For testing: `createGrid()` returns a `reset()` function that clears the store to initial state. Useful in test `beforeEach`/`afterEach`. In controlled mode, `reset()` calls `onConfigChange` with the initial config (consumer is the source of truth — the library notifies, the consumer decides). In uncontrolled mode, it clears localStorage and reverts to `config` prop defaults.
 
 ## Type Safety
 
@@ -876,7 +876,7 @@ Violations in dev mode use `console.error` with the `[ogrid]` prefix — they do
 - No virtualization — all items are in the DOM
 - Each item adds: 1 wrapper div, 1 drag handle, 1 resize handle to the DOM
 - For 100+ items, consider splitting into multiple grids or paginating
-- Grid subscribes to the store via `useSyncExternalStore`. Each item wrapper is `React.memo`’d internally — only the affected wrapper re-renders on resize/drag, not all siblings. Consumer components can further optimize with `memo()`.
+- Grid subscribes to the store via `useSyncExternalStore`. Item wrappers are NOT `React.memo`’d — React elements are new references every render, making `memo` on wrappers that receive JSX children ineffective. React’s own reconciliation handles diffing efficiently. Consumer components can optimize with `memo()` on their own components if needed.
 - HMR: most bundlers (Vite, webpack) preserve module-level state through hot reloads. If state is lost on HMR, the grid re-initializes from `config` prop.
 
 ## Package Exports
@@ -1106,3 +1106,6 @@ These decisions are **deliberate, thoroughly debated, and final**. They reflect 
 - **Layout as array, not object**: Array order is guaranteed everywhere (JS, JSON, databases, ORMs). Object key order is a JS engine convention, not a spec guarantee in all serialization contexts. Array makes display order a first-class, explicit concept.
 - **`onConfigChange` fires only from user actions**: Never from internal normalization or prop changes. Prevents infinite loops in controlled mode. Standard React `onChange` semantics — “the user did something.”
 - **`BannedClass` uses conditional check, not mapped type union**: `S extends { [K in BannedPrefix]: ... }[BannedPrefix] ? never : S` — a single `never` from any banned prefix rejects the whole string. The original mapped+indexed approach produced a union where `never` was absorbed.
+- **`JSXElementConstructor<any>` in `AllowedContent`**: The only `any` in the codebase, isolated in `content.ts`. `JSXElementConstructor<any>` is React’s own pattern for “element created by any component constructor.” Alternatives (`never`, `unknown`) either require contravariance tricks that obscure intent or don’t cover all component types (exotic components like `memo`, `forwardRef`, `lazy`). Explicit intent wins over clever type tricks. The `any` is contained — it never leaks beyond the type parameter.
+- **No `React.memo` on item wrappers**: React elements are new references every render. `memo` on a component that receives JSX children as props is ineffective — the children are always “new” objects, defeating shallow comparison. Removing `memo` is honest: no false impression of optimization, no hidden behavior. Consumers who need perf control can `memo()` their own components.
+- **`reset()` calls `onConfigChange` in controlled mode**: Not a no-op. In controlled mode, the consumer is the source of truth. Silently doing nothing on `reset()` would violate fail-fast — the consumer calls a function and gets no feedback. Instead, `reset()` explicitly tells the consumer to revert by calling `onConfigChange(initialConfig)`. The consumer decides whether to act on it.

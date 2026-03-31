@@ -1,4 +1,5 @@
-import type { ComponentType, Fragment, ReactElement } from 'react'
+import type { ReactElement } from 'react'
+import type { AllowedContent } from './content'
 const BANNED_PREFIXES = [
   'w-',
   'h-',
@@ -67,14 +68,6 @@ const BANNED_PREFIXES = [
   'isolate',
   'isolation-'
 ] as const
-type AllowedContent =
-  | boolean
-  | null
-  | number
-  | ReactElement<unknown, ComponentType<never>>
-  | ReactElement<unknown, typeof Fragment>
-  | string
-  | undefined
 type BannedClass<S extends string> = string extends S
   ? string
   : S extends { [K in BannedPrefix]: `${Before}${K}${string}` }[BannedPrefix]
@@ -127,4 +120,5 @@ interface WidgetLayoutEntry<K extends string = string> {
   w?: 'auto' | number
 }
 export { BANNED_PREFIXES }
-export type { AllowedContent, BannedClass, GridConfig, GridProps, PanelProps, PanelRenderProps, WidgetLayoutEntry }
+export type { AllowedContent } from './content'
+export type { BannedClass, GridConfig, GridProps, PanelProps, PanelRenderProps, WidgetLayoutEntry }
