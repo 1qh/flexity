@@ -1,0 +1,10 @@
+{
+  "extends": "lintmax/tsconfig",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "outDir": "dist",
+    "rootDir": "src",
+    "ignoreDeprecations": "6.0"
+  },
+  "include": ["src", "tsup.config.ts"]
+}
