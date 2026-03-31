@@ -7,5 +7,5 @@
     "types": ["bun-types"],
     "ignoreDeprecations": "6.0"
   },
-  "include": ["src", "tsdown.config.ts"]
+  "include": ["src", "tsdown.config.ts", "happydom.ts"]
 }
