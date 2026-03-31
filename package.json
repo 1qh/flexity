@@ -15,13 +15,9 @@
     "fix": "lintmax fix",
     "test": "turbo test"
   },
-  "simple-git-hooks": {
-    "pre-commit": "bun clean && bun i && bun fix"
-  },
   "devDependencies": {
     "@types/bun": "latest",
     "lintmax": "latest",
-    "simple-git-hooks": "latest",
     "turbo": "latest",
     "typescript": "latest"
   },

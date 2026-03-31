@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/nursery/noIncrementDecrement: test counters */
 import { describe, expect, it } from 'bun:test'
 import { createStore } from '../store'
 describe('edge cases', () => {

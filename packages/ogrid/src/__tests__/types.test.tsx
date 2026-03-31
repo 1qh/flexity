@@ -1,3 +1,4 @@
+/* oxlint-disable react/jsx-key */
 /* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars */
 import { describe, expect, it } from 'bun:test'
 import type { AllowedContent, BannedClass, GridConfig, WidgetLayoutEntry } from '../types'
@@ -7,21 +8,21 @@ describe('type safety', () => {
     const allowed: BannedClass<'pt-3 rounded-lg bg-muted'> = 'pt-3 rounded-lg bg-muted'
     expect(allowed).toBe('pt-3 rounded-lg bg-muted')
     // @ts-expect-error — w-full is a banned class
-    const _banned: BannedClass<'w-full'> = 'w-full',
+    const _a: BannedClass<'w-full'> = 'w-full',
       // @ts-expect-error — absolute is banned
-      _banned2: BannedClass<'absolute top-0'> = 'absolute top-0',
+      _b: BannedClass<'absolute top-0'> = 'absolute top-0',
       // @ts-expect-error — m-4 is banned
-      _banned3: BannedClass<'m-4 pt-3'> = 'm-4 pt-3',
+      _c: BannedClass<'m-4 pt-3'> = 'm-4 pt-3',
       // @ts-expect-error — overflow-hidden is banned
-      _banned4: BannedClass<'overflow-hidden'> = 'overflow-hidden',
+      _d: BannedClass<'overflow-hidden'> = 'overflow-hidden',
       // @ts-expect-error — hidden is banned
-      _banned5: BannedClass<'hidden'> = 'hidden',
+      _e: BannedClass<'hidden'> = 'hidden',
       // @ts-expect-error — sm:w-full variant prefix banned
-      _banned6: BannedClass<'sm:w-full'> = 'sm:w-full',
+      _f: BannedClass<'sm:w-full'> = 'sm:w-full',
       // @ts-expect-error — !w-full important modifier banned
-      _banned7: BannedClass<'!w-full'> = '!w-full',
+      _g: BannedClass<'!w-full'> = '!w-full',
       // @ts-expect-error — -m-4 negative modifier banned
-      _banned8: BannedClass<'-m-4'> = '-m-4'
+      _h: BannedClass<'-m-4'> = '-m-4'
     expect(true).toBe(true)
   })
   it('BannedClass allows valid classes', () => {
@@ -53,9 +54,7 @@ describe('type safety', () => {
     }
     expect(config.layout).toHaveLength(2)
     // @ts-expect-error — 'invalid' is not a valid key
-    const _bad: GridConfig<'chart' | 'kpi'> = {
-      layout: [{ key: 'invalid' }]
-    }
+    const _bad: GridConfig<'chart' | 'kpi'> = { layout: [{ key: 'invalid' }] }
   })
   it('WidgetLayoutEntry key is constrained', () => {
     const entry: WidgetLayoutEntry<'a' | 'b'> = { key: 'a', w: 320 }
@@ -64,26 +63,32 @@ describe('type safety', () => {
     const _bad: WidgetLayoutEntry<'a' | 'b'> = { key: 'c' }
   })
   it('AllowedContent accepts valid types', () => {
-    const _str: AllowedContent = 'hello',
-      _num: AllowedContent = 42,
-      _nul: AllowedContent = null,
-      _undef: AllowedContent = undefined,
-      _bool: AllowedContent = false,
-      _component: AllowedContent = <MyComponent />,
-      _fragment: AllowedContent = <MyComponent />
-    expect(true).toBe(true)
+    const str: AllowedContent = 'hello',
+      num: AllowedContent = 42,
+      nul: AllowedContent = null,
+      undef: AllowedContent = undefined,
+      bool: AllowedContent = false,
+      component: AllowedContent = <MyComponent />,
+      fragment: AllowedContent = <MyComponent />
+    expect(str).toBeTruthy()
+    expect(num).toBeTruthy()
+    expect(nul).toBeNull()
+    expect(undef).toBeUndefined()
+    expect(bool).toBe(false)
+    expect(component).toBeTruthy()
+    expect(fragment).toBeTruthy()
   })
   it('AllowedContent rejects intrinsic elements', () => {
     // @ts-expect-error — <div> is an intrinsic element
-    const _div: AllowedContent = <div>text</div>,
+    const _a: AllowedContent = <div>text</div>,
       // @ts-expect-error — <span> is an intrinsic element
-      _span: AllowedContent = <span>text</span>,
+      _b: AllowedContent = <span>text</span>,
       // @ts-expect-error — <hr /> is an intrinsic element (void)
-      _hr: AllowedContent = <hr />,
+      _c: AllowedContent = <hr />,
       // @ts-expect-error — <canvas /> is an intrinsic element (void)
-      _canvas: AllowedContent = <canvas />,
+      _d: AllowedContent = <canvas />,
       // @ts-expect-error — <section> is an intrinsic element
-      _section: AllowedContent = <section>text</section>
+      _e: AllowedContent = <section>text</section>
     expect(true).toBe(true)
   })
   it('WidgetLayoutEntry w accepts number, auto, or undefined', () => {

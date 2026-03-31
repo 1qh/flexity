@@ -1,13 +1,12 @@
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: dev-only click handler on layout div */
+/** biome-ignore-all lint/a11y/noNoninteractiveElementInteractions: dev-only click handler on layout div */
 /** biome-ignore-all lint/a11y/noSvgWithoutTitle: decorative grip icon */
-/** biome-ignore-all lint/a11y/noNoninteractiveElementInteractions: grid item click to select */
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: handled by dnd-kit */
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: grid wrapper */
 /** biome-ignore-all lint/a11y/useSemanticElements: resize separator */
 /** biome-ignore-all lint/a11y/useAriaPropsForRole: re-resizable handles aria */
 /** biome-ignore-all lint/nursery/noInlineStyles: dynamic layout styles required */
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: intentional dep control */
-/* eslint-disable complexity, react-hooks/exhaustive-deps, @eslint-react/no-unnecessary-use-callback, @typescript-eslint/max-params, @eslint-react/web-api/no-leaked-event-listener */
-/* oxlint-disable react-perf/jsx-no-new-object-as-prop, react-perf/jsx-no-new-array-as-prop, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, promise/prefer-await-to-callbacks */
+/* eslint-disable complexity, react-hooks/exhaustive-deps, @eslint-react/no-unnecessary-use-callback, @typescript-eslint/max-params */
+/* oxlint-disable react-perf/jsx-no-new-object-as-prop, react-perf/jsx-no-new-array-as-prop, jsx-a11y/no-static-element-interactions */
 'use client'
 import type { Announcements, DragEndEvent } from '@dnd-kit/core'
 import type { CSSProperties, ReactElement } from 'react'
@@ -93,15 +92,13 @@ const GridItemInner = memo(
       if (!(dragHandle && wrapperRef.current)) return
       const handle = wrapperRef.current.querySelector(dragHandle)
       if (!handle) return
+      const controller = new AbortController()
       if (listeners)
-        for (const [event, handler] of Object.entries(listeners)) handle.addEventListener(event, handler as EventListener)
+        for (const [event, handler] of Object.entries(listeners))
+          handle.addEventListener(event, handler as EventListener, { signal: controller.signal })
       for (const [attr, value] of Object.entries(attributes)) handle.setAttribute(attr, String(value))
       handle.setAttribute('style', `${handle.getAttribute('style') ?? ''}; cursor: grab;`)
-      return () => {
-        if (listeners)
-          for (const [event, handler] of Object.entries(listeners))
-            handle.removeEventListener(event, handler as EventListener)
-      }
+      return () => controller.abort()
     }, [dragHandle, listeners, attributes, content])
     useEffect(() => {
       if (!(devMode && wrapperRef.current)) return
@@ -174,12 +171,25 @@ const GridItemInner = memo(
       <div
         className={mergedClassName}
         data-ogrid-key={itemKey}
-        onClick={e => {
-          if (devMode) {
-            e.stopPropagation()
-            onSelect(itemKey)
-          }
-        }}
+        onClick={
+          devMode
+            ? e => {
+                e.stopPropagation()
+                onSelect(itemKey)
+              }
+            : undefined
+        }
+        onKeyDown={
+          devMode
+            ? e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  onSelect(itemKey)
+                }
+              }
+            : undefined
+        }
         ref={setNodeRef}
         style={wrapperStyle}>
         {dragHandle ? null : (

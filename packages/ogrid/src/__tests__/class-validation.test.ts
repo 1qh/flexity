@@ -1,17 +1,16 @@
-/** biome-ignore-all lint/suspicious/noEmptyBlockStatements: mock implementations */
 /** biome-ignore-all lint/nursery/useExpect: expect calls are inside helper functions */
 /** biome-ignore-all lint/suspicious/noMisplacedAssertion: expect calls inside test helpers */
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { describe, expect, it, spyOn } from 'bun:test'
 import { validateClassName } from '../validation'
-const expectBanned = (cls: string) => {
-    const spy = spyOn(console, 'error').mockImplementation(() => {})
+const noop = () => undefined,
+  expectBanned = (cls: string) => {
+    const spy = spyOn(console, 'error').mockImplementation(noop)
     validateClassName('test', cls, false)
     expect(spy).toHaveBeenCalled()
     spy.mockRestore()
   },
   expectAllowed = (cls: string) => {
-    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    const spy = spyOn(console, 'error').mockImplementation(noop)
     validateClassName('test', cls, false)
     expect(spy).not.toHaveBeenCalled()
     spy.mockRestore()
@@ -210,55 +209,55 @@ describe('validateClassName — strict mode', () => {
 })
 describe('validateClassName — error messages', () => {
   it('includes item key in message', () => {
-    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    const spy = spyOn(console, 'error').mockImplementation(noop)
     validateClassName('myWidget', 'w-full', false)
     expect(spy.mock.calls[0][0]).toContain('myWidget')
     spy.mockRestore()
   })
   it('mentions layout.w for sizing classes', () => {
-    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    const spy = spyOn(console, 'error').mockImplementation(noop)
     validateClassName('test', 'w-full', false)
     expect(spy.mock.calls[0][0]).toContain('layout.w')
     spy.mockRestore()
   })
   it('mentions config.gap for margin classes', () => {
-    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    const spy = spyOn(console, 'error').mockImplementation(noop)
     validateClassName('test', 'm-4', false)
     expect(spy.mock.calls[0][0]).toContain('gap')
     spy.mockRestore()
   })
   it('mentions overflow for overflow classes', () => {
-    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    const spy = spyOn(console, 'error').mockImplementation(noop)
     validateClassName('test', 'overflow-hidden', false)
     expect(spy.mock.calls[0][0]).toContain('overflow')
     spy.mockRestore()
   })
   it('mentions drag for transform classes', () => {
-    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    const spy = spyOn(console, 'error').mockImplementation(noop)
     validateClassName('test', 'translate-x-4', false)
     expect(spy.mock.calls[0][0]).toContain('drag')
     spy.mockRestore()
   })
   it('mentions positioning for position classes', () => {
-    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    const spy = spyOn(console, 'error').mockImplementation(noop)
     validateClassName('test', 'absolute', false)
     expect(spy.mock.calls[0][0]).toContain('positioning')
     spy.mockRestore()
   })
   it('mentions variant prefix warning', () => {
-    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    const spy = spyOn(console, 'error').mockImplementation(noop)
     validateClassName('test', 'sm:w-full', false)
     expect(spy.mock.calls[0][0]).toContain('variant')
     spy.mockRestore()
   })
   it('mentions layout.hidden for hidden class', () => {
-    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    const spy = spyOn(console, 'error').mockImplementation(noop)
     validateClassName('test', 'hidden', false)
     expect(spy.mock.calls[0][0]).toContain('layout.hidden')
     spy.mockRestore()
   })
   it('mentions resize handles for resize class', () => {
-    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    const spy = spyOn(console, 'error').mockImplementation(noop)
     validateClassName('test', 'resize', false)
     expect(spy.mock.calls[0][0]).toContain('resize')
     spy.mockRestore()
