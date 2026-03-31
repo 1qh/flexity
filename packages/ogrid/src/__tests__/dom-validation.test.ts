@@ -1,48 +1,49 @@
 /** biome-ignore-all lint/suspicious/noEmptyBlockStatements: mock implementations */
 /** biome-ignore-all lint/nursery/useImportsFirst: HTMLElement polyfill must run before validation import */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-extraneous-class */
+/* eslint-disable @typescript-eslint/no-extraneous-class, @typescript-eslint/no-empty-function, @typescript-eslint/max-params, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
+/* oxlint-disable import/first */
 import { describe, expect, it, spyOn } from 'bun:test'
-if (typeof globalThis.HTMLElement === 'undefined') {
+if (globalThis.HTMLElement === undefined) {
   ;(globalThis as Record<string, unknown>).HTMLElement = class HTMLElement {}
 }
 import { validateDom, validateNoNestedGrid, validateRootElement } from '../validation'
 const makeAttrs = (attrs: Record<string, string>) => {
     const entries = Object.entries(attrs)
     return {
-      length: entries.length,
       getNamedItem: (name: string) => {
         const v = attrs[name]
         return v === undefined ? null : { name, value: v }
-      }
+      },
+      length: entries.length
     }
   },
   el = (tag: string, attrs: Record<string, string> = {}, children: unknown[] = [], text?: string): HTMLElement => {
     const childElements = children.filter((c): c is HTMLElement => typeof c === 'object' && c !== null),
       element: unknown = {
-        tagName: tag.toUpperCase(),
         attributes: makeAttrs(attrs),
-        children: { length: childElements.length },
         childNodes: { length: text && childElements.length === 0 ? 1 : childElements.length },
-        firstElementChild: childElements[0] ?? null,
+        children: { length: childElements.length },
         classList: {
           contains: (cls: string) => (attrs.class ?? '').split(' ').includes(cls)
         },
-        parentElement: null as unknown,
-        dataset: attrs['data-ogrid-handle'] === undefined ? {} : { ogridHandle: '' },
-        getAttribute: (name: string) => attrs[name] ?? null,
         closest: (selector: string) => {
           if (selector === '[data-ogrid-key]' && attrs['data-ogrid-key'] !== undefined) return element
           return null
         },
+        dataset: attrs['data-ogrid-handle'] === undefined ? {} : { ogridHandle: '' },
+        firstElementChild: childElements[0] ?? null,
+        getAttribute: (name: string) => attrs[name] ?? null,
+        parentElement: null as unknown,
         querySelector: (selector: string) => {
           if (selector === '[data-ogrid-content]')
             for (const child of childElements) {
               if ((child as { dataset?: Record<string, string> }).dataset?.ogridContent !== undefined) return child
-              const found = (child as { getAttribute?: (n: string) => null | string }).getAttribute?.('data-ogrid-content')
+              const found = (child as { getAttribute?: (n: string) => null | string }).dataset.ogridContent
               if (found !== null && found !== undefined) return child
             }
           return null
-        }
+        },
+        tagName: tag.toUpperCase()
       }
     for (const child of childElements) {
       ;(child as { parentElement: unknown }).parentElement = element

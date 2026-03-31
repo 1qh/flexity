@@ -1,26 +1,22 @@
 'use client'
+import type { ChartConfig } from '@a/ui/chart'
 import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent
-} from '@a/ui/chart'
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@a/ui/chart'
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 const data = [
-    { month: 'Jan', users: 2400, sessions: 4000 },
-    { month: 'Feb', users: 1398, sessions: 3000 },
-    { month: 'Mar', users: 9800, sessions: 2000 },
-    { month: 'Apr', users: 3908, sessions: 2780 },
-    { month: 'May', users: 4800, sessions: 1890 },
-    { month: 'Jun', users: 3800, sessions: 2390 }
+    { month: 'Jan', sessions: 4000, users: 2400 },
+    { month: 'Feb', sessions: 3000, users: 1398 },
+    { month: 'Mar', sessions: 2000, users: 9800 },
+    { month: 'Apr', sessions: 2780, users: 3908 },
+    { month: 'May', sessions: 1890, users: 4800 },
+    { month: 'Jun', sessions: 2390, users: 3800 }
   ],
   chartConfig = {
-    users: { label: 'Users', color: 'var(--chart-1)' },
-    sessions: { label: 'Sessions', color: 'var(--chart-2)' }
+    sessions: { color: 'var(--chart-2)', label: 'Sessions' },
+    users: { color: 'var(--chart-1)', label: 'Users' }
   } satisfies ChartConfig,
+  tooltipContent = <ChartTooltipContent />,
+  legendContent = <ChartLegendContent />,
   AreaChartWidget = () => (
     <Card>
       <CardHeader>
@@ -32,8 +28,8 @@ const data = [
             <CartesianGrid vertical={false} />
             <XAxis axisLine={false} dataKey='month' tickLine={false} />
             <YAxis axisLine={false} tickLine={false} />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <ChartLegend content={<ChartLegendContent />} />
+            <ChartTooltip content={tooltipContent} />
+            <ChartLegend content={legendContent} />
             <Area
               dataKey='users'
               fill='var(--color-users)'

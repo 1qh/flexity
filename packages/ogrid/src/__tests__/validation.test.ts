@@ -1,4 +1,5 @@
 /** biome-ignore-all lint/suspicious/noEmptyBlockStatements: mock implementations */
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { describe, expect, it, spyOn } from 'bun:test'
 import { validateClassName, validateConfig } from '../validation'
 describe('validateConfig', () => {
@@ -27,12 +28,12 @@ describe('validateConfig', () => {
     expect(() => validateConfig({ layout: [{ key: 'a', w: -5 }] })).toThrow('w must be > 0')
   })
   it('throws on fractional w that snaps to 0', () => {
-    expect(() => validateConfig({ snap: 1, layout: [{ key: 'a', w: 0.4 }] })).toThrow('snaps to 0')
-    expect(() => validateConfig({ snap: 10, layout: [{ key: 'a', w: 4 }] })).toThrow('snaps to 0')
+    expect(() => validateConfig({ layout: [{ key: 'a', w: 0.4 }], snap: 1 })).toThrow('snaps to 0')
+    expect(() => validateConfig({ layout: [{ key: 'a', w: 4 }], snap: 10 })).toThrow('snaps to 0')
   })
   it('allows fractional w that snaps to positive', () => {
-    expect(() => validateConfig({ snap: 1, layout: [{ key: 'a', w: 0.6 }] })).not.toThrow()
-    expect(() => validateConfig({ snap: 8, layout: [{ key: 'a', w: 5 }] })).not.toThrow()
+    expect(() => validateConfig({ layout: [{ key: 'a', w: 0.6 }], snap: 1 })).not.toThrow()
+    expect(() => validateConfig({ layout: [{ key: 'a', w: 5 }], snap: 8 })).not.toThrow()
   })
   it('allows w: auto', () => {
     expect(() => validateConfig({ layout: [{ key: 'a', w: 'auto' }] })).not.toThrow()
@@ -41,11 +42,11 @@ describe('validateConfig', () => {
     expect(() =>
       validateConfig({
         gap: 16,
-        snap: 8,
         layout: [
           { key: 'chart', w: 640 },
           { key: 'kpi', w: 320 }
-        ]
+        ],
+        snap: 8
       })
     ).not.toThrow()
   })

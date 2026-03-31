@@ -3,7 +3,8 @@
 /* oxlint-disable prefer-named-capture-group */
 /* eslint-disable prefer-named-capture-group */
 'use client'
-import { type ChangeEvent, type ReactElement, useSyncExternalStore } from 'react'
+import type { ChangeEvent, ReactElement } from 'react'
+import { useSyncExternalStore } from 'react'
 import type { Store } from './store'
 import type { GridConfig, PanelProps, WidgetLayoutEntry } from './types'
 import { cn } from './cn'
@@ -110,7 +111,7 @@ const SelectInput = ({ label, value, onChange, options }: SelectInputProps) => (
   },
   removeMatching = (cls: string, re: RegExp): string => {
     re.lastIndex = 0
-    return cls.replace(re, '').replace(/\s+/gu, ' ').trim()
+    return cls.replace(re, '').replaceAll(/\s+/gu, ' ').trim()
   },
   ROUNDED_OPTIONS = [
     'rounded-none',
@@ -279,13 +280,13 @@ const createPanelComponent = <K extends string>({ store, getItemKeys }: CreatePa
       }
     if (children)
       return children({
-        selectedWidget,
-        widgets: itemKeys,
         gridConfig: config,
-        onWidgetChange: handleWidgetChange,
-        onGridChange: handleGridChange,
         onCopy: handleCopy,
-        onReset: handleReset
+        onGridChange: handleGridChange,
+        onReset: handleReset,
+        onWidgetChange: handleWidgetChange,
+        selectedWidget,
+        widgets: itemKeys
       })
     const selected = selectedWidget ? getLayoutEntry(selectedWidget) : null
     return (

@@ -1,11 +1,11 @@
 'use client'
 import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 const events = [
-    { time: '09:00', title: 'Deployment started', desc: 'v2.4.0 rolling out to production' },
-    { time: '09:15', title: 'Health check passed', desc: 'All instances healthy' },
-    { time: '10:30', title: 'Alert triggered', desc: 'Latency spike detected in us-east-1' },
-    { time: '10:45', title: 'Incident resolved', desc: 'Auto-scaled to handle traffic' },
-    { time: '14:00', title: 'Backup completed', desc: 'Daily snapshot stored' }
+    { desc: 'v2.4.0 rolling out to production', time: '09:00', title: 'Deployment started' },
+    { desc: 'All instances healthy', time: '09:15', title: 'Health check passed' },
+    { desc: 'Latency spike detected in us-east-1', time: '10:30', title: 'Alert triggered' },
+    { desc: 'Auto-scaled to handle traffic', time: '10:45', title: 'Incident resolved' },
+    { desc: 'Daily snapshot stored', time: '14:00', title: 'Backup completed' }
   ],
   Timeline = () => (
     <Card>

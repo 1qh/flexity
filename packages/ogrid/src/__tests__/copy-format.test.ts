@@ -31,15 +31,15 @@ describe('formatConfigForCopy', () => {
     expect(result).toContain("w: 'auto'")
   })
   it('includes h when set', () => {
-    const result = formatConfigForCopy({ layout: [{ key: 'a', h: 400 }] }, ['a'])
+    const result = formatConfigForCopy({ layout: [{ h: 400, key: 'a' }] }, ['a'])
     expect(result).toContain('h: 400')
   })
   it('includes hidden when true', () => {
-    const result = formatConfigForCopy({ layout: [{ key: 'a', hidden: true }] }, ['a'])
+    const result = formatConfigForCopy({ layout: [{ hidden: true, key: 'a' }] }, ['a'])
     expect(result).toContain('hidden: true')
   })
   it('includes className when set', () => {
-    const result = formatConfigForCopy({ layout: [{ key: 'a', className: 'pt-3 rounded-lg' }] }, ['a'])
+    const result = formatConfigForCopy({ layout: [{ className: 'pt-3 rounded-lg', key: 'a' }] }, ['a'])
     expect(result).toContain("className: 'pt-3 rounded-lg'")
   })
   it('filters layout entries not in itemKeys', () => {
@@ -59,11 +59,11 @@ describe('formatConfigForCopy', () => {
     const result = formatConfigForCopy(
       {
         gap: 16,
-        snap: 8,
         layout: [
           { key: 'chart', w: 640 },
-          { key: 'kpi', w: 320, className: 'pt-3 rounded-lg bg-muted' }
-        ]
+          { className: 'pt-3 rounded-lg bg-muted', key: 'kpi', w: 320 }
+        ],
+        snap: 8
       },
       ['chart', 'kpi']
     )

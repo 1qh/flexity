@@ -4,6 +4,7 @@
     "jsx": "react-jsx",
     "outDir": "dist",
     "rootDir": "src",
+    "types": ["bun-types"],
     "ignoreDeprecations": "6.0"
   },
   "include": ["src", "tsdown.config.ts"]

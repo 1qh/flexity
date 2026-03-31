@@ -1,6 +1,7 @@
 'use client'
+import type { ChartConfig } from '@a/ui/chart'
 import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
-import { type ChartConfig, ChartContainer } from '@a/ui/chart'
+import { ChartContainer } from '@a/ui/chart'
 import { Area, AreaChart } from 'recharts'
 const data = [
     { v: 40 },
@@ -22,7 +23,7 @@ const data = [
     { v: 98 }
   ],
   chartConfig = {
-    v: { label: 'Value', color: 'var(--chart-1)' }
+    v: { color: 'var(--chart-1)', label: 'Value' }
   } satisfies ChartConfig,
   Sparkline = () => (
     <Card>

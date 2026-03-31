@@ -7,17 +7,11 @@
 /** biome-ignore-all lint/nursery/noInlineStyles: dynamic layout styles required */
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: intentional dep control */
 /* eslint-disable complexity, react-hooks/exhaustive-deps, @eslint-react/no-unnecessary-use-callback, @typescript-eslint/max-params, @eslint-react/web-api/no-leaked-event-listener */
+/* oxlint-disable react-perf/jsx-no-new-object-as-prop, react-perf/jsx-no-new-array-as-prop, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, promise/prefer-await-to-callbacks */
 'use client'
-import {
-  type Announcements,
-  closestCenter,
-  DndContext,
-  type DragEndEvent,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors
-} from '@dnd-kit/core'
+import type { Announcements, DragEndEvent } from '@dnd-kit/core'
+import type { CSSProperties, ReactElement } from 'react'
+import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import {
   horizontalListSortingStrategy,
   SortableContext,
@@ -26,18 +20,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Resizable } from 're-resizable'
-import {
-  createContext,
-  type CSSProperties,
-  memo,
-  type ReactElement,
-  use,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useSyncExternalStore
-} from 'react'
+import { createContext, memo, use, useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from 'react'
 import type { Store } from './store'
 import type { AllowedContent, GridConfig, GridProps, WidgetLayoutEntry } from './types'
 import { cn } from './cn'
@@ -53,7 +36,7 @@ const GridContext = createContext(false),
   }) => (
     <div
       className='absolute right-1 top-1 z-10 flex cursor-grab items-center justify-center rounded opacity-0 transition-opacity hover:bg-muted group-hover/item:opacity-100'
-      style={{ width: 20, height: 20 }}
+      style={{ height: 20, width: 20 }}
       {...listeners}
       {...attributes}>
       <svg className='text-muted-foreground' fill='currentColor' height='10' viewBox='0 0 10 10' width='10'>
@@ -130,10 +113,10 @@ const GridItemInner = memo(
     }, [itemKey, userClassName, strict, devMode])
     const wrapperStyle: CSSProperties = {
       boxSizing: 'border-box',
+      opacity: isDragging ? 0.5 : isHidden && devMode ? 0.4 : undefined,
       transform: CSS.Transform.toString(transform),
       transition: transition ?? undefined,
-      zIndex: isDragging ? 50 : undefined,
-      opacity: isDragging ? 0.5 : isHidden && devMode ? 0.4 : undefined
+      zIndex: isDragging ? 50 : undefined
     }
     if (typeof w === 'number') {
       wrapperStyle.width = Math.round(w / snap) * snap
@@ -228,7 +211,7 @@ const GridItemInner = memo(
             }
             onResizeStart={handleResizeStart}
             onResizeStop={handleResizeStop}
-            size={{ width: '100%', height: 'auto' }}
+            size={{ height: 'auto', width: '100%' }}
             snap={{ x: Array.from({ length: 200 }, (_, i) => (i + 1) * snap) }}>
             {inner}
           </Resizable>
@@ -338,19 +321,19 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
         [orderedKeys]
       ),
       announcements: Announcements = {
-        onDragStart: ({ active }) => `Picked up widget ${String(active.id)}.`,
+        onDragCancel: ({ active }) => `Dragging cancelled. Widget ${String(active.id)} returned.`,
+        onDragEnd: ({ active, over }) =>
+          over ? `Widget ${String(active.id)} dropped on ${String(over.id)}.` : `Widget ${String(active.id)} dropped.`,
         onDragOver: ({ active, over }) =>
           over
             ? `Widget ${String(active.id)} over ${String(over.id)}.`
             : `Widget ${String(active.id)} is no longer over a drop target.`,
-        onDragEnd: ({ active, over }) =>
-          over ? `Widget ${String(active.id)} dropped on ${String(over.id)}.` : `Widget ${String(active.id)} dropped.`,
-        onDragCancel: ({ active }) => `Dragging cancelled. Widget ${String(active.id)} returned.`
+        onDragStart: ({ active }) => `Picked up widget ${String(active.id)}.`
       },
       containerStyle: CSSProperties = {
+        alignItems: 'flex-start',
         display: 'flex',
         flexWrap: 'wrap',
-        alignItems: 'flex-start',
         gap
       }
     return (

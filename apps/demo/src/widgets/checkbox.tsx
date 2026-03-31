@@ -3,11 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { Checkbox } from '@a/ui/checkbox'
 import { Label } from '@a/ui/label'
 const tasks = [
-    { id: 'design', label: 'Design system review', done: true },
-    { id: 'api', label: 'API integration', done: true },
-    { id: 'tests', label: 'Write unit tests', done: false },
-    { id: 'docs', label: 'Update documentation', done: false },
-    { id: 'deploy', label: 'Deploy to production', done: false }
+    { done: true, id: 'design', label: 'Design system review' },
+    { done: true, id: 'api', label: 'API integration' },
+    { done: false, id: 'tests', label: 'Write unit tests' },
+    { done: false, id: 'docs', label: 'Update documentation' },
+    { done: false, id: 'deploy', label: 'Deploy to production' }
   ],
   CheckboxWidget = () => (
     <Card>

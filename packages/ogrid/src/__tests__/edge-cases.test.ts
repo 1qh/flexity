@@ -32,7 +32,7 @@ describe('edge cases', () => {
   })
   it('updateWidgetLayout with undefined h removes h', () => {
     const store = createStore<'a'>({
-      layout: [{ key: 'a', h: 200 }]
+      layout: [{ h: 200, key: 'a' }]
     })
     store.updateWidgetLayout('a', { h: undefined })
     expect(store.getState().config.layout?.[0]?.h).toBeUndefined()
@@ -62,7 +62,7 @@ describe('edge cases', () => {
   })
   it('reset clears debug flags', () => {
     const store = createStore({})
-    store.setState({ showDebugBorders: true, showDebugBg: true })
+    store.setState({ showDebugBg: true, showDebugBorders: true })
     expect(store.getState().showDebugBorders).toBe(true)
     store.reset()
     expect(store.getState().selectedWidget).toBeNull()
@@ -125,7 +125,7 @@ describe('edge cases', () => {
     expect(store.getState().config.layout?.[0]).toEqual({ key: 'x', w: 400 })
   })
   it('reset reverts to initial config even after multiple changes', () => {
-    const store = createStore<'a'>({ gap: 10, snap: 5, layout: [{ key: 'a', w: 100 }] })
+    const store = createStore<'a'>({ gap: 10, layout: [{ key: 'a', w: 100 }], snap: 5 })
     store.updateGridConfig({ gap: 20 })
     store.updateWidgetLayout('a', { w: 200 })
     store.updateGridConfig({ snap: 10 })
@@ -136,7 +136,7 @@ describe('edge cases', () => {
   })
   it('updateWidgetLayout with className preserves other fields', () => {
     const store = createStore<'a'>({
-      layout: [{ key: 'a', w: 300, h: 200, className: 'old' }]
+      layout: [{ className: 'old', h: 200, key: 'a', w: 300 }]
     })
     store.updateWidgetLayout('a', { className: 'new' })
     const entry = store.getState().config.layout?.[0]
@@ -175,8 +175,8 @@ describe('edge cases', () => {
   it('handles all items hidden', () => {
     const store = createStore<'a' | 'b'>({
         layout: [
-          { key: 'a', hidden: true },
-          { key: 'b', hidden: true }
+          { hidden: true, key: 'a' },
+          { hidden: true, key: 'b' }
         ]
       }),
       layout = store.getState().config.layout ?? []

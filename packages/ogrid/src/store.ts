@@ -1,3 +1,4 @@
+/* oxlint-disable promise/prefer-await-to-callbacks */
 import type { GridConfig, WidgetLayoutEntry } from './types'
 type ChangeCallback<K extends string> = (config: GridConfig<K>) => void
 type Listener = () => void
@@ -26,11 +27,11 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
   const listeners = new Set<Listener>()
   let state: StoreState<K> = {
       config: { ...initialConfig },
+      containerWidth: 0,
       initialConfig: { ...initialConfig },
       selectedWidget: null,
-      containerWidth: 0,
-      showDebugBorders: false,
-      showDebugBg: false
+      showDebugBg: false,
+      showDebugBorders: false
     },
     onUserChangeCb: ChangeCallback<K> | null = null,
     onResetCb: (() => void) | null = null
@@ -55,8 +56,8 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
       const current = state.config,
         layout = [...(current.layout ?? [])],
         idx = layout.findIndex(e => e.key === key)
-      if (idx >= 0) layout[idx] = { ...layout[idx], ...updates }
-      else layout.push({ key, ...updates } as WidgetLayoutEntry<K>)
+      if (idx === -1) layout.push({ key, ...updates } as WidgetLayoutEntry<K>)
+      else layout[idx] = { ...layout[idx], ...updates }
       setState({ config: { ...current, layout } })
     },
     updateGridConfig = (updates: Partial<GridConfig<K>>) => {
@@ -93,15 +94,15 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
     }
   return {
     getState,
-    setState,
-    subscribe,
-    setConfig,
-    updateWidgetLayout,
-    updateGridConfig,
     reorderKeys,
     reset,
+    setConfig,
     setOnReset,
     setOnUserChange,
+    setState,
+    subscribe,
+    updateGridConfig,
+    updateWidgetLayout,
     userChange
   }
 }

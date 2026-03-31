@@ -89,7 +89,7 @@ describe('createStore', () => {
   })
   it('updateWidgetLayout preserves other fields', () => {
     const store = createStore<'a'>({
-      layout: [{ key: 'a', w: 100, className: 'pt-3' }]
+      layout: [{ className: 'pt-3', key: 'a', w: 100 }]
     })
     store.updateWidgetLayout('a', { h: 200 })
     const entry = store.getState().config.layout?.[0]

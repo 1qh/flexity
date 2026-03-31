@@ -3,13 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@a/ui/command'
 import { useState } from 'react'
 const frameworks = [
-    { value: 'next', label: 'Next.js' },
-    { value: 'remix', label: 'Remix' },
-    { value: 'astro', label: 'Astro' },
-    { value: 'nuxt', label: 'Nuxt' },
-    { value: 'svelte', label: 'SvelteKit' },
-    { value: 'gatsby', label: 'Gatsby' },
-    { value: 'vite', label: 'Vite' }
+    { label: 'Next.js', value: 'next' },
+    { label: 'Remix', value: 'remix' },
+    { label: 'Astro', value: 'astro' },
+    { label: 'Nuxt', value: 'nuxt' },
+    { label: 'SvelteKit', value: 'svelte' },
+    { label: 'Gatsby', value: 'gatsby' },
+    { label: 'Vite', value: 'vite' }
   ],
   CommandWidget = () => {
     const [selected, setSelected] = useState('')

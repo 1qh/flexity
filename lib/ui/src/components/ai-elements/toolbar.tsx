@@ -1,6 +1,7 @@
-import type { ComponentProps } from "react";
+// @ts-nocheck
 import { cn } from "@a/ui/lib/utils";
 import { NodeToolbar, Position } from "@xyflow/react";
+import type { ComponentProps } from "react";
 type ToolbarProps = ComponentProps<typeof NodeToolbar>;
 export const Toolbar = ({ className, ...props }: ToolbarProps) => (
   <NodeToolbar

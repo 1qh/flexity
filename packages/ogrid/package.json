@@ -25,9 +25,7 @@
     "tailwind-merge": "latest"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "latest",
-    "@testing-library/react": "latest",
-    "jsdom": "latest",
+    "bun-types": "latest",
     "react": "latest",
     "react-dom": "latest",
     "tsdown": "latest"

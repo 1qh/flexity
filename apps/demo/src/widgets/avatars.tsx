@@ -2,11 +2,11 @@
 import { Avatar, AvatarFallback } from '@a/ui/avatar'
 import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 const people = [
-    { name: 'Alice', initials: 'AJ' },
-    { name: 'Bob', initials: 'BS' },
-    { name: 'Carol', initials: 'CW' },
-    { name: 'Dave', initials: 'DB' },
-    { name: 'Eve', initials: 'ED' }
+    { initials: 'AJ', name: 'Alice' },
+    { initials: 'BS', name: 'Bob' },
+    { initials: 'CW', name: 'Carol' },
+    { initials: 'DB', name: 'Dave' },
+    { initials: 'ED', name: 'Eve' }
   ],
   Avatars = () => (
     <Card>

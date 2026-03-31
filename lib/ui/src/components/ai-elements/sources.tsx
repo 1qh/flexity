@@ -1,5 +1,5 @@
+// @ts-nocheck
 "use client";
-import type { ComponentProps } from "react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -7,6 +7,7 @@ import {
 } from "@a/ui/components/collapsible";
 import { cn } from "@a/ui/lib/utils";
 import { BookIcon, ChevronDownIcon } from "lucide-react";
+import type { ComponentProps } from "react";
 export type SourcesProps = ComponentProps<"div">;
 export const Sources = ({ className, ...props }: SourcesProps) => (
   <Collapsible

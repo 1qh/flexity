@@ -1,32 +1,33 @@
 'use client'
+import type { ChartConfig } from '@a/ui/chart'
 import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
-import { type ChartConfig, ChartContainer } from '@a/ui/chart'
+import { ChartContainer } from '@a/ui/chart'
 import { Area, AreaChart } from 'recharts'
 const kpis = [
     {
-      label: 'Total Revenue',
-      value: '$45,231',
       change: '+20.1%',
+      data: [{ v: 30 }, { v: 35 }, { v: 28 }, { v: 40 }, { v: 38 }, { v: 45 }],
+      label: 'Total Revenue',
       up: true,
-      data: [{ v: 30 }, { v: 35 }, { v: 28 }, { v: 40 }, { v: 38 }, { v: 45 }]
+      value: '$45,231'
     },
     {
-      label: 'Subscriptions',
-      value: '+2,350',
       change: '+180.1%',
+      data: [{ v: 10 }, { v: 15 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 35 }],
+      label: 'Subscriptions',
       up: true,
-      data: [{ v: 10 }, { v: 15 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 35 }]
+      value: '+2,350'
     },
     {
-      label: 'Active Now',
-      value: '573',
       change: '+201',
+      data: [{ v: 50 }, { v: 48 }, { v: 55 }, { v: 52 }, { v: 58 }, { v: 57 }],
+      label: 'Active Now',
       up: true,
-      data: [{ v: 50 }, { v: 48 }, { v: 55 }, { v: 52 }, { v: 58 }, { v: 57 }]
+      value: '573'
     }
   ],
   chartConfig = {
-    v: { label: 'Value', color: 'var(--chart-1)' }
+    v: { color: 'var(--chart-1)', label: 'Value' }
   } satisfies ChartConfig,
   KpiCard = () => (
     <Card>

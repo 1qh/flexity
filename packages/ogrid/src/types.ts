@@ -71,7 +71,6 @@ type AllowedContent =
   | boolean
   | null
   | number
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   | ReactElement<unknown, ComponentType<never>>
   | ReactElement<unknown, typeof Fragment>
   | string

@@ -1,9 +1,9 @@
 /** biome-ignore-all lint/style/noProcessEnv: env check */
-/* eslint-disable no-console, @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable no-console, complexity */
 import type { GridConfig } from './types'
 import { BANNED_PREFIXES } from './types'
 const isDev = () => typeof process !== 'undefined' && process.env.NODE_ENV === 'development',
-  escapeRegex = (s: string) => s.replaceAll(/[.*+?^${}()|[\]\\]/gu, '\\$&'),
+  escapeRegex = (s: string) => s.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`),
   BANNED_REGEX = (() => {
     const prefixPatterns = BANNED_PREFIXES.map(p => escapeRegex(p)),
       pattern = `(?:^|\\s|:)(?:!?-?|!-?)(?:${prefixPatterns.join('|')})`
@@ -165,7 +165,8 @@ const isDev = () => typeof process !== 'undefined' && process.env.NODE_ENV === '
     let current = element.parentElement
     while (current) {
       if (current.classList.contains('ogrid')) {
-        const itemKey = element.closest('[data-ogrid-key]')?.getAttribute('data-ogrid-key') ?? 'unknown'
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+        const itemKey: string = element.closest('[data-ogrid-key]').dataset.ogridKey ?? 'unknown'
         throw new Error(`[ogrid] Nested grids are not supported. Remove the inner <Grid> from item '${itemKey}'.`)
       }
       current = current.parentElement

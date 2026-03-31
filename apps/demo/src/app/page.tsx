@@ -1,4 +1,6 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: demo page */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
+/* oxlint-disable react-perf/jsx-no-new-object-as-prop, react-perf/jsx-no-new-array-as-prop */
 'use client'
 import { createGrid } from 'ogrid'
 import AccordionWidget from '~/widgets/accordion'
@@ -36,7 +38,6 @@ const { Grid, Panel } = createGrid(),
         <Grid
           config={{
             gap: 16,
-            snap: 8,
             layout: [
               { key: 'kpi', w: 400 },
               { key: 'stats', w: 400 },
@@ -64,40 +65,41 @@ const { Grid, Panel } = createGrid(),
               { key: 'skeleton', w: 400 },
               { key: 'separator', w: 400 },
               { key: 'empty', w: 300 },
-              { key: 'scroll', w: 300, h: 350 },
+              { h: 350, key: 'scroll', w: 300 },
               { key: 'prose', w: 500 }
-            ]
+            ],
+            snap: 8
           }}
           id='demo'
           items={{
-            kpi: <KpiCard />,
-            stats: <StatsGrid />,
-            sparkline: <Sparkline />,
-            bar: <BarChartWidget />,
-            line: <LineChartWidget />,
+            accordion: <AccordionWidget />,
             area: <AreaChartWidget />,
+            avatars: <Avatars />,
+            badges: <Badges />,
+            bar: <BarChartWidget />,
+            calendar: <CalendarWidget />,
+            checkboxes: <CheckboxWidget />,
+            command: <CommandWidget />,
+            datePicker: <DatePicker />,
+            empty: <EmptyState />,
+            form: <FormWidget />,
+            kpi: <KpiCard />,
+            line: <LineChartWidget />,
             pie: <PieChartWidget />,
+            progress: <ProgressBars />,
+            prose: <Prose />,
             radar: <RadarChartWidget />,
             radial: <RadialChartWidget />,
-            table: <DataTableWidget />,
-            progress: <ProgressBars />,
-            timeline: <Timeline />,
-            badges: <Badges />,
-            avatars: <Avatars />,
-            calendar: <CalendarWidget />,
-            datePicker: <DatePicker />,
-            tabs: <TabsPanel />,
-            accordion: <AccordionWidget />,
-            form: <FormWidget />,
-            command: <CommandWidget />,
-            toggles: <ToggleGroupWidget />,
-            sliders: <SliderWidget />,
-            checkboxes: <CheckboxWidget />,
-            skeleton: <SkeletonWidget />,
-            separator: <SeparatorWidget />,
-            empty: <EmptyState />,
             scroll: <ScrollContent />,
-            prose: <Prose />
+            separator: <SeparatorWidget />,
+            skeleton: <SkeletonWidget />,
+            sliders: <SliderWidget />,
+            sparkline: <Sparkline />,
+            stats: <StatsGrid />,
+            table: <DataTableWidget />,
+            tabs: <TabsPanel />,
+            timeline: <Timeline />,
+            toggles: <ToggleGroupWidget />
           }}
         />
       </div>

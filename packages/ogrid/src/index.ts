@@ -12,8 +12,8 @@ const createGrid = <K extends string = string>() => {
     }
   Grid.displayName = 'Grid'
   const Panel = createPanelComponent({
-      store,
-      getItemKeys: () => currentItemKeys
+      getItemKeys: () => currentItemKeys,
+      store
     }),
     reset = () => {
       store.reset()

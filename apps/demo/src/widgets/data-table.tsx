@@ -5,16 +5,16 @@ import { Input } from '@a/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@a/ui/table'
 import { useState } from 'react'
 const allRows = [
-    { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin', status: 'Active' },
-    { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor', status: 'Active' },
-    { id: 3, name: 'Carol White', email: 'carol@example.com', role: 'Viewer', status: 'Inactive' },
-    { id: 4, name: 'Dave Brown', email: 'dave@example.com', role: 'Editor', status: 'Active' },
-    { id: 5, name: 'Eve Davis', email: 'eve@example.com', role: 'Admin', status: 'Active' },
-    { id: 6, name: 'Frank Wilson', email: 'frank@example.com', role: 'Viewer', status: 'Pending' },
-    { id: 7, name: 'Grace Lee', email: 'grace@example.com', role: 'Editor', status: 'Active' },
-    { id: 8, name: 'Henry Clark', email: 'henry@example.com', role: 'Viewer', status: 'Inactive' },
-    { id: 9, name: 'Ivy Martin', email: 'ivy@example.com', role: 'Admin', status: 'Active' },
-    { id: 10, name: 'Jack Turner', email: 'jack@example.com', role: 'Editor', status: 'Pending' }
+    { email: 'alice@example.com', id: 1, name: 'Alice Johnson', role: 'Admin', status: 'Active' },
+    { email: 'bob@example.com', id: 2, name: 'Bob Smith', role: 'Editor', status: 'Active' },
+    { email: 'carol@example.com', id: 3, name: 'Carol White', role: 'Viewer', status: 'Inactive' },
+    { email: 'dave@example.com', id: 4, name: 'Dave Brown', role: 'Editor', status: 'Active' },
+    { email: 'eve@example.com', id: 5, name: 'Eve Davis', role: 'Admin', status: 'Active' },
+    { email: 'frank@example.com', id: 6, name: 'Frank Wilson', role: 'Viewer', status: 'Pending' },
+    { email: 'grace@example.com', id: 7, name: 'Grace Lee', role: 'Editor', status: 'Active' },
+    { email: 'henry@example.com', id: 8, name: 'Henry Clark', role: 'Viewer', status: 'Inactive' },
+    { email: 'ivy@example.com', id: 9, name: 'Ivy Martin', role: 'Admin', status: 'Active' },
+    { email: 'jack@example.com', id: 10, name: 'Jack Turner', role: 'Editor', status: 'Pending' }
   ],
   PAGE_SIZE = 5,
   sortKeys = ['name', 'email', 'role', 'status'] as const
@@ -31,7 +31,7 @@ const DataTableWidget = () => {
         r.email.toLowerCase().includes(filter.toLowerCase()) ||
         r.role.toLowerCase().includes(filter.toLowerCase())
     ),
-    sorted = [...filtered].sort((a, b) => {
+    sorted = [...filtered].toSorted((a, b) => {
       const av = a[sortKey],
         bv = b[sortKey]
       return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av)

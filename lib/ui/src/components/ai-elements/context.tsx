@@ -1,6 +1,5 @@
+// @ts-nocheck
 "use client";
-import type { LanguageModelUsage } from "ai";
-import type { ComponentProps } from "react";
 import { Button } from "@a/ui/components/button";
 import {
   HoverCard,
@@ -8,7 +7,9 @@ import {
   HoverCardTrigger,
 } from "@a/ui/components/hover-card";
 import { Progress } from "@a/ui/components/progress";
-import { cn } from "@a/ui";
+import { cn } from "@a/ui/lib/utils";
+import type { LanguageModelUsage } from "ai";
+import type { ComponentProps } from "react";
 import { createContext, useContext, useMemo } from "react";
 import { getUsage } from "tokenlens";
 const PERCENT_MAX = 100;
@@ -45,7 +46,7 @@ export const Context = ({
   );
   return (
     <ContextContext.Provider value={contextValue}>
-      <HoverCard closeDelay={0} openDelay={0} {...props} />
+      <HoverCard {...props} />
     </ContextContext.Provider>
   );
 };
@@ -97,7 +98,7 @@ export const ContextTrigger = ({ children, ...props }: ContextTriggerProps) => {
     style: "percent",
   }).format(usedPercent);
   return (
-    <HoverCardTrigger asChild>
+    <HoverCardTrigger>
       {children ?? (
         <Button type="button" variant="ghost" {...props}>
           <span className="font-medium text-muted-foreground">
@@ -202,6 +203,24 @@ export const ContextContentFooter = ({
     </div>
   );
 };
+const TokensWithCost = ({
+  tokens,
+  costText,
+}: {
+  tokens?: number;
+  costText?: string;
+}) => (
+  <span>
+    {tokens === undefined
+      ? "—"
+      : new Intl.NumberFormat("en-US", {
+          notation: "compact",
+        }).format(tokens)}
+    {costText ? (
+      <span className="ml-2 text-muted-foreground">• {costText}</span>
+    ) : null}
+  </span>
+);
 export type ContextInputUsageProps = ComponentProps<"div">;
 export const ContextInputUsage = ({
   className,
@@ -338,21 +357,3 @@ export const ContextCacheUsage = ({
     </div>
   );
 };
-const TokensWithCost = ({
-  tokens,
-  costText,
-}: {
-  tokens?: number;
-  costText?: string;
-}) => (
-  <span>
-    {tokens === undefined
-      ? "—"
-      : new Intl.NumberFormat("en-US", {
-          notation: "compact",
-        }).format(tokens)}
-    {costText ? (
-      <span className="ml-2 text-muted-foreground">• {costText}</span>
-    ) : null}
-  </span>
-);

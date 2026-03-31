@@ -1,13 +1,13 @@
+// @ts-nocheck
 "use client";
-import type { FileUIPart, SourceDocumentUIPart } from "ai";
-import type { ComponentProps, HTMLAttributes, ReactNode } from "react";
 import { Button } from "@a/ui/components/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@a/ui/components/hover-card";
-import { cn } from "@a/ui";
+import { cn } from "@a/ui/lib/utils";
+import type { FileUIPart, SourceDocumentUIPart } from "ai";
 import {
   FileTextIcon,
   GlobeIcon,
@@ -17,6 +17,7 @@ import {
   VideoIcon,
   XIcon,
 } from "lucide-react";
+import type { ComponentProps, HTMLAttributes, ReactNode } from "react";
 import { createContext, useCallback, useContext, useMemo } from "react";
 // ============================================================================
 // Types
@@ -318,11 +319,9 @@ export const AttachmentRemove = ({
 // ============================================================================
 export type AttachmentHoverCardProps = ComponentProps<typeof HoverCard>;
 export const AttachmentHoverCard = ({
-  openDelay = 0,
-  closeDelay = 0,
   ...props
 }: AttachmentHoverCardProps) => (
-  <HoverCard closeDelay={closeDelay} openDelay={openDelay} {...props} />
+  <HoverCard {...props} />
 );
 export type AttachmentHoverCardTriggerProps = ComponentProps<
   typeof HoverCardTrigger

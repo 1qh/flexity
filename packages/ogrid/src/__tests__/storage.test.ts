@@ -3,20 +3,20 @@ import { clearConfig, loadConfig, saveConfig } from '../storage'
 const mockStorage = (): Storage => {
   const store = new Map<string, string>()
   return {
+    clear: () => {
+      store.clear()
+    },
     getItem: (key: string) => store.get(key) ?? null,
-    setItem: (key: string, value: string) => {
-      store.set(key, value)
+    key: (index: number) => [...store.keys()][index] ?? null,
+    get length() {
+      return store.size
     },
     removeItem: (key: string) => {
       store.delete(key)
     },
-    clear: () => {
-      store.clear()
-    },
-    get length() {
-      return store.size
-    },
-    key: (index: number) => [...store.keys()][index] ?? null
+    setItem: (key: string, value: string) => {
+      store.set(key, value)
+    }
   }
 }
 describe('storage', () => {
@@ -27,7 +27,7 @@ describe('storage', () => {
   it('saveConfig and loadConfig round-trip', () => {
     original = globalThis.localStorage
     Object.defineProperty(globalThis, 'localStorage', { value: mockStorage(), writable: true })
-    const config = { gap: 16, snap: 8, layout: [{ key: 'a', w: 320 }] }
+    const config = { gap: 16, layout: [{ key: 'a', w: 320 }], snap: 8 }
     saveConfig('test', config)
     const loaded = loadConfig<'a'>('test')
     expect(loaded).toEqual(config)
