@@ -4,6 +4,8 @@ node_modules
 dist
 .cache
 *.tsbuildinfo
+*.lock
+bun.lock
 .env
 .env.*
 !.env.example

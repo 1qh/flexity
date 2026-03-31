@@ -905,6 +905,36 @@ ogrid/
   package.json
 ```
 
+## Implementation Guide
+
+### Setup
+
+1. Monorepo with turborepo + bun, same structure as `~/vb/monitor`
+2. Copy `lib/ui` from `~/z/noboil/lib/ui` (read-only — never modify)
+3. Adopt lintmax from `~/z/lintmax` — pre-commit hook: `bun clean && bun i && bun fix`
+4. All deps use `latest` tag — no pinned versions, no lockfile in repo
+5. `bun fix` must pass before every commit
+
+### Build order
+
+1. Types — `WidgetLayoutEntry`, `GridConfig`, `AllowedContent`, `BannedClass`, `BANNED_PREFIXES`
+2. Store — `createGrid()` factory, plain JS store with `useSyncExternalStore` bridge
+3. Grid component — flexbox container, wrapper divs, width modes, overflow, box-sizing
+4. Resize — re-resizable integration, snap, keyboard resize
+5. Drag reorder — @dnd-kit sortable, stable React keys, smooth animations
+6. Validation — runtime DOM checks (root element), class checks (BANNED_PREFIXES + `container` exact match), `strict` prop
+7. Persistence — localStorage (uncontrolled), `onConfigChange` (controlled), `reset()`
+8. Panel — dev controls, widget list, visual Tailwind editors, `cn()` merging, copy button
+9. Demo app — single page, 30+ widgets from shadcn (all chart types with legends/tooltips/hover, data tables, forms, calendars, interactive controls)
+10. Tests — every category from the test plan below
+
+### Verification
+
+- `bun fix` passes
+- `bun build` passes
+- Demo runs and all widgets render, drag, resize
+- All tests pass
+
 ## Linting
 
 **lintmax** adopted from day one. Source at `~/z/lintmax`. Pre-commit hook runs `bun clean && bun i && bun fix`. All code must pass lintmax before commit. See `CLAUDE.md` for full linting rules, ignore syntax, and safe-to-ignore rules.
