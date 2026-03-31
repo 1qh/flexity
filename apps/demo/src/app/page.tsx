@@ -8,7 +8,9 @@ import Badges from '~/widgets/badges'
 import BarChartWidget from '~/widgets/bar-chart'
 import CalendarWidget from '~/widgets/calendar-widget'
 import CheckboxWidget from '~/widgets/checkbox-widget'
+import CommandWidget from '~/widgets/command-widget'
 import DataTableWidget from '~/widgets/data-table'
+import DatePicker from '~/widgets/date-picker'
 import EmptyState from '~/widgets/empty-state'
 import FormWidget from '~/widgets/form-widget'
 import KpiCard from '~/widgets/kpi-card'
@@ -19,6 +21,7 @@ import Prose from '~/widgets/prose'
 import RadarChartWidget from '~/widgets/radar-chart'
 import RadialChartWidget from '~/widgets/radial-chart'
 import ScrollContent from '~/widgets/scroll-content'
+import SeparatorWidget from '~/widgets/separator-widget'
 import SkeletonWidget from '~/widgets/skeleton-widget'
 import SliderWidget from '~/widgets/slider-widget'
 import Sparkline from '~/widgets/sparkline'
@@ -56,6 +59,9 @@ const { Grid, Panel } = createGrid(),
             sliders: <SliderWidget />,
             checkboxes: <CheckboxWidget />,
             skeleton: <SkeletonWidget />,
+            command: <CommandWidget />,
+            datePicker: <DatePicker />,
+            separator: <SeparatorWidget />,
             empty: <EmptyState />,
             scroll: <ScrollContent />,
             prose: <Prose />
