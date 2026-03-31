@@ -1,0 +1,16 @@
+{
+  "name": "@ogrid/demo",
+  "private": true,
+  "scripts": {
+    "build": "next build --turbo",
+    "dev": "next dev --turbo -p 3200"
+  },
+  "dependencies": {
+    "@a/ui": "workspace:*",
+    "next": "latest",
+    "ogrid": "workspace:*",
+    "react": "latest",
+    "react-dom": "latest",
+    "recharts": "latest"
+  }
+}
