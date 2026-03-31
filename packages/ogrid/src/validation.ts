@@ -73,17 +73,67 @@ const isDev = () => typeof process !== 'undefined' && process.env.NODE_ENV === '
       }
     }
   },
+  STRIP_MODIFIERS = /^[!-]*/u,
+  getBannedReason = (matched: string): string => {
+    const clean = matched.replace(STRIP_MODIFIERS, '')
+    if (
+      clean.startsWith('w-') ||
+      clean.startsWith('h-') ||
+      clean.startsWith('size-') ||
+      clean.startsWith('min-w') ||
+      clean.startsWith('max-w') ||
+      clean.startsWith('min-h') ||
+      clean.startsWith('max-h')
+    )
+      return 'Use layout.w or layout.h instead.'
+    if (
+      clean.startsWith('m-') ||
+      clean.startsWith('mx-') ||
+      clean.startsWith('my-') ||
+      clean.startsWith('mt-') ||
+      clean.startsWith('mr-') ||
+      clean.startsWith('mb-') ||
+      clean.startsWith('ml-') ||
+      clean.startsWith('ms-') ||
+      clean.startsWith('me-')
+    )
+      return 'Use config.gap for spacing between items, padding for inner spacing.'
+    if (clean.startsWith('overflow')) return 'The grid controls overflow based on layout.w and layout.h.'
+    if (
+      ['absolute', 'fixed', 'sticky'].some(p => clean.startsWith(p)) ||
+      clean.startsWith('top-') ||
+      clean.startsWith('right-') ||
+      clean.startsWith('bottom-') ||
+      clean.startsWith('left-') ||
+      clean.startsWith('inset-')
+    )
+      return 'The grid controls positioning.'
+    if (
+      clean.startsWith('translate') ||
+      clean.startsWith('scale') ||
+      clean.startsWith('rotate') ||
+      clean.startsWith('skew') ||
+      clean === 'transform'
+    )
+      return 'Transform classes conflict with drag.'
+    if (clean === 'hidden') return 'Use layout.hidden instead.'
+    if (clean === 'resize' || clean.startsWith('resize')) return 'Resize classes conflict with resize handles.'
+    return 'This class is not allowed on the grid wrapper.'
+  },
   validateClassName = (key: string, className: string, strict: boolean) => {
     if (BANNED_REGEX.test(className)) {
       const match = className.match(BANNED_REGEX),
-        matched = match ? match[0].trim() : className
-      report(
-        `[ogrid] Item '${key}': '${matched}' is not allowed in layout.className. Size/position/margin/overflow classes are banned.`,
-        strict
-      )
+        matched = match ? match[0].trim() : className,
+        isVariant = matched.includes(':'),
+        reason = getBannedReason(matched.split(':').pop() ?? matched),
+        suffix = isVariant ? ' Size classes are banned even with variant prefixes.' : ''
+      report(`[ogrid] Item '${key}': '${matched}' is not allowed in layout.className. ${reason}${suffix}`, strict)
     }
     if (CONTAINER_EXACT.test(className))
-      report(`[ogrid] Item '${key}': 'container' is not allowed in layout.className. Use layout sizing instead.`, strict)
+      report(
+        `[ogrid] Item '${key}': 'container' (Tailwind max-width utility) is not allowed in layout.className. container-type-* for CSS containment is allowed.`,
+        strict
+      )
   },
   validateDom = (key: string, wrapper: HTMLElement, strict: boolean) => {
     const root = wrapper.firstElementChild

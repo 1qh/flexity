@@ -270,6 +270,13 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
         store.setConfig(configProp)
       }
     }, [configProp, onConfigChange])
+    useEffect(() => {
+      store.setOnUserChange((newConfig: GridConfig<K>) => {
+        if (onConfigChange) onConfigChange(newConfig)
+        else if (id) saveConfig(id, newConfig)
+      })
+      return () => store.setOnUserChange(null)
+    }, [id, onConfigChange])
     const gap = state.config.gap ?? 0,
       snap = state.config.snap ?? 1,
       layout = state.config.layout ?? [],
@@ -284,23 +291,13 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
         for (const key of iKeys) if (!result.includes(key)) result.push(key)
         return result
       }, [layoutKeyStr, itemKeyStr]),
-      saveAndNotify = useCallback(
-        (newConfig: GridConfig<K>) => {
-          if (onConfigChange) onConfigChange(newConfig)
-          else if (id) saveConfig(id, newConfig)
-        },
-        [id, onConfigChange]
-      ),
       handleSelect = useCallback((key: string) => {
         store.setState({ selectedWidget: key as K })
       }, []),
-      handleResizeStop = useCallback(
-        (key: string, width: number) => {
-          store.updateWidgetLayout(key as K, { w: width })
-          saveAndNotify(store.getState().config)
-        },
-        [saveAndNotify]
-      ),
+      handleResizeStop = useCallback((key: string, width: number) => {
+        store.updateWidgetLayout(key as K, { w: width })
+        store.userChange()
+      }, []),
       handleDragEnd = useCallback(
         (event: DragEndEvent) => {
           const { active, over } = event
@@ -312,9 +309,9 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
             [removed] = newOrder.splice(oldIndex, 1)
           newOrder.splice(newIndex, 0, removed)
           store.reorderKeys(newOrder)
-          saveAndNotify(store.getState().config)
+          store.userChange()
         },
-        [orderedKeys, saveAndNotify]
+        [orderedKeys]
       ),
       containerStyle: CSSProperties = {
         display: 'flex',

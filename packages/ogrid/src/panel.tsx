@@ -58,7 +58,12 @@ interface CreatePanelComponentProps<K extends string> {
   store: Store<K>
 }
 const createPanelComponent = <K extends string>({ store, getItemKeys }: CreatePanelComponentProps<K>) => {
-  const PanelComponent = ({ children, renderWidgetControl }: PanelProps<K>): null | ReactElement => {
+  const PanelComponent = ({
+    children,
+    renderWidgetControl,
+    renderGridControl,
+    renderCopyButton
+  }: PanelProps<K>): null | ReactElement => {
     const devMode = isDev(),
       state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
     if (!devMode) return null
@@ -70,9 +75,11 @@ const createPanelComponent = <K extends string>({ store, getItemKeys }: CreatePa
       getLayoutEntry = (key: K): WidgetLayoutEntry<K> => layout.find(e => e.key === key) ?? { key },
       handleWidgetChange = (key: K, updates: Partial<WidgetLayoutEntry<K>>) => {
         store.updateWidgetLayout(key, updates)
+        store.userChange()
       },
       handleGridChange = (updates: Partial<GridConfig<K>>) => {
         store.updateGridConfig(updates)
+        store.userChange()
       },
       handleCopy = () => {
         const text = formatConfigForCopy(store.getState().config, itemKeys)
@@ -81,6 +88,7 @@ const createPanelComponent = <K extends string>({ store, getItemKeys }: CreatePa
       },
       handleReset = () => {
         store.reset()
+        store.userChange()
       }
     if (children)
       return children({
@@ -99,21 +107,25 @@ const createPanelComponent = <K extends string>({ store, getItemKeys }: CreatePa
           <span className='font-medium'>ogrid</span>
           <span className='text-xs text-muted-foreground'>{String(Math.round(containerWidth))}px</span>
         </div>
-        <div className='flex flex-col gap-2'>
-          <NumberInput
-            label='gap'
-            onChange={v => handleGridChange({ gap: v ?? 0 })}
-            placeholder='0'
-            value={gap || undefined}
-          />
-          <NumberInput
-            label='snap'
-            min={1}
-            onChange={v => handleGridChange({ snap: v ?? 1 })}
-            placeholder='1'
-            value={snap === 1 ? undefined : snap}
-          />
-        </div>
+        {renderGridControl ? (
+          renderGridControl(config, handleGridChange)
+        ) : (
+          <div className='flex flex-col gap-2'>
+            <NumberInput
+              label='gap'
+              onChange={v => handleGridChange({ gap: v ?? 0 })}
+              placeholder='0'
+              value={gap || undefined}
+            />
+            <NumberInput
+              label='snap'
+              min={1}
+              onChange={v => handleGridChange({ snap: v ?? 1 })}
+              placeholder='1'
+              value={snap === 1 ? undefined : snap}
+            />
+          </div>
+        )}
         <div className='h-px bg-border' />
         <div className='flex flex-col gap-1'>
           <span className='text-xs text-muted-foreground'>widgets</span>
@@ -232,12 +244,16 @@ const createPanelComponent = <K extends string>({ store, getItemKeys }: CreatePa
           </label>
         </div>
         <div className='flex gap-2'>
-          <button
-            className='flex-1 rounded border border-border px-3 py-1.5 text-xs transition-colors hover:bg-muted'
-            onClick={handleCopy}
-            type='button'>
-            copy
-          </button>
+          {renderCopyButton ? (
+            renderCopyButton(handleCopy)
+          ) : (
+            <button
+              className='flex-1 rounded border border-border px-3 py-1.5 text-xs transition-colors hover:bg-muted'
+              onClick={handleCopy}
+              type='button'>
+              copy
+            </button>
+          )}
           <button
             className='flex-1 rounded border border-border px-3 py-1.5 text-xs transition-colors hover:bg-destructive hover:text-destructive-foreground'
             onClick={handleReset}

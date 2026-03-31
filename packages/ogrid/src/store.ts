@@ -1,14 +1,17 @@
 import type { GridConfig, WidgetLayoutEntry } from './types'
+type ChangeCallback<K extends string> = (config: GridConfig<K>) => void
 type Listener = () => void
 interface Store<K extends string = string> {
   getState: () => StoreState<K>
   reorderKeys: (orderedKeys: K[]) => void
   reset: () => void
   setConfig: (config: GridConfig<K>) => void
+  setOnUserChange: (cb: ChangeCallback<K> | null) => void
   setState: (partial: Partial<StoreState<K>>) => void
   subscribe: (listener: Listener) => () => void
   updateGridConfig: (updates: Partial<GridConfig<K>>) => void
   updateWidgetLayout: (key: K, updates: Partial<WidgetLayoutEntry<K>>) => void
+  userChange: () => void
 }
 interface StoreState<K extends string = string> {
   config: GridConfig<K>
@@ -21,13 +24,14 @@ interface StoreState<K extends string = string> {
 const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> => {
   const listeners = new Set<Listener>()
   let state: StoreState<K> = {
-    config: { ...initialConfig },
-    initialConfig: { ...initialConfig },
-    selectedWidget: null,
-    containerWidth: 0,
-    showDebugBorders: false,
-    showDebugBg: false
-  }
+      config: { ...initialConfig },
+      initialConfig: { ...initialConfig },
+      selectedWidget: null,
+      containerWidth: 0,
+      showDebugBorders: false,
+      showDebugBg: false
+    },
+    onUserChangeCb: ChangeCallback<K> | null = null
   const notify = () => {
       for (const listener of listeners) listener()
     },
@@ -74,6 +78,12 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
         config: { ...state.initialConfig },
         selectedWidget: null
       })
+    },
+    setOnUserChange = (cb: ChangeCallback<K> | null) => {
+      onUserChangeCb = cb
+    },
+    userChange = () => {
+      if (onUserChangeCb) onUserChangeCb(state.config)
     }
   return {
     getState,
@@ -83,7 +93,9 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
     updateWidgetLayout,
     updateGridConfig,
     reorderKeys,
-    reset
+    reset,
+    setOnUserChange,
+    userChange
   }
 }
 export { createStore }
