@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'bun:test'
 import { createStore } from '../store'
 
 describe('createStore', () => {
@@ -72,5 +72,36 @@ describe('createStore', () => {
     store.setConfig({ gap: 24, snap: 4 })
     expect(store.getState().config.gap).toBe(24)
     expect(store.getState().config.snap).toBe(4)
+  })
+
+  it('preserves non-matching layout entries on reorder', () => {
+    const store = createStore<'a' | 'b' | 'c'>({
+      layout: [{ key: 'a' }, { key: 'b' }, { key: 'c' }],
+    })
+    store.reorderKeys(['b', 'a'])
+    const keys = store.getState().config.layout?.map((e) => e.key)
+    expect(keys).toEqual(['b', 'a', 'c'])
+  })
+
+  it('selectedWidget starts null', () => {
+    const store = createStore({})
+    expect(store.getState().selectedWidget).toBeNull()
+  })
+
+  it('setState updates selectedWidget', () => {
+    const store = createStore<'x'>({})
+    store.setState({ selectedWidget: 'x' })
+    expect(store.getState().selectedWidget).toBe('x')
+  })
+
+  it('updateWidgetLayout preserves other fields', () => {
+    const store = createStore<'a'>({
+      layout: [{ key: 'a', w: 100, className: 'pt-3' }],
+    })
+    store.updateWidgetLayout('a', { h: 200 })
+    const entry = store.getState().config.layout?.[0]
+    expect(entry?.w).toBe(100)
+    expect(entry?.h).toBe(200)
+    expect(entry?.className).toBe('pt-3')
   })
 })

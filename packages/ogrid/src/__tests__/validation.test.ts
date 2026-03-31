@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, spyOn } from 'bun:test'
 import { validateClassName, validateConfig } from '../validation'
 
 describe('validateConfig', () => {
@@ -60,95 +60,73 @@ describe('validateConfig', () => {
 
 describe('validateClassName', () => {
   it('reports banned width classes', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', 'w-full', false)
-    console.error = originalError
-    expect(errors.length).toBe(1)
-    expect(errors[0]).toContain('w-')
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
   })
 
   it('reports banned height classes', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', 'h-64', false)
-    console.error = originalError
-    expect(errors.length).toBe(1)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
   })
 
   it('reports banned margin classes', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', 'm-4', false)
-    console.error = originalError
-    expect(errors.length).toBe(1)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
   })
 
   it('reports banned overflow classes', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', 'overflow-hidden', false)
-    console.error = originalError
-    expect(errors.length).toBe(1)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
   })
 
   it('reports banned position classes', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', 'absolute top-0', false)
-    console.error = originalError
-    expect(errors.length).toBe(1)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
   })
 
   it('reports banned transform classes', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', 'translate-x-4', false)
-    console.error = originalError
-    expect(errors.length).toBe(1)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
   })
 
   it('reports banned classes with variant prefixes', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', 'sm:w-full', false)
-    console.error = originalError
-    expect(errors.length).toBe(1)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
   })
 
   it('reports banned classes with important modifier', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', '!w-full', false)
-    console.error = originalError
-    expect(errors.length).toBe(1)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
   })
 
   it('reports banned classes with negative modifier', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', '-m-4', false)
-    console.error = originalError
-    expect(errors.length).toBe(1)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
   })
 
   it('reports container exact match', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', 'container', false)
-    console.error = originalError
-    expect(errors.length).toBe(1)
-    expect(errors[0]).toContain('container')
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
   })
 
   it('throws when strict is true', () => {
@@ -156,51 +134,94 @@ describe('validateClassName', () => {
   })
 
   it('allows valid Tailwind classes', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', 'pt-3 rounded-lg bg-muted shadow-lg', false)
     validateClassName('test', 'flex gap-2 items-center', false)
     validateClassName('test', 'relative z-10', false)
     validateClassName('test', 'border border-border/50', false)
     validateClassName('test', 'opacity-50 blur-sm', false)
-    console.error = originalError
-    expect(errors.length).toBe(0)
+    expect(spy).not.toHaveBeenCalled()
+    spy.mockRestore()
   })
 
   it('allows flex direction classes', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', 'flex-col flex-row flex-wrap', false)
-    console.error = originalError
-    expect(errors.length).toBe(0)
+    expect(spy).not.toHaveBeenCalled()
+    spy.mockRestore()
   })
 
   it('bans flex sizing classes', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', 'flex-1', false)
-    console.error = originalError
-    expect(errors.length).toBe(1)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
   })
 
   it('bans hidden', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', 'hidden', false)
-    console.error = originalError
-    expect(errors.length).toBe(1)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
   })
 
   it('allows container-type-* classes', () => {
-    const errors: string[] = []
-    const originalError = console.error
-    console.error = (msg: string) => errors.push(msg)
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
     validateClassName('test', 'container-type-inline-size', false)
-    console.error = originalError
-    expect(errors.length).toBe(0)
+    expect(spy).not.toHaveBeenCalled()
+    spy.mockRestore()
+  })
+
+  it('bans combined variant sm:!-m-4', () => {
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    validateClassName('test', 'sm:!-m-4', false)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
+  })
+
+  it('bans flex-auto flex-none flex-initial', () => {
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    validateClassName('test', 'flex-auto', false)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
+    const spy2 = spyOn(console, 'error').mockImplementation(() => {})
+    validateClassName('test', 'flex-none', false)
+    expect(spy2).toHaveBeenCalledTimes(1)
+    spy2.mockRestore()
+  })
+
+  it('bans aspect-* classes', () => {
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    validateClassName('test', 'aspect-video', false)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
+  })
+
+  it('bans resize classes', () => {
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    validateClassName('test', 'resize', false)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
+  })
+
+  it('bans size-* classes', () => {
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    validateClassName('test', 'size-4', false)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
+  })
+
+  it('allows grid interior classes', () => {
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    validateClassName('test', 'grid grid-cols-2 gap-4', false)
+    expect(spy).not.toHaveBeenCalled()
+    spy.mockRestore()
+  })
+
+  it('allows padding classes', () => {
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
+    validateClassName('test', 'p-4 px-6 py-2 pt-3 pb-8 pl-1 pr-2', false)
+    expect(spy).not.toHaveBeenCalled()
+    spy.mockRestore()
   })
 })

@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "vitest run"
+    "test": "bun test"
   },
   "dependencies": {
     "@dnd-kit/core": "latest",
@@ -30,8 +30,7 @@
     "jsdom": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "tsup": "latest",
-    "vitest": "latest"
+    "tsup": "latest"
   },
   "peerDependencies": {
     "react": ">=19",
