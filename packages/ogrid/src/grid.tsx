@@ -27,29 +27,7 @@ import { cn } from './cn'
 import { WidgetDevPanelContent } from './panel'
 import { clearConfig, loadConfig, saveConfig } from './storage'
 import { isDev, validateClassName, validateConfig, validateDom, validateNoNestedGrid } from './validation'
-const GridContext = createContext(false),
-  DefaultDragHandle = ({
-    listeners,
-    attributes
-  }: {
-    attributes: Record<string, unknown>
-    listeners: Record<string, unknown>
-  }) => (
-    <div
-      className='absolute right-1 top-1 z-10 flex cursor-grab items-center justify-center rounded opacity-0 transition-opacity hover:bg-muted group-hover/item:opacity-100'
-      style={{ height: 20, width: 20 }}
-      {...listeners}
-      {...attributes}>
-      <svg className='text-muted-foreground' fill='currentColor' height='10' viewBox='0 0 10 10' width='10'>
-        <circle cx='3' cy='2' r='1' />
-        <circle cx='7' cy='2' r='1' />
-        <circle cx='3' cy='5' r='1' />
-        <circle cx='7' cy='5' r='1' />
-        <circle cx='3' cy='8' r='1' />
-        <circle cx='7' cy='8' r='1' />
-      </svg>
-    </div>
-  )
+const GridContext = createContext(false)
 interface GridItemInnerProps {
   content: AllowedContent
   devMode: boolean
@@ -222,28 +200,22 @@ const GridItemInner = ({
                   bottom: (
                     <div
                       aria-label={`Resize ${itemKey} height`}
-                      className='flex w-full h-2 cursor-row-resize items-center justify-center opacity-0 transition-opacity group-hover/item:opacity-100'
+                      className='w-full h-2 cursor-row-resize'
                       role='separator'
-                      tabIndex={0}>
-                      <div className='w-8 h-0.5 rounded-full bg-border' />
-                    </div>
+                      tabIndex={0}
+                    />
                   ),
                   bottomRight: (
-                    <div
-                      className='flex h-3 w-3 cursor-nwse-resize items-center justify-center opacity-0 transition-opacity group-hover/item:opacity-100'
-                      tabIndex={-1}>
-                      <div className='h-2 w-2 rounded-sm border-b-2 border-r-2 border-border' />
-                    </div>
+                    <div className='h-3 w-3 cursor-nwse-resize' tabIndex={-1} />
                   ),
                   right: (
                     <div
                       aria-label={`Resize ${itemKey}`}
-                      className='flex h-full w-2 cursor-col-resize items-center justify-center opacity-0 transition-opacity group-hover/item:opacity-100'
+                      className='h-full w-2 cursor-col-resize'
                       onKeyDown={handleKeyDown}
                       role='separator'
-                      tabIndex={0}>
-                      <div className='h-8 w-0.5 rounded-full bg-border' />
-                    </div>
+                      tabIndex={0}
+                    />
                   )
                 }
           }
@@ -252,26 +224,38 @@ const GridItemInner = ({
           size={{ height: '100%', width: '100%' }}
           snap={{ x: Array.from({ length: Math.ceil(10_000 / snap) }, (_, i) => (i + 1) * snap) }}
           style={{ display: 'block', height: '100%', width: '100%' }}>
-          {devMode ? (
-            <button
-              className={cn(
-                'absolute left-1 top-1 z-10 rounded px-1 text-[9px] opacity-0 transition-opacity group-hover/item:opacity-100 hover:bg-muted',
-                isDevPanelOpen && 'text-primary opacity-100'
-              )}
-              onClick={e => {
-                e.stopPropagation()
-                onCssClick(itemKey, e.currentTarget.getBoundingClientRect())
-              }}
-              type='button'>
-              css
-            </button>
-          ) : null}
-          {dragHandle ? null : (
-            <DefaultDragHandle
-              attributes={attributes as Record<string, unknown>}
-              listeners={listeners as Record<string, unknown>}
-            />
-          )}
+          <div className='absolute right-1 top-1 z-10 flex items-center gap-0.5 opacity-0 transition-opacity group-hover/item:opacity-100'>
+            {devMode ? (
+              <button
+                className={cn(
+                  'rounded px-1 text-[9px] hover:bg-muted',
+                  isDevPanelOpen && 'text-primary'
+                )}
+                onClick={e => {
+                  e.stopPropagation()
+                  onCssClick(itemKey, e.currentTarget.getBoundingClientRect())
+                }}
+                type='button'>
+                css
+              </button>
+            ) : null}
+            {dragHandle ? null : (
+              <div
+                className='flex cursor-grab items-center justify-center rounded hover:bg-muted'
+                style={{ width: 20, height: 20 }}
+                {...(listeners as Record<string, unknown>)}
+                {...(attributes as Record<string, unknown>)}>
+                <svg className='text-muted-foreground' fill='currentColor' height='10' viewBox='0 0 10 10' width='10'>
+                  <circle cx='3' cy='2' r='1' />
+                  <circle cx='7' cy='2' r='1' />
+                  <circle cx='3' cy='5' r='1' />
+                  <circle cx='7' cy='5' r='1' />
+                  <circle cx='3' cy='8' r='1' />
+                  <circle cx='7' cy='8' r='1' />
+                </svg>
+              </div>
+            )}
+          </div>
           {inner}
         </Resizable>
       )}
