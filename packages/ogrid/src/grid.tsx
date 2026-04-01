@@ -145,16 +145,20 @@ const GridItemInner = ({
       if (!el) return
       const rect = el.getBoundingClientRect(),
         savedW = el.style.width,
-        savedH = el.style.height
-      el.style.width = 'min-content'
-      el.style.height = 'min-content'
-      const minRect = el.getBoundingClientRect()
+        savedH = el.style.height,
+        savedOverflow = el.style.overflow
+      el.style.overflow = 'hidden'
+      el.style.width = '0px'
+      el.style.height = '0px'
+      const minW = el.scrollWidth,
+        minH = el.scrollHeight
       el.style.width = savedW
       el.style.height = savedH
+      el.style.overflow = savedOverflow
       setResizeState({
         direction,
-        minH: minRect.height,
-        minW: minRect.width,
+        minH,
+        minW,
         startH: rect.height,
         startW: rect.width,
         startX: e.clientX,
