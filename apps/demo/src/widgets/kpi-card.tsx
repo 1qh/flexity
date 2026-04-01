@@ -1,6 +1,5 @@
 'use client'
-import { Area, AreaChart } from 'recharts'
-import { useSize } from '~/widgets/use-size'
+import { Area, AreaChart, ResponsiveContainer } from 'recharts'
 const kpis = [
     {
       change: '+20.1%',
@@ -24,25 +23,22 @@ const kpis = [
       value: '573'
     }
   ],
-  MiniChart = ({ data }: { data: { v: number }[] }) => {
-    const { ref, width, height } = useSize()
-    return (
-      <div className='h-8 w-16' ref={ref}>
-        {width > 0 && height > 0 ? (
-          <AreaChart data={data} height={height} width={width}>
-            <Area
-              dataKey='v'
-              fill='var(--chart-1)'
-              fillOpacity={0.2}
-              stroke='var(--chart-1)'
-              strokeWidth={1.5}
-              type='monotone'
-            />
-          </AreaChart>
-        ) : null}
-      </div>
-    )
-  },
+  MiniChart = ({ data }: { data: { v: number }[] }) => (
+    <div className='h-8 w-16'>
+      <ResponsiveContainer height='100%' width='100%'>
+        <AreaChart data={data}>
+          <Area
+            dataKey='v'
+            fill='var(--chart-1)'
+            fillOpacity={0.2}
+            stroke='var(--chart-1)'
+            strokeWidth={1.5}
+            type='monotone'
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  ),
   KpiCard = () => (
     <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Key Metrics</span>

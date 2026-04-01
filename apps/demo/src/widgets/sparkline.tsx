@@ -1,6 +1,5 @@
 'use client'
-import { Area, AreaChart } from 'recharts'
-import { useSize } from '~/widgets/use-size'
+import { Area, AreaChart, ResponsiveContainer } from 'recharts'
 const data = [
     { v: 40 },
     { v: 30 },
@@ -20,30 +19,27 @@ const data = [
     { v: 92 },
     { v: 98 }
   ],
-  Sparkline = () => {
-    const { ref, width, height } = useSize()
-    return (
-      <div className='flex h-full flex-col gap-2'>
-        <span className='text-sm font-medium'>Sparkline</span>
-        <div className='h-16' ref={ref}>
-          {width > 0 && height > 0 ? (
-            <AreaChart data={data} height={height} width={width}>
-              <Area
-                dataKey='v'
-                fill='var(--chart-1)'
-                fillOpacity={0.2}
-                stroke='var(--chart-1)'
-                strokeWidth={2}
-                type='monotone'
-              />
-            </AreaChart>
-          ) : null}
-        </div>
-        <div className='flex items-center justify-between pt-2 text-sm'>
-          <span className='text-muted-foreground'>Last 17 days</span>
-          <span className='font-medium'>+145%</span>
-        </div>
+  Sparkline = () => (
+    <div className='flex h-full flex-col gap-2'>
+      <span className='text-sm font-medium'>Sparkline</span>
+      <div className='min-h-0 flex-1'>
+        <ResponsiveContainer height='100%' width='100%'>
+          <AreaChart data={data}>
+            <Area
+              dataKey='v'
+              fill='var(--chart-1)'
+              fillOpacity={0.2}
+              stroke='var(--chart-1)'
+              strokeWidth={2}
+              type='monotone'
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
-    )
-  }
+      <div className='flex items-center justify-between pt-2 text-sm'>
+        <span className='text-muted-foreground'>Last 17 days</span>
+        <span className='font-medium'>+145%</span>
+      </div>
+    </div>
+  )
 export default Sparkline
