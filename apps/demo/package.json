@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "next build --turbo",
-    "dev": "next dev --turbo -p 3200"
+    "dev": "next dev --turbo -p 3200",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@a/ui": "workspace:*",
@@ -12,5 +13,8 @@
     "react": "latest",
     "react-dom": "latest",
     "recharts": "latest"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.0"
   }
 }
