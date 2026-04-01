@@ -201,10 +201,10 @@ const GridItemInner = ({
   if (isHidden && !devMode) wrapperStyle.display = 'none'
   const mergedClassName = cn(
     'ogrid-item group/item relative hover:outline hover:outline-1 hover:outline-border',
-    showDebugRings && 'outline outline-2 outline-foreground',
-    showDebugBg && 'bg-muted/30',
     isHidden && devMode && 'border-dashed',
-    userClassName
+    userClassName,
+    showDebugRings && 'outline outline-2 outline-foreground',
+    showDebugBg && 'bg-muted/30'
   )
   return (
     <div className={mergedClassName} data-ogrid-key={itemKey} ref={combinedRef} style={wrapperStyle}>
