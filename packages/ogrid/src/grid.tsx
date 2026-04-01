@@ -190,7 +190,6 @@ const GridItemInner = ({
     }
   if (typeof w === 'number') {
     wrapperStyle.width = Math.round(w / snap) * snap
-    wrapperStyle.minWidth = 'min-content'
     wrapperStyle.maxWidth = '100%'
     wrapperStyle.flexShrink = 0
   } else if (w === 'auto') {

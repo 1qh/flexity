@@ -6,9 +6,8 @@ const useSize = () => {
   useEffect(() => {
     if (!ref.current) return
     const observer = new ResizeObserver(entries => {
-      for (const entry of entries) {
+      for (const entry of entries)
         setSize({ height: Math.floor(entry.contentRect.height), width: Math.floor(entry.contentRect.width) })
-      }
     })
     observer.observe(ref.current)
     return () => observer.disconnect()

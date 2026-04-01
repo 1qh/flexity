@@ -10,7 +10,14 @@ const POLAR_DOMAIN = [0, 100] as const,
         <span className='text-sm font-medium'>Radial Progress</span>
         <div className='flex min-h-0 flex-1 items-center justify-center' ref={ref}>
           {width > 0 && height > 0 ? (
-            <RadialBarChart data={data} endAngle={90 + 360 * 0.72} height={height} innerRadius={80} outerRadius={110} startAngle={90} width={width}>
+            <RadialBarChart
+              data={data}
+              endAngle={90 + 360 * 0.72}
+              height={height}
+              innerRadius={80}
+              outerRadius={110}
+              startAngle={90}
+              width={width}>
               <PolarAngleAxis angleAxisId={0} domain={POLAR_DOMAIN} tick={false} type='number' />
               <RadialBar cornerRadius={10} dataKey='value' />
               <text
