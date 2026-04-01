@@ -1,20 +1,32 @@
+/* eslint-disable @eslint-react/hooks-extra/no-direct-set-state-in-use-effect */
 'use client'
 import { useEffect, useRef, useState } from 'react'
 const useSize = () => {
   const ref = useRef<HTMLDivElement>(null),
-    [size, setSize] = useState({ height: 0, width: 0 })
+    [width, setWidth] = useState(0),
+    [height, setHeight] = useState(0),
+    prevWRef = useRef(0),
+    prevHRef = useRef(0)
   useEffect(() => {
     if (!ref.current) return
-    const observer = new ResizeObserver(entries => {
-      for (const entry of entries) {
-        const w = Math.floor(entry.contentRect.width),
-          h = Math.floor(entry.contentRect.height)
-        setSize(prev => (prev.width === w && prev.height === h ? prev : { height: h, width: w }))
+    const check = () => {
+      if (!ref.current) return
+      const w = ref.current.clientWidth,
+        h = ref.current.clientHeight
+      if (w !== prevWRef.current) {
+        prevWRef.current = w
+        setWidth(w)
       }
-    })
+      if (h !== prevHRef.current) {
+        prevHRef.current = h
+        setHeight(h)
+      }
+    }
+    check()
+    const observer = new ResizeObserver(check)
     observer.observe(ref.current)
     return () => observer.disconnect()
   }, [])
-  return { ref, ...size }
+  return { height, ref, width }
 }
 export { useSize }
