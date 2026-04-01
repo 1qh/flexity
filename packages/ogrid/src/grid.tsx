@@ -44,7 +44,6 @@ interface GridItemInnerProps {
 }
 interface ResizeState {
   direction: 'e' | 's' | 'se'
-  minH: number
   startH: number
   startW: number
   startX: number
@@ -118,7 +117,7 @@ const GridItemInner = ({
         if (resizeState.direction === 'e' || resizeState.direction === 'se')
           el.style.width = `${resizeState.startW + dx}px`
         if (resizeState.direction === 's' || resizeState.direction === 'se')
-          el.style.height = `${Math.max(resizeState.minH, resizeState.startH + dy)}px`
+          el.style.height = `${Math.max(snap, resizeState.startH + dy)}px`
       },
       onUp = () => {
         setResizeState(null)
@@ -127,7 +126,7 @@ const GridItemInner = ({
         if (resizeState.direction === 'e' || resizeState.direction === 'se')
           updates.w = Math.max(snap, Math.round(rect.width / snap) * snap)
         if (resizeState.direction === 's' || resizeState.direction === 'se')
-          updates.h = Math.max(resizeState.minH, Math.round(rect.height))
+          updates.h = Math.max(snap, Math.round(rect.height))
         if (updates.w !== undefined || updates.h !== undefined) onResizeStop(itemKey, updates)
       }
     window.addEventListener('pointermove', onMove)
@@ -140,16 +139,10 @@ const GridItemInner = ({
   const handleResizePointerDown = (direction: 'e' | 's' | 'se') => (e: React.PointerEvent) => {
       e.preventDefault()
       e.stopPropagation()
-      const el = outerRef.current
-      if (!el) return
-      const rect = el.getBoundingClientRect(),
-        savedH = el.style.height
-      el.style.height = 'auto'
-      const naturalH = el.getBoundingClientRect().height
-      el.style.height = savedH
+      const rect = outerRef.current?.getBoundingClientRect()
+      if (!rect) return
       setResizeState({
         direction,
-        minH: naturalH,
         startH: rect.height,
         startW: rect.width,
         startX: e.clientX,
