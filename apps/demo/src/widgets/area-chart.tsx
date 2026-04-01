@@ -1,6 +1,7 @@
 'use client'
 import { ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@a/ui/chart'
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
+import { useSize } from '~/widgets/use-size'
 const data = [
     { month: 'Jan', sessions: 4000, users: 2400 },
     { month: 'Feb', sessions: 3000, users: 1398 },
@@ -11,22 +12,25 @@ const data = [
   ],
   tooltipContent = <ChartTooltipContent />,
   legendContent = <ChartLegendContent />,
-  AreaChartWidget = () => (
-    <div className='flex h-full flex-col gap-2'>
-      <span className='text-sm font-medium'>Area Chart</span>
-      <div className='min-h-0 flex-1'>
-        <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
-          <AreaChart data={data}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey='month' />
-            <YAxis />
-            <ChartTooltip content={tooltipContent} />
-            <ChartLegend content={legendContent} />
-            <Area dataKey='sessions' fill='var(--chart-1)' stroke='var(--chart-1)' type='monotone' />
-            <Area dataKey='users' fill='var(--chart-2)' stroke='var(--chart-2)' type='monotone' />
-          </AreaChart>
-        </ResponsiveContainer>
+  AreaChartWidget = () => {
+    const { ref, width, height } = useSize()
+    return (
+      <div className='flex h-full flex-col gap-2'>
+        <span className='text-sm font-medium'>Area Chart</span>
+        <div className='min-h-0 min-w-0 flex-1 overflow-hidden' ref={ref}>
+          {width > 0 && height > 0 ? (
+            <AreaChart data={data} height={height} width={width}>
+              <CartesianGrid vertical={false} />
+              <XAxis dataKey='month' />
+              <YAxis />
+              <ChartTooltip content={tooltipContent} />
+              <ChartLegend content={legendContent} />
+              <Area dataKey='sessions' fill='var(--chart-1)' stroke='var(--chart-1)' type='monotone' />
+              <Area dataKey='users' fill='var(--chart-2)' stroke='var(--chart-2)' type='monotone' />
+            </AreaChart>
+          ) : null}
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 export default AreaChartWidget

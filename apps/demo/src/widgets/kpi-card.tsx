@@ -1,5 +1,6 @@
 'use client'
-import { Area, AreaChart, ResponsiveContainer } from 'recharts'
+import { Area, AreaChart } from 'recharts'
+import { useSize } from '~/widgets/use-size'
 const kpis = [
     {
       change: '+20.1%',
@@ -23,6 +24,25 @@ const kpis = [
       value: '573'
     }
   ],
+  MiniChart = ({ data }: { data: { v: number }[] }) => {
+    const { ref, width, height } = useSize()
+    return (
+      <div className='h-8 w-16' ref={ref}>
+        {width > 0 && height > 0 ? (
+          <AreaChart data={data} height={height} width={width}>
+            <Area
+              dataKey='v'
+              fill='var(--chart-1)'
+              fillOpacity={0.2}
+              stroke='var(--chart-1)'
+              strokeWidth={1.5}
+              type='monotone'
+            />
+          </AreaChart>
+        ) : null}
+      </div>
+    )
+  },
   KpiCard = () => (
     <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Key Metrics</span>
@@ -34,20 +54,7 @@ const kpis = [
               <span className='text-2xl font-bold'>{k.value}</span>
             </div>
             <div className='flex items-center gap-2'>
-              <div className='h-8 w-16'>
-                <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
-                  <AreaChart data={k.data}>
-                    <Area
-                      dataKey='v'
-                      fill='var(--chart-1)'
-                      fillOpacity={0.2}
-                      stroke='var(--chart-1)'
-                      strokeWidth={1.5}
-                      type='monotone'
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+              <MiniChart data={k.data} />
               <span className='text-sm text-primary'>{k.change}</span>
             </div>
           </div>
