@@ -115,9 +115,9 @@ const GridItemInner = ({
         const dx = e.clientX - resizeState.startX,
           dy = e.clientY - resizeState.startY
         if (resizeState.direction === 'e' || resizeState.direction === 'se')
-          el.style.width = `${Math.max(snap, resizeState.startW + dx)}px`
+          el.style.width = `${resizeState.startW + dx}px`
         if (resizeState.direction === 's' || resizeState.direction === 'se')
-          el.style.height = `${Math.max(snap, resizeState.startH + dy)}px`
+          el.style.height = `${resizeState.startH + dy}px`
       },
       onUp = () => {
         setResizeState(null)
@@ -199,7 +199,6 @@ const GridItemInner = ({
     wrapperStyle.height = h
     wrapperStyle.minHeight = 'min-content'
   }
-
   if (isHidden && !devMode) wrapperStyle.display = 'none'
   const mergedClassName = cn(
     'ogrid-item group/item relative hover:outline hover:outline-1 hover:outline-border',
