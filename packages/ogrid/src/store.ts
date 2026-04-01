@@ -19,6 +19,7 @@ interface StoreState<K extends string = string> {
   containerWidth: number
   initialConfig: GridConfig<K>
   itemKeys: K[]
+  openDevPanel: null | { key: K; x: number; y: number }
   selectedWidget: K | null
   showDebugBg: boolean
   showDebugBorders: boolean
@@ -30,6 +31,7 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
       containerWidth: 0,
       initialConfig: { ...initialConfig, layout: initialConfig.layout?.map(e => ({ ...e })) },
       itemKeys: [],
+      openDevPanel: null,
       selectedWidget: null,
       showDebugBg: false,
       showDebugBorders: false
@@ -80,6 +82,7 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
     reset = () => {
       setState({
         config: { ...state.initialConfig, layout: state.initialConfig.layout?.map(e => ({ ...e })) },
+        openDevPanel: null,
         selectedWidget: null,
         showDebugBg: false,
         showDebugBorders: false

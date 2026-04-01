@@ -4,7 +4,7 @@
 /* eslint-disable prefer-named-capture-group */
 'use client'
 import type { ChangeEvent, ReactElement } from 'react'
-import { useSyncExternalStore } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import type { Store } from './store'
 import type { GridConfig, PanelProps, WidgetLayoutEntry } from './types'
 import { cn } from './cn'
@@ -38,10 +38,10 @@ interface NumberInputProps {
   value: number | undefined
 }
 const NumberInput = ({ label, value, onChange, min = 0, step = 1, placeholder }: NumberInputProps) => (
-  <label className='flex items-center gap-2 text-xs'>
-    <span className='w-10 shrink-0 text-muted-foreground'>{label}</span>
+  <label className='flex items-center gap-1 text-xs'>
+    <span className='text-[9px] text-muted-foreground'>{label}</span>
     <input
-      className='h-7 w-20 rounded border border-border bg-background px-2 text-xs'
+      className='h-6 w-14 rounded border border-border bg-background px-1 text-xs'
       min={min}
       onChange={(e: ChangeEvent<HTMLInputElement>) => {
         const v = e.target.value
@@ -242,24 +242,101 @@ const VisualControls = ({ className: cls, onChange }: VisualControlsProps) => {
     </div>
   )
 }
+interface WidgetDevPanelProps<K extends string> {
+  layout: WidgetLayoutEntry<K>
+  onChange: (updates: Partial<WidgetLayoutEntry<K>>) => void
+  renderWidgetControl?: PanelProps<K>['renderWidgetControl']
+  widgetKey: K
+}
+const WidgetDevPanelContent = <K extends string>({
+  widgetKey,
+  layout,
+  onChange,
+  renderWidgetControl
+}: WidgetDevPanelProps<K>): ReactElement => {
+  if (renderWidgetControl) return renderWidgetControl(widgetKey, layout, onChange) ?? <div />
+  return (
+    <div className='flex flex-col gap-2'>
+      <span className='text-[9px] font-medium'>{widgetKey}</span>
+      <div className='flex items-center gap-2'>
+        <NumberInput
+          label='w'
+          min={1}
+          onChange={v => onChange({ w: v } as Partial<WidgetLayoutEntry<K>>)}
+          placeholder='auto'
+          value={typeof layout.w === 'number' ? layout.w : undefined}
+        />
+        {layout.w === undefined ? null : (
+          <button
+            className='text-[9px] text-muted-foreground hover:text-foreground'
+            onClick={() => onChange({ w: undefined } as Partial<WidgetLayoutEntry<K>>)}
+            type='button'>
+            ×
+          </button>
+        )}
+      </div>
+      <div className='flex items-center gap-2'>
+        <NumberInput
+          label='h'
+          min={1}
+          onChange={v => onChange({ h: v } as Partial<WidgetLayoutEntry<K>>)}
+          placeholder='auto'
+          value={layout.h}
+        />
+        {layout.h === undefined ? null : (
+          <button
+            className='text-[9px] text-muted-foreground hover:text-foreground'
+            onClick={() => onChange({ h: undefined } as Partial<WidgetLayoutEntry<K>>)}
+            type='button'>
+            ×
+          </button>
+        )}
+      </div>
+      <label className='flex items-center gap-2 text-xs'>
+        <input
+          checked={layout.hidden ?? false}
+          onChange={e =>
+            onChange({
+              hidden: e.target.checked || undefined
+            } as Partial<WidgetLayoutEntry<K>>)
+          }
+          type='checkbox'
+        />
+        <span className='text-[9px]'>hidden</span>
+      </label>
+      <VisualControls
+        className={layout.className ?? ''}
+        onChange={v => onChange({ className: v || undefined } as Partial<WidgetLayoutEntry<K>>)}
+      />
+      <label className='flex flex-col gap-1 text-xs'>
+        <span className='text-[9px] text-muted-foreground'>classes</span>
+        <input
+          className='h-6 w-full rounded border border-border bg-background px-1 text-[9px]'
+          onChange={e =>
+            onChange({
+              className: e.target.value || undefined
+            } as Partial<WidgetLayoutEntry<K>>)
+          }
+          placeholder='Tailwind classes'
+          type='text'
+          value={layout.className ?? ''}
+        />
+      </label>
+    </div>
+  )
+}
 interface CreatePanelComponentProps<K extends string> {
   store: Store<K>
 }
 const createPanelComponent = <K extends string>({ store }: CreatePanelComponentProps<K>) => {
-  const PanelComponent = ({
-    children,
-    renderWidgetControl,
-    renderGridControl,
-    renderCopyButton
-  }: PanelProps<K>): null | ReactElement => {
+  const PanelComponent = ({ children, renderGridControl, renderCopyButton }: PanelProps<K>): null | ReactElement => {
     const devMode = isDev(),
-      state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
+      state = useSyncExternalStore(store.subscribe, store.getState, store.getState),
+      [copied, setCopied] = useState(false)
     if (!devMode) return null
-    const { config, selectedWidget, showDebugBorders, showDebugBg, containerWidth, itemKeys } = state,
-      layout = config.layout ?? [],
+    const { config, showDebugBorders, showDebugBg, containerWidth, itemKeys } = state,
       gap = config.gap ?? 0,
       snap = config.snap ?? 1,
-      getLayoutEntry = (key: K): WidgetLayoutEntry<K> => layout.find(e => e.key === key) ?? { key },
       handleWidgetChange = (key: K, updates: Partial<WidgetLayoutEntry<K>>) => {
         if (updates.className) validateClassName(key, updates.className, false)
         store.updateWidgetLayout(key, updates)
@@ -273,6 +350,8 @@ const createPanelComponent = <K extends string>({ store }: CreatePanelComponentP
         const text = formatConfigForCopy(store.getState().config, itemKeys)
         // oxlint-disable-next-line promise/prefer-await-to-then
         navigator.clipboard.writeText(text).catch(() => undefined)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
       },
       handleReset = () => {
         store.reset()
@@ -284,20 +363,15 @@ const createPanelComponent = <K extends string>({ store }: CreatePanelComponentP
         onGridChange: handleGridChange,
         onReset: handleReset,
         onWidgetChange: handleWidgetChange,
-        selectedWidget,
+        selectedWidget: state.selectedWidget,
         widgets: itemKeys
       })
-    const selected = selectedWidget ? getLayoutEntry(selectedWidget) : null
     return (
-      <div className='flex flex-col gap-3 rounded-lg border border-border bg-background p-3 text-sm'>
-        <div className='flex items-center justify-between'>
-          <span className='font-medium'>ogrid</span>
-          <span className='text-xs text-muted-foreground'>{String(Math.round(containerWidth))}px</span>
-        </div>
+      <div className='flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-primary/30 bg-primary/5 px-3 py-1.5'>
         {renderGridControl ? (
           renderGridControl(config, handleGridChange)
         ) : (
-          <div className='flex flex-col gap-2'>
+          <>
             <NumberInput
               label='gap'
               onChange={v => handleGridChange({ gap: v ?? 0 })}
@@ -311,161 +385,38 @@ const createPanelComponent = <K extends string>({ store }: CreatePanelComponentP
               placeholder='1'
               value={snap === 1 ? undefined : snap}
             />
-          </div>
-        )}
-        <div className='h-px bg-border' />
-        <div className='flex flex-col gap-1'>
-          <span className='text-xs text-muted-foreground'>widgets</span>
-          {itemKeys.map(key => {
-            const entry = getLayoutEntry(key),
-              isSelected = selectedWidget === key,
-              hasCustomLayout =
-                entry.w !== undefined || entry.h !== undefined || entry.className !== undefined || entry.hidden === true
-            return (
-              <div
-                className={cn(
-                  'flex items-center justify-between rounded px-2 py-1 text-xs transition-colors hover:bg-muted',
-                  isSelected && 'bg-muted ring-1 ring-primary',
-                  entry.hidden && 'text-muted-foreground line-through'
-                )}
-                key={key}>
-                <button className='flex-1 text-left' onClick={() => store.setState({ selectedWidget: key })} type='button'>
-                  {hasCustomLayout ? '◆ ' : ''}
-                  {key}
-                </button>
-                <div className='flex items-center gap-1'>
-                  {entry.w !== undefined && (
-                    <span className='text-muted-foreground'>{entry.w === 'auto' ? 'auto' : `${String(entry.w)}px`}</span>
-                  )}
-                  <button
-                    className='text-muted-foreground hover:text-foreground'
-                    onClick={e => {
-                      e.stopPropagation()
-                      handleWidgetChange(key, { hidden: !entry.hidden || undefined })
-                    }}
-                    title={entry.hidden ? 'Show' : 'Hide'}
-                    type='button'>
-                    {entry.hidden ? '○' : '●'}
-                  </button>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-        {selected && selectedWidget ? (
-          <>
-            <div className='h-px bg-border' />
-            <div className='flex flex-col gap-2'>
-              <span className='text-xs font-medium'>{selectedWidget}</span>
-              {renderWidgetControl ? (
-                renderWidgetControl(selectedWidget, selected, updates => handleWidgetChange(selectedWidget, updates))
-              ) : (
-                <>
-                  <div className='flex items-center gap-2'>
-                    <NumberInput
-                      label='w'
-                      min={1}
-                      onChange={v => handleWidgetChange(selectedWidget, { w: v })}
-                      placeholder='auto'
-                      value={typeof selected.w === 'number' ? selected.w : undefined}
-                    />
-                    {selected.w !== undefined && (
-                      <button
-                        className='text-xs text-muted-foreground hover:text-foreground'
-                        onClick={() => handleWidgetChange(selectedWidget, { w: undefined })}
-                        type='button'>
-                        reset
-                      </button>
-                    )}
-                  </div>
-                  <div className='flex items-center gap-2'>
-                    <NumberInput
-                      label='h'
-                      min={1}
-                      onChange={v => handleWidgetChange(selectedWidget, { h: v })}
-                      placeholder='auto'
-                      value={selected.h}
-                    />
-                    {selected.h !== undefined && (
-                      <button
-                        className='text-xs text-muted-foreground hover:text-foreground'
-                        onClick={() => handleWidgetChange(selectedWidget, { h: undefined })}
-                        type='button'>
-                        clear
-                      </button>
-                    )}
-                  </div>
-                  <label className='flex items-center gap-2 text-xs'>
-                    <input
-                      checked={selected.hidden ?? false}
-                      onChange={e =>
-                        handleWidgetChange(selectedWidget, {
-                          hidden: e.target.checked || undefined
-                        })
-                      }
-                      type='checkbox'
-                    />
-                    <span>hidden</span>
-                  </label>
-                  <VisualControls
-                    className={selected.className ?? ''}
-                    onChange={v => handleWidgetChange(selectedWidget, { className: v || undefined })}
-                  />
-                  <label className='flex flex-col gap-1 text-xs'>
-                    <span className='text-muted-foreground'>custom classes</span>
-                    <input
-                      className='h-7 rounded border border-border bg-background px-2 text-xs'
-                      onChange={e =>
-                        handleWidgetChange(selectedWidget, {
-                          className: e.target.value || undefined
-                        })
-                      }
-                      placeholder='additional Tailwind classes'
-                      type='text'
-                      value={selected.className ?? ''}
-                    />
-                  </label>
-                </>
-              )}
-            </div>
           </>
-        ) : null}
-        <div className='h-px bg-border' />
-        <div className='flex flex-col gap-1'>
-          <label className='flex items-center gap-2 text-xs'>
-            <input
-              checked={showDebugBorders}
-              onChange={e => store.setState({ showDebugBorders: e.target.checked })}
-              type='checkbox'
-            />
-            <span>borders</span>
-          </label>
-          <label className='flex items-center gap-2 text-xs'>
-            <input
-              checked={showDebugBg}
-              onChange={e => store.setState({ showDebugBg: e.target.checked })}
-              type='checkbox'
-            />
-            <span>backgrounds</span>
-          </label>
-        </div>
-        <div className='flex gap-2'>
-          {renderCopyButton ? (
-            renderCopyButton(handleCopy)
-          ) : (
-            <button
-              className='flex-1 rounded border border-border px-3 py-1.5 text-xs transition-colors hover:bg-muted'
-              onClick={handleCopy}
-              type='button'>
-              copy
-            </button>
-          )}
+        )}
+        <label className='flex items-center gap-1 text-[9px]'>
+          <input
+            checked={showDebugBorders}
+            onChange={e => store.setState({ showDebugBorders: e.target.checked })}
+            type='checkbox'
+          />
+          <span className='text-muted-foreground'>borders</span>
+        </label>
+        <label className='flex items-center gap-1 text-[9px]'>
+          <input checked={showDebugBg} onChange={e => store.setState({ showDebugBg: e.target.checked })} type='checkbox' />
+          <span className='text-muted-foreground'>bg</span>
+        </label>
+        <span className='text-[9px] text-muted-foreground'>{String(Math.round(containerWidth))}px</span>
+        <div className='ml-auto flex items-center gap-1'>
           <button
-            className='flex-1 rounded border border-border px-3 py-1.5 text-xs transition-colors hover:bg-destructive hover:text-destructive-foreground'
+            className='rounded bg-muted px-1.5 py-0.5 text-[9px] hover:bg-muted-foreground/20'
             onClick={handleReset}
             type='button'>
             reset
           </button>
+          {renderCopyButton ? (
+            renderCopyButton(handleCopy)
+          ) : (
+            <button
+              className='rounded bg-primary px-1.5 py-0.5 text-[9px] text-primary-foreground hover:bg-primary/80'
+              onClick={handleCopy}
+              type='button'>
+              {copied ? 'copied' : 'copy'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -473,4 +424,4 @@ const createPanelComponent = <K extends string>({ store }: CreatePanelComponentP
   PanelComponent.displayName = 'Panel'
   return PanelComponent
 }
-export { createPanelComponent, formatConfigForCopy }
+export { createPanelComponent, formatConfigForCopy, VisualControls, WidgetDevPanelContent }

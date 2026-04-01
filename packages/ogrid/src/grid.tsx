@@ -20,9 +20,11 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { Resizable } from 're-resizable'
 import { createContext, use, useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import { createPortal } from 'react-dom'
 import type { Store } from './store'
 import type { AllowedContent, GridConfig, GridProps, WidgetLayoutEntry } from './types'
 import { cn } from './cn'
+import { WidgetDevPanelContent } from './panel'
 import { clearConfig, loadConfig, saveConfig } from './storage'
 import { isDev, validateClassName, validateConfig, validateDom, validateNoNestedGrid } from './validation'
 const GridContext = createContext(false),
@@ -52,8 +54,10 @@ interface GridItemInnerProps {
   content: AllowedContent
   devMode: boolean
   dragHandle?: string
+  isDevPanelOpen: boolean
   itemKey: string
   layout: undefined | WidgetLayoutEntry
+  onCssClick: (key: string, rect: DOMRect) => void
   onResizeStop: (key: string, updates: ResizeUpdates) => void
   onSelect: (key: string) => void
   resizeHandle?: ReactElement
@@ -74,10 +78,12 @@ const GridItemInner = ({
   snap,
   strict,
   onSelect,
+  onCssClick,
   onResizeStop,
   resizeHandle,
   dragHandle,
   selected,
+  isDevPanelOpen,
   showDebugBorders,
   showDebugBg,
   devMode
@@ -227,6 +233,20 @@ const GridItemInner = ({
       }
       ref={combinedRef}
       style={wrapperStyle}>
+      {devMode ? (
+        <button
+          className={cn(
+            'absolute left-1 top-1 z-10 rounded px-1 text-[9px] opacity-0 transition-opacity group-hover/item:opacity-100 hover:bg-muted',
+            isDevPanelOpen && 'text-primary opacity-100'
+          )}
+          onClick={e => {
+            e.stopPropagation()
+            onCssClick(itemKey, e.currentTarget.getBoundingClientRect())
+          }}
+          type='button'>
+          css
+        </button>
+      ) : null}
       {dragHandle ? null : (
         <DefaultDragHandle
           attributes={attributes as Record<string, unknown>}
@@ -366,6 +386,14 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
       handleSelect = useCallback((key: string) => {
         store.setState({ selectedWidget: key as K })
       }, []),
+      handleCssClick = useCallback(
+        (key: string, rect: DOMRect) => {
+          store.setState({
+            openDevPanel: state.openDevPanel?.key === key ? null : { key: key as K, x: rect.left, y: rect.bottom + 4 }
+          })
+        },
+        [state.openDevPanel?.key]
+      ),
       handleResizeStop = useCallback((key: string, updates: ResizeUpdates) => {
         store.updateWidgetLayout(key as K, updates)
         store.userChange()
@@ -418,9 +446,11 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
                     content={items[key]}
                     devMode={devMode}
                     dragHandle={dragHandle}
+                    isDevPanelOpen={state.openDevPanel?.key === key}
                     itemKey={key}
                     key={key}
                     layout={entry}
+                    onCssClick={handleCssClick}
                     onResizeStop={handleResizeStop}
                     onSelect={handleSelect}
                     resizeHandle={resizeHandle}
@@ -435,6 +465,41 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
             </SortableContext>
           </DndContext>
         </div>
+        {state.openDevPanel && devMode
+          ? createPortal(
+              <>
+                <div
+                  className='fixed inset-0 z-[9998]'
+                  onClick={() => store.setState({ openDevPanel: null })}
+                  onKeyDown={e => {
+                    if (e.key === 'Escape') store.setState({ openDevPanel: null })
+                  }}
+                  role='button'
+                  tabIndex={-1}
+                />
+                <div
+                  className='fixed z-[9999] w-48 max-h-[70vh] overflow-y-auto rounded-lg border border-border bg-background p-2 shadow-2xl'
+                  style={{ left: state.openDevPanel.x, top: state.openDevPanel.y }}>
+                  <WidgetDevPanelContent
+                    layout={
+                      layout.find(e => e.key === state.openDevPanel?.key) ?? {
+                        key: state.openDevPanel.key
+                      }
+                    }
+                    onChange={updates => {
+                      const key = state.openDevPanel?.key
+                      if (!key) return
+                      if (updates.className) validateClassName(key, updates.className, false)
+                      store.updateWidgetLayout(key, updates)
+                      store.userChange()
+                    }}
+                    widgetKey={state.openDevPanel.key}
+                  />
+                </div>
+              </>,
+              document.body
+            )
+          : null}
       </GridContext>
     )
   }

@@ -66,46 +66,42 @@ const { Grid, Panel } = createGrid(),
     snap: 8
   },
   Page = () => (
-    <div className='flex gap-4 p-4'>
-      <div className='min-w-0 flex-1'>
-        <Grid
-          config={demoConfig}
-          id='demo'
-          items={{
-            accordion: <AccordionWidget />,
-            area: <AreaChartWidget />,
-            avatars: <Avatars />,
-            badges: <Badges />,
-            bar: <BarChartWidget />,
-            calendar: <CalendarWidget />,
-            checkboxes: <CheckboxWidget />,
-            command: <CommandWidget />,
-            datePicker: <DatePicker />,
-            empty: <EmptyState />,
-            form: <FormWidget />,
-            kpi: <KpiCard />,
-            line: <LineChartWidget />,
-            pie: <PieChartWidget />,
-            progress: <ProgressBars />,
-            prose: <Prose />,
-            radar: <RadarChartWidget />,
-            radial: <RadialChartWidget />,
-            scroll: <ScrollContent />,
-            separator: <SeparatorWidget />,
-            skeleton: <SkeletonWidget />,
-            sliders: <SliderWidget />,
-            sparkline: <Sparkline />,
-            stats: <StatsGrid />,
-            table: <DataTableWidget />,
-            tabs: <TabsPanel />,
-            timeline: <Timeline />,
-            toggles: <ToggleGroupWidget />
-          }}
-        />
-      </div>
-      <div className='w-64 shrink-0'>
-        <Panel />
-      </div>
+    <div className='flex flex-col gap-2 p-4'>
+      <Panel />
+      <Grid
+        config={demoConfig}
+        id='demo'
+        items={{
+          accordion: <AccordionWidget />,
+          area: <AreaChartWidget />,
+          avatars: <Avatars />,
+          badges: <Badges />,
+          bar: <BarChartWidget />,
+          calendar: <CalendarWidget />,
+          checkboxes: <CheckboxWidget />,
+          command: <CommandWidget />,
+          datePicker: <DatePicker />,
+          empty: <EmptyState />,
+          form: <FormWidget />,
+          kpi: <KpiCard />,
+          line: <LineChartWidget />,
+          pie: <PieChartWidget />,
+          progress: <ProgressBars />,
+          prose: <Prose />,
+          radar: <RadarChartWidget />,
+          radial: <RadialChartWidget />,
+          scroll: <ScrollContent />,
+          separator: <SeparatorWidget />,
+          skeleton: <SkeletonWidget />,
+          sliders: <SliderWidget />,
+          sparkline: <Sparkline />,
+          stats: <StatsGrid />,
+          table: <DataTableWidget />,
+          tabs: <TabsPanel />,
+          timeline: <Timeline />,
+          toggles: <ToggleGroupWidget />
+        }}
+      />
     </div>
   )
 export default Page
