@@ -8,6 +8,7 @@ import { cleanup, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { lazy, memo, Suspense } from 'react'
 import { createGrid } from '../index'
+import { createStore } from '../store'
 const noop = () => undefined,
   tick = async () =>
     new Promise(r => {
@@ -321,5 +322,66 @@ describe('copy output format', () => {
     expect(result).toContain("className: 'pt-3 bg-muted'")
     expect(result).toContain('h: 400')
     expect(result).not.toContain('"')
+  })
+})
+
+describe('nested grids', () => {
+  it('throws when Grid is rendered inside another Grid item', () => {
+    const outer = createGrid(),
+      inner = createGrid(),
+      W = () => <span>w</span>,
+      Nested = () => <inner.Grid items={{ x: <W /> }} />
+    expect(() => render(<outer.Grid items={{ a: <Nested /> }} />)).toThrow('Nested grids')
+  })
+})
+
+describe('auto-height', () => {
+  it('does not set maxHeight when h is omitted', () => {
+    const { Grid } = createGrid(),
+      W = () => <span>content</span>
+    render(<Grid items={{ a: <W /> }} />)
+    const item = el('[data-ogrid-key="a"]')
+    expect(item.style.maxHeight).toBe('')
+  })
+
+  it('does not set overflowY when h is omitted', () => {
+    const { Grid } = createGrid(),
+      W = () => <span>content</span>
+    render(<Grid items={{ a: <W /> }} />)
+    const item = el('[data-ogrid-key="a"]')
+    expect(item.style.overflowY).toBe('')
+  })
+})
+
+describe('rapid store operations', () => {
+  it('handles rapid resize updates without error', () => {
+    const store = createStore<'a'>({ layout: [{ key: 'a', w: 100 }], snap: 8 })
+    for (let i = 0; i < 100; i += 1) store.updateWidgetLayout('a', { w: 100 + i * 8 })
+    expect(store.getState().config.layout![0]!.w).toBe(892)
+  })
+
+  it('handles rapid reorder without error', () => {
+    const store = createStore<'a' | 'b' | 'c'>({
+      layout: [{ key: 'a' }, { key: 'b' }, { key: 'c' }]
+    })
+    for (let i = 0; i < 50; i += 1) {
+      store.reorderKeys(i % 2 === 0 ? ['c', 'b', 'a'] : ['a', 'b', 'c'])
+    }
+    const keys = store.getState().config.layout!.map(e => e.key)
+    expect(keys).toEqual(['a', 'b', 'c'])
+  })
+})
+
+describe('Suspense fallback', () => {
+  it('renders grid with Suspense wrapper', () => {
+    const { Grid } = createGrid(),
+      W = () => <span>loaded</span>
+    render(
+      <Suspense fallback={<span>loading</span>}>
+        <Grid items={{ a: <W /> }} />
+      </Suspense>
+    )
+    expect(els('.ogrid-item').length).toBe(1)
+    expect(document.body.textContent).toContain('loaded')
   })
 })
