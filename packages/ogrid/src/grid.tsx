@@ -111,27 +111,22 @@ const GridItemInner = ({
   useEffect(() => {
     if (!(resizeState && outerRef.current)) return
     const el = outerRef.current,
-      minW = Math.max(snap, el.scrollWidth - (resizeState.startW - snap)),
-      minH = snap,
       onMove = (e: PointerEvent) => {
         const dx = e.clientX - resizeState.startX,
           dy = e.clientY - resizeState.startY
         if (resizeState.direction === 'e' || resizeState.direction === 'se')
-          el.style.width = `${Math.max(minW, resizeState.startW + dx)}px`
+          el.style.width = `${resizeState.startW + dx}px`
         if (resizeState.direction === 's' || resizeState.direction === 'se')
-          el.style.height = `${Math.max(minH, resizeState.startH + dy)}px`
+          el.style.height = `${resizeState.startH + dy}px`
       },
-      onUp = (e: PointerEvent) => {
+      onUp = () => {
         setResizeState(null)
-        const dx = e.clientX - resizeState.startX,
-          dy = e.clientY - resizeState.startY,
+        const rect = el.getBoundingClientRect(),
           updates: ResizeUpdates = {}
-        if (resizeState.direction === 'e' || resizeState.direction === 'se') {
-          const rawW = Math.max(minW, resizeState.startW + dx)
-          updates.w = Math.max(snap, Math.round(rawW / snap) * snap)
-        }
+        if (resizeState.direction === 'e' || resizeState.direction === 'se')
+          updates.w = Math.max(snap, Math.round(rect.width / snap) * snap)
         if (resizeState.direction === 's' || resizeState.direction === 'se')
-          updates.h = Math.max(minH, resizeState.startH + dy)
+          updates.h = Math.max(snap, Math.round(rect.height))
         if (updates.w !== undefined || updates.h !== undefined) onResizeStop(itemKey, updates)
       }
     window.addEventListener('pointermove', onMove)
@@ -188,6 +183,7 @@ const GridItemInner = ({
     }
   if (typeof w === 'number') {
     wrapperStyle.width = Math.round(w / snap) * snap
+    wrapperStyle.minWidth = 'min-content'
     wrapperStyle.maxWidth = '100%'
     wrapperStyle.flexShrink = 0
   } else if (w === 'auto') {
@@ -199,7 +195,10 @@ const GridItemInner = ({
     wrapperStyle.minWidth = 0
     wrapperStyle.overflow = 'visible'
   }
-  if (typeof h === 'number') wrapperStyle.height = h
+  if (typeof h === 'number') {
+    wrapperStyle.height = h
+    wrapperStyle.minHeight = 'min-content'
+  }
   if (isHidden && !devMode) wrapperStyle.display = 'none'
   const mergedClassName = cn(
     'ogrid-item group/item relative hover:outline hover:outline-1 hover:outline-border',

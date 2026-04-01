@@ -15,17 +15,17 @@ const data = [
     <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Area Chart</span>
       <div className='min-h-0 flex-1'>
-          <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
-            <AreaChart data={data}>
-              <CartesianGrid vertical={false} />
-              <XAxis dataKey='month' />
-              <YAxis />
-              <ChartTooltip content={tooltipContent} />
-              <ChartLegend content={legendContent} />
-              <Area dataKey='sessions' fill='var(--chart-1)' stroke='var(--chart-1)' type='monotone' />
-              <Area dataKey='users' fill='var(--chart-2)' stroke='var(--chart-2)' type='monotone' />
-            </AreaChart>
-          </ResponsiveContainer>
+        <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
+          <AreaChart data={data}>
+            <CartesianGrid vertical={false} />
+            <XAxis dataKey='month' />
+            <YAxis />
+            <ChartTooltip content={tooltipContent} />
+            <ChartLegend content={legendContent} />
+            <Area dataKey='sessions' fill='var(--chart-1)' stroke='var(--chart-1)' type='monotone' />
+            <Area dataKey='users' fill='var(--chart-2)' stroke='var(--chart-2)' type='monotone' />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     </div>
   )

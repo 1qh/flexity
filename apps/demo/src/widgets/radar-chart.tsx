@@ -15,16 +15,16 @@ const data = [
     <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Radar Chart</span>
       <div className='min-h-0 flex-1'>
-          <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
-            <RadarChart data={data}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey='subject' />
-              <ChartTooltip content={tooltipContent} />
-              <ChartLegend content={legendContent} />
-              <Radar dataKey='a' fill='var(--chart-1)' fillOpacity={0.6} stroke='var(--chart-1)' />
-              <Radar dataKey='b' fill='var(--chart-2)' fillOpacity={0.6} stroke='var(--chart-2)' />
-            </RadarChart>
-          </ResponsiveContainer>
+        <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
+          <RadarChart data={data}>
+            <PolarGrid />
+            <PolarAngleAxis dataKey='subject' />
+            <ChartTooltip content={tooltipContent} />
+            <ChartLegend content={legendContent} />
+            <Radar dataKey='a' fill='var(--chart-1)' fillOpacity={0.6} stroke='var(--chart-1)' />
+            <Radar dataKey='b' fill='var(--chart-2)' fillOpacity={0.6} stroke='var(--chart-2)' />
+          </RadarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   )

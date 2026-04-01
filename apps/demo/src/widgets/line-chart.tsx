@@ -15,18 +15,18 @@ const data = [
     <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Line Chart</span>
       <div className='min-h-0 flex-1'>
-          <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
-            <LineChart data={data}>
-              <CartesianGrid vertical={false} />
-              <XAxis dataKey='month' />
-              <YAxis />
-              <ReferenceLine label='Target' stroke='var(--chart-3)' strokeDasharray='3 3' y={4000} />
-              <ChartTooltip content={tooltipContent} />
-              <ChartLegend content={legendContent} />
-              <Line dataKey='revenue' stroke='var(--chart-1)' type='monotone' />
-              <Line dataKey='profit' stroke='var(--chart-2)' type='monotone' />
-            </LineChart>
-          </ResponsiveContainer>
+        <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
+          <LineChart data={data}>
+            <CartesianGrid vertical={false} />
+            <XAxis dataKey='month' />
+            <YAxis />
+            <ReferenceLine label='Target' stroke='var(--chart-3)' strokeDasharray='3 3' y={4000} />
+            <ChartTooltip content={tooltipContent} />
+            <ChartLegend content={legendContent} />
+            <Line dataKey='revenue' stroke='var(--chart-1)' type='monotone' />
+            <Line dataKey='profit' stroke='var(--chart-2)' type='monotone' />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
     </div>
   )
