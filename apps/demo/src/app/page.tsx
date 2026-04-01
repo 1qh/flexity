@@ -1,8 +1,8 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: demo page */
 /* oxlint-disable react-perf/jsx-no-new-object-as-prop */
 'use client'
-import dynamic from 'next/dynamic'
 import { createGrid } from 'flexity'
+import dynamic from 'next/dynamic'
 import AccordionWidget from '~/widgets/accordion'
 import Avatars from '~/widgets/avatars'
 import Badges from '~/widgets/badges'

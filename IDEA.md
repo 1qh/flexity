@@ -821,9 +821,9 @@ The `className` from layout is applied to the `flexity-item` div via `cn()`. The
 
 Every violation produces a clear, actionable message:
 
-| Violation                       | Message                                                                                                                                |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Intrinsic element in items      | TypeScript type error (compile time only — no runtime check)                                                                           |
+| Violation                       | Message                                                                                                                                  |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Intrinsic element in items      | TypeScript type error (compile time only — no runtime check)                                                                             |
 | Root wrapper with no attributes | `[flexity] Item 'kpi': root <div> has no attributes and has children. Use a fragment (<>...</>) instead.`                                |
 | Root single-child wrapper       | `[flexity] Item 'kpi': root <div> wraps a single child. Remove the wrapper and pass content directly. Move styling to layout.className.` |
 | Root bare text wrapper          | `[flexity] Item 'kpi': root <div> wraps only text with no attributes. Pass the text directly as a string.`                               |
@@ -1115,11 +1115,12 @@ These decisions are **deliberate, thoroughly debated, and final**. They reflect 
 
 ### ogrid → flexity rename
 
-The project was originally named "ogrid" (opinionated grid). Renamed to "flexity" to reflect the core technical decision: **flexbox layout, not CSS grid**. The name signals the implementation to consumers — this is a flex-based system with pixel-level control.
+The project was originally named “ogrid” (opinionated grid). Renamed to “flexity” to reflect the core technical decision: **flexbox layout, not CSS grid**. The name signals the implementation to consumers — this is a flex-based system with pixel-level control.
 
 ### re-resizable → custom pointer resize
 
 **Why re-resizable was dropped:** re-resizable creates an inner wrapper div. The layout `className` (padding, bg, rounded) is applied to the ogrid-item div, but the hover ring and resize handles live on the re-resizable wrapper INSIDE it. This caused:
+
 - Ring appearing inside padding (wrong visual boundary)
 - className and ring on different elements (misalignment)
 - Extra DOM node per item (violates minimal DOM philosophy)
@@ -1128,56 +1129,59 @@ The project was originally named "ogrid" (opinionated grid). Renamed to "flexity
 
 ### ResponsiveContainer vs custom useSize
 
-**Why ResponsiveContainer was kept:** We attempted replacing recharts' `ResponsiveContainer` with a custom `useSize` hook (ResizeObserver-based). This caused infinite re-render loops — the chart renders at measured size, which changes the container size, which triggers ResizeObserver, which re-renders the chart. Multiple attempts to break the loop (ref guards, tick counters, clientWidth integers) all failed or hit other issues (React 19 ref-during-render rules, eslint no-direct-set-state-in-useEffect).
+**Why ResponsiveContainer was kept:** We attempted replacing recharts’ `ResponsiveContainer` with a custom `useSize` hook (ResizeObserver-based). This caused infinite re-render loops — the chart renders at measured size, which changes the container size, which triggers ResizeObserver, which re-renders the chart. Multiple attempts to break the loop (ref guards, tick counters, clientWidth integers) all failed or hit other issues (React 19 ref-during-render rules, eslint no-direct-set-state-in-useEffect).
 
-`ResponsiveContainer` handles all of this internally. The only downside is console.warn spam during SSR (`width(-1)`), suppressed via a `<script>` tag in `<head>` that filters `console.warn` calls containing "should be greater than 0".
+`ResponsiveContainer` handles all of this internally. The only downside is console.warn spam during SSR (`width(-1)`), suppressed via a `<script>` tag in `<head>` that filters `console.warn` calls containing “should be greater than 0”.
 
 ### h: max-height → height
 
-**Why `h` changed from `max-height` to `height`:** The original spec used `max-height` — "widget is shorter if content is shorter." But this prevents growable content (charts, flex elements) from filling available space. A chart inside `max-height: 350px` stays at its natural height (usually 0 without explicit dimensions), not 350px.
+**Why `h` changed from `max-height` to `height`:** The original spec used `max-height` — “widget is shorter if content is shorter.” But this prevents growable content (charts, flex elements) from filling available space. A chart inside `max-height: 350px` stays at its natural height (usually 0 without explicit dimensions), not 350px.
 
-With `height`, the container has explicit dimensions. Growable content fills it. Fixed content stays at natural height. Content taller than `h` is clipped (overflow managed by content, not the grid). The consumer's CSS decides the behavior — `h-full` fills, nothing means natural size.
+With `height`, the container has explicit dimensions. Growable content fills it. Fixed content stays at natural height. Content taller than `h` is clipped (overflow managed by content, not the grid). The consumer’s CSS decides the behavior — `h-full` fills, nothing means natural size.
 
 ### Resize clamping: the height measurement technique
 
-**The problem:** During resize, the ring (outline) must never shrink below the content's natural size. Multiple approaches failed:
+**The problem:** During resize, the ring (outline) must never shrink below the content’s natural size. Multiple approaches failed:
 
-1. **CSS `min-height: min-content`** — doesn't work because inline `style.height` set during drag overrides `min-height` in the cascade
-2. **`contentRef.scrollHeight`** — fails because flex children stretch to fill their container, so scrollHeight = current (possibly enlarged) container height, not the content's natural height. Once you increase height, you can never shrink back.
+1. **CSS `min-height: min-content`** — doesn’t work because inline `style.height` set during drag overrides `min-height` in the cascade
+2. **`contentRef.scrollHeight`** — fails because flex children stretch to fill their container, so scrollHeight = current (possibly enlarged) container height, not the content’s natural height. Once you increase height, you can never shrink back.
 3. **Zero-size measurement** (`width:0; height:0` + `scrollWidth/scrollHeight`) — fails because `ResponsiveContainer` reports its current rendered size, not its minimum
 4. **CSS `min-height: fit-content`** — prevents `h` from capping height at all (fit-content is always >= content height)
 5. **JS `Math.max(snap, ...)` clamp** — sets minimum to 8px, way too small, content overflows
 
-**The solution:** At resize start, temporarily set `el.style.height = 'auto'`, read `getBoundingClientRect().height` (the element's natural auto-sized height), restore the original height, use that measurement as the floor during drag.
+**The solution:** At resize start, temporarily set `el.style.height = 'auto'`, read `getBoundingClientRect().height` (the element’s natural auto-sized height), restore the original height, use that measurement as the floor during drag.
 
 Why this works:
+
 - `height: auto` lets the element auto-size to content
 - Non-chart items: natural height = full content height → prevents shrinking below content
 - Chart items: chart container has `flex-1 min-h-0` which collapses to 0 when parent is `auto` → minH ≈ title height only → allows free shrinking
-- Width clamping uses CSS `min-width: min-content` which works correctly because inline `style.width` is overridden by `min-width` in the browser's constraint resolution
+- Width clamping uses CSS `min-width: min-content` which works correctly because inline `style.width` is overridden by `min-width` in the browser’s constraint resolution
 
 **Baseline commit:** `a81760a`
 
 ### Card wrappers removed from demo widgets
 
-**Why Cards were removed:** Every demo widget originally wrapped content in `<Card><CardHeader><CardTitle>...<CardContent>...`. This violated the "one source of truth for styling" philosophy — the Card provided border, padding, and rounded corners that couldn't be controlled from `layout.className`. The grid's wrapper div IS the styling surface.
+**Why Cards were removed:** Every demo widget originally wrapped content in `<Card><CardHeader><CardTitle>...<CardContent>...`. This violated the “one source of truth for styling” philosophy — the Card provided border, padding, and rounded corners that couldn’t be controlled from `layout.className`. The grid’s wrapper div IS the styling surface.
 
-Widgets now render content directly. All visual styling (padding, rounded, border, background) comes from `layout.className` on the grid wrapper, controlled via the dev panel's css button.
+Widgets now render content directly. All visual styling (padding, rounded, border, background) comes from `layout.className` on the grid wrapper, controlled via the dev panel’s css button.
 
 ### Panel: sidebar → top toolbar + floating panels
 
-**Why the panel was redesigned:** The original Panel was a sidebar that showed a widget list, grid controls, and selected widget controls all in one column. This didn't match the legacy monitor repo's UX which had:
+**Why the panel was redesigned:** The original Panel was a sidebar that showed a widget list, grid controls, and selected widget controls all in one column. This didn’t match the legacy monitor repo’s UX which had:
+
 - A horizontal top toolbar for grid-level controls
-- Per-item floating settings panels triggered by a "css" button on hover
+- Per-item floating settings panels triggered by a “css” button on hover
 
 The new design:
+
 - `<Panel />` renders a horizontal toolbar above the grid (gap, snap, debug toggles, copy, reset)
-- Each grid item shows a "css" button (top-left on hover) that opens a floating settings panel via `createPortal(document.body)`
+- Each grid item shows a “css” button (top-left on hover) that opens a floating settings panel via `createPortal(document.body)`
 - The floating panel has w, h, visual controls (padding, layout, visual, typography), custom className input
 - Click backdrop or press Escape to close
 
 ### isDev() always returns true
 
-**Why dev features are always enabled:** The `isDev()` function checked `process.env.NODE_ENV === 'development'`. This doesn't work in pre-built library code — the library is bundled by tsdown, and `process.env.NODE_ENV` is NOT inlined (unlike webpack/Next.js which replace it at build time). In the browser, `process` doesn't exist.
+**Why dev features are always enabled:** The `isDev()` function checked `process.env.NODE_ENV === 'development'`. This doesn’t work in pre-built library code — the library is bundled by tsdown, and `process.env.NODE_ENV` is NOT inlined (unlike webpack/Next.js which replace it at build time). In the browser, `process` doesn’t exist.
 
-Instead of trying to detect the environment, all dev features (css button, drag handle, panel, validation) are always available. The consumer controls what's active by rendering `<Panel />` or not. The library is opinionated — all features always work.
+Instead of trying to detect the environment, all dev features (css button, drag handle, panel, validation) are always available. The consumer controls what’s active by rendering `<Panel />` or not. The library is opinionated — all features always work.

@@ -8,8 +8,8 @@
   },
   "dependencies": {
     "@a/ui": "workspace:*",
-    "next": "latest",
     "flexity": "workspace:*",
+    "next": "latest",
     "react": "latest",
     "react-dom": "latest",
     "recharts": "latest"
