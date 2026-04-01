@@ -13,7 +13,7 @@ const metadata: Metadata = {
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `var _e=console.error;console.error=function(){if(typeof arguments[0]==='string'&&arguments[0].indexOf('width(-1)')>-1)return;_e.apply(console,arguments)}`
+            __html: `var _w=console.warn;console.warn=function(){if(typeof arguments[0]==='string'&&arguments[0].indexOf('should be greater than 0')>-1)return;_w.apply(console,arguments)}`
           }}
         />
       </head>
