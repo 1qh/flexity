@@ -995,10 +995,11 @@ ogrid/
     ogrid/          # the npm package
       src/
         index.ts        # entry point, exports createGrid + types
+        content.ts      # AllowedContent type (isolated JSXElementConstructor<any>)
         grid.tsx        # Grid component
         panel.tsx       # Panel component (dev only)
         store.ts        # plain JS store (Zustand-like)
-        types.ts        # WidgetLayoutEntry, AllowedContent, BannedClass, GridConfig
+        types.ts        # WidgetLayoutEntry, BannedClass, GridConfig (re-exports AllowedContent)
         validation.ts   # runtime DOM checks + class checks
         storage.ts      # localStorage persistence
         cn.ts           # tailwind-merge wrapper

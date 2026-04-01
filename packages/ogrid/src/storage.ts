@@ -1,4 +1,5 @@
-/* eslint-disable no-console */
+/** biome-ignore-all lint/suspicious/noEmptyBlockStatements: intentional catch-and-ignore for localStorage */
+/* eslint-disable no-console, no-empty */
 import type { GridConfig } from './types'
 import { isDev } from './validation'
 const STORAGE_PREFIX = 'ogrid-',
@@ -21,8 +22,6 @@ const STORAGE_PREFIX = 'ogrid-',
   clearConfig = (id: string) => {
     try {
       localStorage.removeItem(`${STORAGE_PREFIX}${id}`)
-    } catch {
-      // Noop
-    }
+    } catch {}
   }
 export { clearConfig, loadConfig, saveConfig }

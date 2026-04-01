@@ -64,6 +64,8 @@ describe('edge cases', () => {
     expect(store.getState().showDebugBorders).toBe(true)
     store.reset()
     expect(store.getState().selectedWidget).toBeNull()
+    expect(store.getState().showDebugBg).toBe(false)
+    expect(store.getState().showDebugBorders).toBe(false)
   })
   it('setConfig replaces entire config including layout', () => {
     const store = createStore<'a' | 'b'>({

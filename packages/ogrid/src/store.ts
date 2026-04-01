@@ -26,9 +26,9 @@ interface StoreState<K extends string = string> {
 const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> => {
   const listeners = new Set<Listener>()
   let state: StoreState<K> = {
-      config: { ...initialConfig },
+      config: { ...initialConfig, layout: initialConfig.layout?.map(e => ({ ...e })) },
       containerWidth: 0,
-      initialConfig: { ...initialConfig },
+      initialConfig: { ...initialConfig, layout: initialConfig.layout?.map(e => ({ ...e })) },
       itemKeys: [],
       selectedWidget: null,
       showDebugBg: false,
@@ -79,7 +79,7 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
     },
     reset = () => {
       setState({
-        config: { ...state.initialConfig },
+        config: { ...state.initialConfig, layout: state.initialConfig.layout?.map(e => ({ ...e })) },
         selectedWidget: null,
         showDebugBg: false,
         showDebugBorders: false

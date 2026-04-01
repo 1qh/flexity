@@ -78,30 +78,42 @@ const GridItemInner = ({
   showDebugBg,
   devMode
 }: GridItemInnerProps) => {
-  const wrapperRef = useRef<HTMLDivElement>(null),
+  const contentRef = useRef<HTMLDivElement>(null),
+    outerRef = useRef<HTMLDivElement>(null),
     startWidthRef = useRef(0),
     { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
       id: itemKey
     }),
+    combinedRef = useCallback(
+      (node: HTMLDivElement | null) => {
+        setNodeRef(node)
+        outerRef.current = node
+      },
+      [setNodeRef]
+    ),
     w = layout?.w,
     h = layout?.h,
     isHidden = layout?.hidden === true,
     userClassName = layout?.className
   useEffect(() => {
-    if (!(dragHandle && wrapperRef.current)) return
-    const handle = wrapperRef.current.querySelector(dragHandle)
+    if (!(dragHandle && outerRef.current)) return
+    const handle = outerRef.current.querySelector(dragHandle)
     if (!handle) return
-    const controller = new AbortController()
+    const controller = new AbortController(),
+      originalStyle = handle.getAttribute('style') ?? ''
     if (listeners)
       for (const [event, handler] of Object.entries(listeners))
         handle.addEventListener(event, handler as EventListener, { signal: controller.signal })
     for (const [attr, value] of Object.entries(attributes)) handle.setAttribute(attr, String(value))
-    handle.setAttribute('style', `${handle.getAttribute('style') ?? ''}; cursor: grab;`)
-    return () => controller.abort()
-  }, [dragHandle, listeners, attributes, content])
+    handle.setAttribute('style', `${originalStyle}; cursor: grab;`)
+    return () => {
+      controller.abort()
+      handle.setAttribute('style', originalStyle)
+    }
+  }, [dragHandle, listeners, attributes])
   useEffect(() => {
-    if (!(devMode && wrapperRef.current)) return
-    validateDom(itemKey, wrapperRef.current, strict)
+    if (!(devMode && contentRef.current)) return
+    validateDom(itemKey, contentRef.current, strict)
   }, [itemKey, content, strict, devMode])
   useEffect(() => {
     if (!(devMode && userClassName)) return
@@ -134,7 +146,7 @@ const GridItemInner = ({
   }
   if (isHidden && !devMode) wrapperStyle.display = 'none'
   const handleResizeStart = () => {
-      if (wrapperRef.current) startWidthRef.current = wrapperRef.current.getBoundingClientRect().width
+      if (outerRef.current) startWidthRef.current = outerRef.current.getBoundingClientRect().width
     },
     handleResizeStop = (_e: unknown, _dir: unknown, _ref: unknown, d: { width: number }) => {
       const rawWidth = startWidthRef.current + d.width,
@@ -146,11 +158,11 @@ const GridItemInner = ({
       const step = e.shiftKey ? snap * 5 : snap
       if (e.key === 'ArrowRight') {
         e.preventDefault()
-        const currentW = typeof w === 'number' ? w : (wrapperRef.current?.getBoundingClientRect().width ?? 200)
+        const currentW = typeof w === 'number' ? w : (outerRef.current?.getBoundingClientRect().width ?? 200)
         onResizeStop(itemKey, Math.max(snap, Math.round((currentW + step) / snap) * snap))
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault()
-        const currentW = typeof w === 'number' ? w : (wrapperRef.current?.getBoundingClientRect().width ?? 200)
+        const currentW = typeof w === 'number' ? w : (outerRef.current?.getBoundingClientRect().width ?? 200)
         onResizeStop(itemKey, Math.max(snap, Math.round((currentW - step) / snap) * snap))
       }
     },
@@ -163,7 +175,7 @@ const GridItemInner = ({
       userClassName
     ),
     inner = (
-      <div className='contents' data-ogrid-content='' ref={wrapperRef}>
+      <div className='contents' data-ogrid-content='' ref={contentRef}>
         {content as React.ReactNode}
       </div>
     )
@@ -190,7 +202,7 @@ const GridItemInner = ({
             }
           : undefined
       }
-      ref={setNodeRef}
+      ref={combinedRef}
       style={wrapperStyle}>
       {dragHandle ? null : (
         <DefaultDragHandle
