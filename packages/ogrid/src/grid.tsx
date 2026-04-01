@@ -185,6 +185,7 @@ const GridItemInner = ({
     wrapperStyle.width = Math.round(w / snap) * snap
     wrapperStyle.maxWidth = '100%'
     wrapperStyle.flexShrink = 0
+    wrapperStyle.overflow = 'hidden'
   } else if (w === 'auto') {
     wrapperStyle.width = 'fit-content'
     wrapperStyle.maxWidth = '100%'
@@ -194,7 +195,10 @@ const GridItemInner = ({
     wrapperStyle.minWidth = 0
     wrapperStyle.overflow = 'visible'
   }
-  if (typeof h === 'number') wrapperStyle.height = h
+  if (typeof h === 'number') {
+    wrapperStyle.height = h
+    wrapperStyle.overflow = 'hidden'
+  }
   if (isHidden && !devMode) wrapperStyle.display = 'none'
   const mergedClassName = cn(
     'ogrid-item group/item relative hover:outline hover:outline-1 hover:outline-border',
