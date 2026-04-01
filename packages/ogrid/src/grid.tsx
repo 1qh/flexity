@@ -192,7 +192,7 @@ const GridItemInner = ({
       }
     },
     mergedClassName = cn(
-      'ogrid-item group/item relative hover:outline hover:outline-1 hover:outline-border',
+      'ogrid-item group/item relative',
       showDebugBorders && 'border border-foreground',
       showDebugBg && 'bg-muted/30',
       isHidden && devMode && 'border-dashed',
@@ -233,6 +233,7 @@ const GridItemInner = ({
         inner
       ) : (
         <Resizable
+          className='rounded-[inherit] transition-[outline] duration-200 hover:outline hover:outline-1 hover:outline-border'
           enable={{ bottom: true, bottomRight: true, right: true }}
           handleComponent={
             resizeHandle
