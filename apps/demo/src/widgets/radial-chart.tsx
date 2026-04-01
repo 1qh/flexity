@@ -6,7 +6,7 @@ const POLAR_DOMAIN = [0, 100] as const,
     <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Radial Progress</span>
       <div className='flex min-h-0 flex-1 items-center justify-center'>
-        <ResponsiveContainer height='100%' width='100%'>
+        <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
           <RadialBarChart data={data} endAngle={90 + 360 * 0.72} innerRadius={80} outerRadius={110} startAngle={90}>
             <PolarAngleAxis angleAxisId={0} domain={POLAR_DOMAIN} tick={false} type='number' />
             <RadialBar cornerRadius={10} dataKey='value' />

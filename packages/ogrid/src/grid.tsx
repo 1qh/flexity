@@ -19,7 +19,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Resizable } from 're-resizable'
-import { createContext, use, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import { createContext, use, useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import type { Store } from './store'
 import type { AllowedContent, GridConfig, GridProps, WidgetLayoutEntry } from './types'
 import { cn } from './cn'
@@ -296,6 +296,7 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
       gridRef = useRef<HTMLDivElement>(null),
       initializedRef = useRef(false),
       state = useSyncExternalStore(store.subscribe, store.getState, store.getState),
+      dndId = useId(),
       devMode = isDev(),
       sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -406,6 +407,7 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
           <DndContext
             accessibility={{ announcements }}
             collisionDetection={closestCenter}
+            id={dndId}
             onDragEnd={handleDragEnd}
             sensors={sensors}>
             <SortableContext items={orderedKeys} strategy={horizontalListSortingStrategy}>

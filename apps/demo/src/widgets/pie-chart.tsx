@@ -14,7 +14,7 @@ const data = [
     <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Pie Chart</span>
       <div className='min-h-0 flex-1'>
-        <ResponsiveContainer height='100%' width='100%'>
+        <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
           <PieChart>
             <ChartTooltip content={tooltipContent} />
             <ChartLegend content={legendContent} />

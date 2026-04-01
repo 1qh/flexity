@@ -23,7 +23,7 @@ const data = [
     <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Sparkline</span>
       <div className='h-16'>
-        <ResponsiveContainer height='100%' width='100%'>
+        <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
           <AreaChart data={data}>
             <Area
               dataKey='v'

@@ -35,7 +35,7 @@ const kpis = [
             </div>
             <div className='flex items-center gap-2'>
               <div className='h-8 w-16'>
-                <ResponsiveContainer height='100%' width='100%'>
+                <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
                   <AreaChart data={k.data}>
                     <Area
                       dataKey='v'
