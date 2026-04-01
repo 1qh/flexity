@@ -44,8 +44,6 @@ interface GridItemInnerProps {
 }
 interface ResizeState {
   direction: 'e' | 's' | 'se'
-  minH: number
-  minW: number
   startH: number
   startW: number
   startX: number
@@ -117,18 +115,18 @@ const GridItemInner = ({
         const dx = e.clientX - resizeState.startX,
           dy = e.clientY - resizeState.startY
         if (resizeState.direction === 'e' || resizeState.direction === 'se')
-          el.style.width = `${Math.max(resizeState.minW, resizeState.startW + dx)}px`
+          el.style.width = `${Math.max(snap, resizeState.startW + dx)}px`
         if (resizeState.direction === 's' || resizeState.direction === 'se')
-          el.style.height = `${Math.max(resizeState.minH, resizeState.startH + dy)}px`
+          el.style.height = `${Math.max(snap, resizeState.startH + dy)}px`
       },
       onUp = () => {
         setResizeState(null)
         const rect = el.getBoundingClientRect(),
           updates: ResizeUpdates = {}
         if (resizeState.direction === 'e' || resizeState.direction === 'se')
-          updates.w = Math.max(resizeState.minW, Math.round(rect.width / snap) * snap)
+          updates.w = Math.max(snap, Math.round(rect.width / snap) * snap)
         if (resizeState.direction === 's' || resizeState.direction === 'se')
-          updates.h = Math.max(resizeState.minH, Math.round(rect.height))
+          updates.h = Math.max(snap, Math.round(rect.height))
         if (updates.w !== undefined || updates.h !== undefined) onResizeStop(itemKey, updates)
       }
     window.addEventListener('pointermove', onMove)
@@ -141,24 +139,10 @@ const GridItemInner = ({
   const handleResizePointerDown = (direction: 'e' | 's' | 'se') => (e: React.PointerEvent) => {
       e.preventDefault()
       e.stopPropagation()
-      const el = outerRef.current
-      if (!el) return
-      const rect = el.getBoundingClientRect(),
-        savedW = el.style.width,
-        savedH = el.style.height,
-        savedOverflow = el.style.overflow
-      el.style.overflow = 'hidden'
-      el.style.width = '0px'
-      el.style.height = '0px'
-      const minW = el.scrollWidth,
-        minH = el.scrollHeight
-      el.style.width = savedW
-      el.style.height = savedH
-      el.style.overflow = savedOverflow
+      const rect = outerRef.current?.getBoundingClientRect()
+      if (!rect) return
       setResizeState({
         direction,
-        minH,
-        minW,
         startH: rect.height,
         startW: rect.width,
         startX: e.clientX,
@@ -199,7 +183,6 @@ const GridItemInner = ({
     }
   if (typeof w === 'number') {
     wrapperStyle.width = Math.round(w / snap) * snap
-    wrapperStyle.minWidth = 'min-content'
     wrapperStyle.maxWidth = '100%'
     wrapperStyle.flexShrink = 0
   } else if (w === 'auto') {
@@ -213,7 +196,6 @@ const GridItemInner = ({
   }
   if (typeof h === 'number') {
     wrapperStyle.height = h
-    wrapperStyle.minHeight = 'min-content'
   }
   if (isHidden && !devMode) wrapperStyle.display = 'none'
   const mergedClassName = cn(
