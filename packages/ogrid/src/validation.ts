@@ -2,7 +2,7 @@
 /* eslint-disable no-console, complexity */
 import type { GridConfig } from './types'
 import { BANNED_PREFIXES } from './types'
-const isDev = () => typeof process !== 'undefined' && process.env.NODE_ENV === 'development',
+const isDev = () => true,
   escapeRegex = (s: string) => s.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`),
   BANNED_REGEX = (() => {
     const prefixPatterns = BANNED_PREFIXES.map(p => escapeRegex(p)),
