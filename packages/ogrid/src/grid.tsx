@@ -2,7 +2,6 @@
 /** biome-ignore-all lint/a11y/noNoninteractiveElementInteractions: dev-only click handler on layout div */
 /** biome-ignore-all lint/a11y/noSvgWithoutTitle: decorative grip icon */
 /** biome-ignore-all lint/a11y/useSemanticElements: resize separator */
-/** biome-ignore-all lint/a11y/useAriaPropsForRole: re-resizable handles aria */
 /** biome-ignore-all lint/nursery/noInlineStyles: dynamic layout styles required */
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: intentional dep control */
 /* eslint-disable complexity, react-hooks/exhaustive-deps, @eslint-react/no-unnecessary-use-callback, @typescript-eslint/max-params */
@@ -18,7 +17,6 @@ import {
   useSortable
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Resizable } from 're-resizable'
 import { createContext, use, useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
 import type { Store } from './store'
@@ -37,7 +35,6 @@ interface GridItemInnerProps {
   layout: undefined | WidgetLayoutEntry
   onCssClick: (key: string, rect: DOMRect) => void
   onResizeStop: (key: string, updates: ResizeUpdates) => void
-  resizeHandle?: ReactElement
   showDebugBg: boolean
   showDebugBorders: boolean
   snap: number
@@ -47,6 +44,13 @@ interface ResizeUpdates {
   h?: number
   w?: number
 }
+interface ResizeState {
+  direction: 'e' | 's' | 'se'
+  startH: number
+  startW: number
+  startX: number
+  startY: number
+}
 const GridItemInner = ({
   itemKey,
   content,
@@ -55,18 +59,14 @@ const GridItemInner = ({
   strict,
   onCssClick,
   onResizeStop,
-  resizeHandle,
   dragHandle,
   isDevPanelOpen,
-  showDebugBorders,
   showDebugBg,
   devMode
 }: GridItemInnerProps) => {
   const contentRef = useRef<HTMLDivElement>(null),
     outerRef = useRef<HTMLDivElement>(null),
-    startWidthRef = useRef(0),
-    startHeightRef = useRef(0),
-    [isResizing, setIsResizing] = useState(false),
+    [resizeState, setResizeState] = useState<ResizeState | null>(null),
     { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
       id: itemKey
     }),
@@ -105,48 +105,50 @@ const GridItemInner = ({
     if (!(devMode && userClassName)) return
     validateClassName(itemKey, userClassName, strict)
   }, [itemKey, userClassName, strict, devMode])
-  const sizeTransition = isDragging ? '' : 'all 200ms ease',
-    dndTransition = transition ?? '',
-    combinedTransition = [dndTransition, sizeTransition].filter(Boolean).join(', ') || undefined,
-    wrapperStyle: CSSProperties = {
-      boxSizing: 'border-box',
-      opacity: isDragging ? 0.5 : isHidden && devMode ? 0.4 : undefined,
-      transform: CSS.Transform.toString(transform),
-      transition: combinedTransition,
-      zIndex: isDragging ? 50 : undefined
+  useEffect(() => {
+    if (!resizeState || !outerRef.current) return
+    const el = outerRef.current
+    const onMove = (e: PointerEvent) => {
+      const dx = e.clientX - resizeState.startX
+      const dy = e.clientY - resizeState.startY
+      if (resizeState.direction === 'e' || resizeState.direction === 'se')
+        el.style.width = `${resizeState.startW + dx}px`
+      if (resizeState.direction === 's' || resizeState.direction === 'se')
+        el.style.height = `${resizeState.startH + dy}px`
     }
-  if (typeof w === 'number') {
-    wrapperStyle.width = Math.round(w / snap) * snap
-    wrapperStyle.maxWidth = '100%'
-    wrapperStyle.flexShrink = 0
-  } else if (w === 'auto') {
-    wrapperStyle.width = 'fit-content'
-    wrapperStyle.maxWidth = '100%'
-    wrapperStyle.flexShrink = 0
-  } else {
-    wrapperStyle.flex = '1 1 0%'
-    wrapperStyle.minWidth = 0
-    wrapperStyle.overflow = 'visible'
-  }
-  if (typeof h === 'number') wrapperStyle.height = h
-  if (isHidden && !devMode) wrapperStyle.display = 'none'
-  const handleResizeStart = () => {
-      if (outerRef.current) {
-        const rect = outerRef.current.getBoundingClientRect()
-        startWidthRef.current = rect.width
-        startHeightRef.current = rect.height
-      }
-      setIsResizing(true)
-    },
-    handleResizeStop = (_e: unknown, _dir: unknown, _ref: HTMLElement, d: { height: number; width: number }) => {
-      setIsResizing(false)
+    const onUp = (e: PointerEvent) => {
+      setResizeState(null)
+      const dx = e.clientX - resizeState.startX
+      const dy = e.clientY - resizeState.startY
       const updates: ResizeUpdates = {}
-      if (d.width !== 0) {
-        const rawWidth = startWidthRef.current + d.width
-        updates.w = Math.max(snap, Math.round(rawWidth / snap) * snap)
+      if (resizeState.direction === 'e' || resizeState.direction === 'se') {
+        const rawW = resizeState.startW + dx
+        updates.w = Math.max(snap, Math.round(rawW / snap) * snap)
       }
-      if (d.height !== 0) updates.h = startHeightRef.current + d.height
+      if (resizeState.direction === 's' || resizeState.direction === 'se')
+        updates.h = Math.max(snap, resizeState.startH + dy)
       if (updates.w !== undefined || updates.h !== undefined) onResizeStop(itemKey, updates)
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+    return () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+    }
+  }, [resizeState])
+  const handleResizePointerDown = (direction: 'e' | 's' | 'se') => (e: React.PointerEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      const rect = outerRef.current?.getBoundingClientRect()
+      if (!rect) return
+      setResizeState({
+        startX: e.clientX,
+        startY: e.clientY,
+        startW: rect.width,
+        startH: rect.height,
+        direction
+      })
+      ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
     },
     handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.target !== e.currentTarget) return
@@ -169,95 +171,101 @@ const GridItemInner = ({
         onResizeStop(itemKey, { h: Math.max(snap, currentH - step) })
       }
     },
-    mergedClassName = cn(
-      'ogrid-item group/item relative',
-      showDebugBorders && 'border border-foreground',
-      showDebugBg && 'bg-muted/30',
-      isHidden && devMode && 'border-dashed',
-      userClassName
-    ),
-    inner = (
-      <div className='h-full w-full' data-ogrid-content='' ref={contentRef}>
-        {content as React.ReactNode}
-      </div>
-    )
+    sizeTransition = isDragging || resizeState ? '' : 'all 200ms ease',
+    dndTransition = transition ?? '',
+    combinedTransition = [dndTransition, sizeTransition].filter(Boolean).join(', ') || undefined,
+    wrapperStyle: CSSProperties = {
+      boxSizing: 'border-box',
+      opacity: isDragging ? 0.5 : isHidden && devMode ? 0.4 : undefined,
+      transform: CSS.Transform.toString(transform),
+      transition: resizeState ? 'none' : combinedTransition,
+      zIndex: isDragging ? 50 : undefined
+    }
+  if (typeof w === 'number') {
+    wrapperStyle.width = Math.round(w / snap) * snap
+    wrapperStyle.maxWidth = '100%'
+    wrapperStyle.flexShrink = 0
+  } else if (w === 'auto') {
+    wrapperStyle.width = 'fit-content'
+    wrapperStyle.maxWidth = '100%'
+    wrapperStyle.flexShrink = 0
+  } else {
+    wrapperStyle.flex = '1 1 0%'
+    wrapperStyle.minWidth = 0
+    wrapperStyle.overflow = 'visible'
+  }
+  if (typeof h === 'number') wrapperStyle.height = h
+  if (isHidden && !devMode) wrapperStyle.display = 'none'
+  const mergedClassName = cn(
+    'ogrid-item group/item relative hover:outline hover:outline-1 hover:outline-border',
+    showDebugBg && 'bg-muted/30',
+    isHidden && devMode && 'border-dashed',
+    userClassName
+  )
   return (
     <div
       className={mergedClassName}
       data-ogrid-key={itemKey}
       ref={combinedRef}
       style={wrapperStyle}>
-      {isHidden ? (
-        inner
-      ) : (
-        <Resizable
-          className='rounded-[inherit] transition-[outline] duration-200 hover:outline hover:outline-1 hover:outline-border'
-          enable={{ bottom: true, bottomRight: true, right: true }}
-          handleComponent={
-            resizeHandle
-              ? { right: resizeHandle }
-              : {
-                  bottom: (
-                    <div
-                      aria-label={`Resize ${itemKey} height`}
-                      className='w-full h-2 cursor-row-resize'
-                      role='separator'
-                      tabIndex={0}
-                    />
-                  ),
-                  bottomRight: (
-                    <div className='h-3 w-3 cursor-nwse-resize' tabIndex={-1} />
-                  ),
-                  right: (
-                    <div
-                      aria-label={`Resize ${itemKey}`}
-                      className='h-full w-2 cursor-col-resize'
-                      onKeyDown={handleKeyDown}
-                      role='separator'
-                      tabIndex={0}
-                    />
-                  )
-                }
-          }
-          onResizeStart={handleResizeStart}
-          onResizeStop={handleResizeStop}
-          size={{ height: '100%', width: '100%' }}
-          snap={{ x: Array.from({ length: Math.ceil(10_000 / snap) }, (_, i) => (i + 1) * snap) }}
-          style={{ display: 'block', height: '100%', width: '100%' }}>
-          <div className='absolute right-1 top-1 z-10 flex items-center gap-0.5 opacity-0 transition-opacity group-hover/item:opacity-100'>
-            {devMode ? (
-              <button
-                className={cn(
-                  'rounded px-1 text-[9px] hover:bg-muted',
-                  isDevPanelOpen && 'text-primary'
-                )}
-                onClick={e => {
-                  e.stopPropagation()
-                  onCssClick(itemKey, e.currentTarget.getBoundingClientRect())
-                }}
-                type='button'>
-                css
-              </button>
-            ) : null}
-            {dragHandle ? null : (
-              <div
-                className='flex cursor-grab items-center justify-center rounded hover:bg-muted'
-                style={{ width: 20, height: 20 }}
-                {...(listeners as Record<string, unknown>)}
-                {...(attributes as Record<string, unknown>)}>
-                <svg className='text-muted-foreground' fill='currentColor' height='10' viewBox='0 0 10 10' width='10'>
-                  <circle cx='3' cy='2' r='1' />
-                  <circle cx='7' cy='2' r='1' />
-                  <circle cx='3' cy='5' r='1' />
-                  <circle cx='7' cy='5' r='1' />
-                  <circle cx='3' cy='8' r='1' />
-                  <circle cx='7' cy='8' r='1' />
-                </svg>
-              </div>
+      <div className='absolute right-1 top-1 z-10 flex items-center gap-0.5 opacity-0 transition-opacity group-hover/item:opacity-100'>
+        {devMode ? (
+          <button
+            className={cn(
+              'rounded px-1 text-[9px] hover:bg-muted',
+              isDevPanelOpen && 'text-primary'
             )}
+            onClick={e => {
+              e.stopPropagation()
+              onCssClick(itemKey, e.currentTarget.getBoundingClientRect())
+            }}
+            type='button'>
+            css
+          </button>
+        ) : null}
+        {dragHandle ? null : (
+          <div
+            className='flex cursor-grab items-center justify-center rounded hover:bg-muted'
+            style={{ width: 20, height: 20 }}
+            {...(listeners as Record<string, unknown>)}
+            {...(attributes as Record<string, unknown>)}>
+            <svg className='text-muted-foreground' fill='currentColor' height='10' viewBox='0 0 10 10' width='10'>
+              <circle cx='3' cy='2' r='1' />
+              <circle cx='7' cy='2' r='1' />
+              <circle cx='3' cy='5' r='1' />
+              <circle cx='7' cy='5' r='1' />
+              <circle cx='3' cy='8' r='1' />
+              <circle cx='7' cy='8' r='1' />
+            </svg>
           </div>
-          {inner}
-        </Resizable>
+        )}
+      </div>
+      <div className='h-full w-full' data-ogrid-content='' ref={contentRef}>
+        {content as React.ReactNode}
+      </div>
+      {isHidden ? null : (
+        <>
+          <div
+            aria-label={`Resize ${itemKey}`}
+            className='absolute right-0 top-0 h-full w-2 cursor-col-resize'
+            onKeyDown={handleKeyDown}
+            onPointerDown={handleResizePointerDown('e')}
+            role='separator'
+            tabIndex={0}
+          />
+          <div
+            aria-label={`Resize ${itemKey} height`}
+            className='absolute bottom-0 left-0 w-full h-2 cursor-row-resize'
+            onPointerDown={handleResizePointerDown('s')}
+            role='separator'
+            tabIndex={0}
+          />
+          <div
+            className='absolute bottom-0 right-0 h-3 w-3 cursor-nwse-resize'
+            onPointerDown={handleResizePointerDown('se')}
+            tabIndex={-1}
+          />
+        </>
       )}
       {isHidden && devMode ? (
         <div className='absolute inset-0 flex items-center justify-center'>
@@ -272,7 +280,7 @@ interface CreateGridComponentProps<K extends string> {
 }
 const createGridComponent = <K extends string>({ store }: CreateGridComponentProps<K>) => {
   const GridComponent = (props: GridProps<K>): ReactElement => {
-    const { items, config: configProp, id, onConfigChange, dragHandle, resizeHandle, className, strict = false } = props,
+    const { items, config: configProp, id, onConfigChange, dragHandle, className, strict = false } = props,
       isNested = use(GridContext),
       gridRef = useRef<HTMLDivElement>(null),
       initializedRef = useRef(false),
@@ -410,7 +418,6 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
                     layout={entry}
                     onCssClick={handleCssClick}
                     onResizeStop={handleResizeStop}
-                    resizeHandle={resizeHandle}
                     showDebugBg={state.showDebugBg}
                     showDebugBorders={state.showDebugBorders}
                     snap={snap}

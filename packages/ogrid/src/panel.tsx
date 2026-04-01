@@ -393,7 +393,7 @@ const createPanelComponent = <K extends string>({ store }: CreatePanelComponentP
             onChange={e => store.setState({ showDebugBorders: e.target.checked })}
             type='checkbox'
           />
-          <span className='text-muted-foreground'>borders</span>
+          <span className='text-muted-foreground'>rings</span>
         </label>
         <label className='flex items-center gap-1 text-[9px]'>
           <input checked={showDebugBg} onChange={e => store.setState({ showDebugBg: e.target.checked })} type='checkbox' />
