@@ -209,26 +209,6 @@ const GridItemInner = ({
       data-ogrid-key={itemKey}
       ref={combinedRef}
       style={wrapperStyle}>
-      {devMode ? (
-        <button
-          className={cn(
-            'absolute left-1 top-1 z-10 rounded px-1 text-[9px] opacity-0 transition-opacity group-hover/item:opacity-100 hover:bg-muted',
-            isDevPanelOpen && 'text-primary opacity-100'
-          )}
-          onClick={e => {
-            e.stopPropagation()
-            onCssClick(itemKey, e.currentTarget.getBoundingClientRect())
-          }}
-          type='button'>
-          css
-        </button>
-      ) : null}
-      {dragHandle ? null : (
-        <DefaultDragHandle
-          attributes={attributes as Record<string, unknown>}
-          listeners={listeners as Record<string, unknown>}
-        />
-      )}
       {isHidden ? (
         inner
       ) : (
@@ -272,6 +252,26 @@ const GridItemInner = ({
           size={{ height: '100%', width: '100%' }}
           snap={{ x: Array.from({ length: Math.ceil(10_000 / snap) }, (_, i) => (i + 1) * snap) }}
           style={{ display: 'block', height: '100%', width: '100%' }}>
+          {devMode ? (
+            <button
+              className={cn(
+                'absolute left-1 top-1 z-10 rounded px-1 text-[9px] opacity-0 transition-opacity group-hover/item:opacity-100 hover:bg-muted',
+                isDevPanelOpen && 'text-primary opacity-100'
+              )}
+              onClick={e => {
+                e.stopPropagation()
+                onCssClick(itemKey, e.currentTarget.getBoundingClientRect())
+              }}
+              type='button'>
+              css
+            </button>
+          ) : null}
+          {dragHandle ? null : (
+            <DefaultDragHandle
+              attributes={attributes as Record<string, unknown>}
+              listeners={listeners as Record<string, unknown>}
+            />
+          )}
           {inner}
         </Resizable>
       )}
