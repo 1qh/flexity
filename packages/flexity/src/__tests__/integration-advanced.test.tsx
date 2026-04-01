@@ -102,7 +102,7 @@ describe('DOM validation — memo/forwardRef/lazy/Suspense', () => {
       )
     render(<Grid items={{ good: <Good /> }} />)
     await tick()
-    expect(spy.mock.calls.some(c => String(c[0]).includes('[ogrid]'))).toBe(false)
+    expect(spy.mock.calls.some(c => String(c[0]).includes('[flexity]'))).toBe(false)
     spy.mockRestore()
   })
 })
@@ -123,7 +123,7 @@ describe('fragments as items', () => {
         }}
       />
     )
-    expect(els('.ogrid-item').length).toBe(1)
+    expect(els('.flexity-item').length).toBe(1)
     expect(document.body.textContent).toContain('a')
     expect(document.body.textContent).toContain('b')
   })
@@ -153,37 +153,37 @@ describe('onConfigChange callback', () => {
 describe('controlled vs uncontrolled', () => {
   beforeEach(() => localStorage.clear())
   it('controlled: ignores localStorage even with id', () => {
-    localStorage.setItem('ogrid-test', JSON.stringify({ gap: 99 }))
+    localStorage.setItem('flexity-test', JSON.stringify({ gap: 99 }))
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ gap: 16 }} id='test' items={{ a: <W /> }} onConfigChange={noop} />)
-    const grid = document.querySelector('.ogrid')!
+    const grid = document.querySelector('.flexity')!
     expect(grid.style.gap).toBe('16px')
   })
   it('uncontrolled with id: loads from localStorage', async () => {
-    localStorage.setItem('ogrid-ctrl', JSON.stringify({ gap: 42 }))
+    localStorage.setItem('flexity-ctrl', JSON.stringify({ gap: 42 }))
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ gap: 8 }} id='ctrl' items={{ a: <W /> }} />)
     await tick()
-    const grid = document.querySelector('.ogrid')!
+    const grid = document.querySelector('.flexity')!
     expect(grid.style.gap).toBe('42px')
   })
   it('uncontrolled without id: uses config prop', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ gap: 20 }} items={{ a: <W /> }} />)
-    const grid = document.querySelector('.ogrid')!
+    const grid = document.querySelector('.flexity')!
     expect(grid.style.gap).toBe('20px')
   })
 })
 describe('localStorage persistence', () => {
   beforeEach(() => localStorage.clear())
-  it('saves to localStorage with ogrid- prefix on user change', () => {
+  it('saves to localStorage with flexity- prefix on user change', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ gap: 16 }} id='persist' items={{ a: <W /> }} />)
-    expect(localStorage.getItem('ogrid-persist')).toBeNull()
+    expect(localStorage.getItem('flexity-persist')).toBeNull()
   })
 })
 describe('reset behavior', () => {
@@ -207,24 +207,24 @@ describe('reset behavior', () => {
     expect((configs[0] as { gap: number }).gap).toBe(16)
   })
   it('uncontrolled: reset clears localStorage', () => {
-    localStorage.setItem('ogrid-resettest', JSON.stringify({ gap: 99 }))
+    localStorage.setItem('flexity-resettest', JSON.stringify({ gap: 99 }))
     const { Grid, reset } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ gap: 16 }} id='resettest' items={{ a: <W /> }} />)
     reset()
-    expect(localStorage.getItem('ogrid-resettest')).toBeNull()
+    expect(localStorage.getItem('flexity-resettest')).toBeNull()
   })
 })
 describe('string/number items with handles', () => {
   it('string item has drag handle', () => {
     const { Grid } = createGrid()
     render(<Grid items={{ txt: 'hello' }} />)
-    expect(document.querySelector('.ogrid-item svg')).not.toBeNull()
+    expect(document.querySelector('.flexity-item svg')).not.toBeNull()
   })
   it('number item has drag handle', () => {
     const { Grid } = createGrid()
     render(<Grid items={{ num: 42 }} />)
-    expect(document.querySelector('.ogrid-item svg')).not.toBeNull()
+    expect(document.querySelector('.flexity-item svg')).not.toBeNull()
   })
   it('string item has resize handle', () => {
     const { Grid } = createGrid()
@@ -237,12 +237,12 @@ describe('single item', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid items={{ only: <W /> }} />)
-    const item = el('[data-ogrid-key="only"]')
+    const item = el('[data-flexity-key="only"]')
     expect(item.style.flex).toBe('1 1 0%')
   })
 })
 describe('all items hidden', () => {
-  it('renders no visible items', () => {
+  it('renders hidden items with reduced opacity', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(
@@ -256,8 +256,11 @@ describe('all items hidden', () => {
         items={{ a: <W />, b: <W /> }}
       />
     )
-    const items = els('.ogrid-item')
-    for (const item of items) expect((item as HTMLElement).style.display).toBe('none')
+    const items = els('.flexity-item')
+    for (const item of items) {
+      expect((item as HTMLElement).style.opacity).toBe('0.4')
+      expect((item as HTMLElement).style.display).not.toBe('none')
+    }
   })
 })
 describe('hidden items in dev mode', () => {
@@ -273,7 +276,7 @@ describe('hidden items in dev mode', () => {
       W = () => <span>w</span>
     render(<Grid config={{ layout: [{ hidden: true, key: 'a' }] }} items={{ a: <W /> }} />)
     await tick()
-    const item = el('[data-ogrid-key="a"]')
+    const item = el('[data-flexity-key="a"]')
     expect(item.style.opacity).toBe('0.4')
     expect(item.style.display).not.toBe('none')
     expect(item.textContent).toContain('hidden')
@@ -285,18 +288,18 @@ describe('w: auto overflow', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ layout: [{ key: 'a', w: 'auto' }] }} items={{ a: <W /> }} />)
-    const item = el('[data-ogrid-key="a"]')
+    const item = el('[data-flexity-key="a"]')
     expect(item.style.overflowX).toBe('')
   })
 })
 describe('both w and h set', () => {
-  it('sets both overflow axes', () => {
+  it('sets both width and height', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ layout: [{ h: 200, key: 'a', w: 400 }] }} items={{ a: <W /> }} />)
-    const item = el('[data-ogrid-key="a"]')
-    expect(item.style.overflowX).toBe('auto')
-    expect(item.style.overflowY).toBe('auto')
+    const item = el('[data-flexity-key="a"]')
+    expect(item.style.width).toBe('400px')
+    expect(item.style.height).toBe('200px')
   })
 })
 describe('copy output format', () => {
@@ -338,14 +341,14 @@ describe('auto-height', () => {
     const { Grid } = createGrid(),
       W = () => <span>content</span>
     render(<Grid items={{ a: <W /> }} />)
-    const item = el('[data-ogrid-key="a"]')
+    const item = el('[data-flexity-key="a"]')
     expect(item.style.height).toBe('')
   })
   it('does not set overflowY when h is omitted', () => {
     const { Grid } = createGrid(),
       W = () => <span>content</span>
     render(<Grid items={{ a: <W /> }} />)
-    const item = el('[data-ogrid-key="a"]')
+    const item = el('[data-flexity-key="a"]')
     expect(item.style.overflowY).toBe('')
   })
 })
@@ -373,7 +376,7 @@ describe('Suspense fallback', () => {
         <Grid items={{ a: <W /> }} />
       </Suspense>
     )
-    expect(els('.ogrid-item').length).toBe(1)
+    expect(els('.flexity-item').length).toBe(1)
     expect(document.body.textContent).toContain('loaded')
   })
 })

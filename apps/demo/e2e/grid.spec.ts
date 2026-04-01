@@ -6,13 +6,13 @@
 import { expect, test } from '@playwright/test'
 const waitForGrid = async (page: import('@playwright/test').Page) => {
   await page.goto('/')
-  await page.waitForSelector('.ogrid')
+  await page.waitForSelector('.flexity')
   await page.waitForTimeout(500)
 }
 test.describe('Grid rendering', () => {
-  test('renders flex container with ogrid class', async ({ page }) => {
+  test('renders flex container with flexity class', async ({ page }) => {
     await waitForGrid(page)
-    const grid = page.locator('.ogrid')
+    const grid = page.locator('.flexity')
     await expect(grid).toBeVisible()
     const display = await grid.evaluate(el => getComputedStyle(el).display)
     expect(display).toBe('flex')
@@ -21,41 +21,41 @@ test.describe('Grid rendering', () => {
   })
   test('renders all 28 widget items', async ({ page }) => {
     await waitForGrid(page)
-    await expect(page.locator('.ogrid-item')).toHaveCount(28)
+    await expect(page.locator('.flexity-item')).toHaveCount(28)
   })
-  test('each item has data-ogrid-key', async ({ page }) => {
+  test('each item has data-flexity-key', async ({ page }) => {
     await waitForGrid(page)
-    const items = page.locator('.ogrid-item'),
+    const items = page.locator('.flexity-item'),
       count = await items.count()
     for (let i = 0; i < count; i += 1) {
-      const key = await items.nth(i).getAttribute('data-ogrid-key')
+      const key = await items.nth(i).getAttribute('data-flexity-key')
       expect(key).toBeTruthy()
     }
   })
   test('items have box-sizing: border-box', async ({ page }) => {
     await waitForGrid(page)
     const boxSizing = await page
-      .locator('.ogrid-item')
+      .locator('.flexity-item')
       .first()
       .evaluate(el => getComputedStyle(el).boxSizing)
     expect(boxSizing).toBe('border-box')
   })
   test('kpi widget has configured width', async ({ page }) => {
     await waitForGrid(page)
-    const width = await page.locator('[data-ogrid-key="kpi"]').evaluate(el => el.getBoundingClientRect().width)
+    const width = await page.locator('[data-flexity-key="kpi"]').evaluate(el => el.getBoundingClientRect().width)
     expect(width).toBe(400)
   })
 })
 test.describe('drag reorder', () => {
   test('drag handle visible on hover', async ({ page }) => {
     await waitForGrid(page)
-    const item = page.locator('[data-ogrid-key="kpi"]')
+    const item = page.locator('[data-flexity-key="kpi"]')
     await item.hover()
     await expect(item.locator('svg').first()).toBeVisible()
   })
   test('drag handle has proper ARIA attributes', async ({ page }) => {
     await waitForGrid(page)
-    const item = page.locator('[data-ogrid-key="kpi"]')
+    const item = page.locator('[data-flexity-key="kpi"]')
     await item.hover()
     const handle = item.locator('[role="button"]').first()
     await expect(handle).toBeAttached()
@@ -66,13 +66,13 @@ test.describe('drag reorder', () => {
 test.describe('resize', () => {
   test('resize handle visible on hover', async ({ page }) => {
     await waitForGrid(page)
-    const item = page.locator('[data-ogrid-key="bar"]')
+    const item = page.locator('[data-flexity-key="bar"]')
     await item.hover()
     await expect(item.locator('[role="separator"]')).toBeVisible()
   })
   test('resize changes width', async ({ page }) => {
     await waitForGrid(page)
-    const item = page.locator('[data-ogrid-key="bar"]'),
+    const item = page.locator('[data-flexity-key="bar"]'),
       widthBefore = await item.evaluate(el => el.getBoundingClientRect().width)
     await item.hover()
     const handle = item.locator('[role="separator"]'),
@@ -88,7 +88,7 @@ test.describe('resize', () => {
   })
   test('resize snaps to snap value (8px)', async ({ page }) => {
     await waitForGrid(page)
-    const item = page.locator('[data-ogrid-key="bar"]')
+    const item = page.locator('[data-flexity-key="bar"]')
     await item.hover()
     const handle = item.locator('[role="separator"]'),
       box = await handle.boundingBox()
@@ -103,7 +103,7 @@ test.describe('resize', () => {
   })
   test('keyboard ArrowRight increases width', async ({ page }) => {
     await waitForGrid(page)
-    const item = page.locator('[data-ogrid-key="bar"]'),
+    const item = page.locator('[data-flexity-key="bar"]'),
       widthBefore = await item.evaluate(el => el.getBoundingClientRect().width)
     await item.hover()
     await item.locator('[role="separator"]').focus()
@@ -114,7 +114,7 @@ test.describe('resize', () => {
   })
   test('keyboard ArrowLeft decreases width', async ({ page }) => {
     await waitForGrid(page)
-    const item = page.locator('[data-ogrid-key="bar"]'),
+    const item = page.locator('[data-flexity-key="bar"]'),
       widthBefore = await item.evaluate(el => el.getBoundingClientRect().width)
     await item.hover()
     await item.locator('[role="separator"]').focus()
@@ -125,7 +125,7 @@ test.describe('resize', () => {
   })
   test('Shift+ArrowRight increases by 5x snap', async ({ page }) => {
     await waitForGrid(page)
-    const item = page.locator('[data-ogrid-key="bar"]'),
+    const item = page.locator('[data-flexity-key="bar"]'),
       widthBefore = await item.evaluate(el => el.getBoundingClientRect().width)
     await item.hover()
     await item.locator('[role="separator"]').focus()
@@ -136,10 +136,10 @@ test.describe('resize', () => {
   })
 })
 test.describe('panel', () => {
-  test('panel shows ogrid header', async ({ page }) => {
+  test('panel shows flexity header', async ({ page }) => {
     await waitForGrid(page)
     const text = await page.locator('body').textContent()
-    expect(text).toContain('ogrid')
+    expect(text).toContain('flexity')
   })
   test('panel shows widget list', async ({ page }) => {
     await waitForGrid(page)
@@ -159,7 +159,7 @@ test.describe('panel', () => {
   })
   test('clicking widget in grid selects it', async ({ page }) => {
     await waitForGrid(page)
-    await page.locator('[data-ogrid-key="bar"]').click()
+    await page.locator('[data-flexity-key="bar"]').click()
     await page.waitForTimeout(200)
     const panelText = await page.locator('body').textContent()
     expect(panelText).toContain('bar')
@@ -168,12 +168,12 @@ test.describe('panel', () => {
     await waitForGrid(page)
     const checkbox = page.getByText('borders').locator('..').locator('input[type="checkbox"]')
     await checkbox.check()
-    const cls = await page.locator('.ogrid-item').first().getAttribute('class')
+    const cls = await page.locator('.flexity-item').first().getAttribute('class')
     expect(cls).toContain('border-foreground')
   })
   test('reset reverts resize', async ({ page }) => {
     await waitForGrid(page)
-    const item = page.locator('[data-ogrid-key="bar"]'),
+    const item = page.locator('[data-flexity-key="bar"]'),
       widthBefore = await item.evaluate(el => el.getBoundingClientRect().width)
     await item.hover()
     const handle = item.locator('[role="separator"]'),
@@ -194,23 +194,23 @@ test.describe('responsive', () => {
   test('items wrap on narrow viewport', async ({ page }) => {
     await page.setViewportSize({ height: 800, width: 500 })
     await waitForGrid(page)
-    const first = await page.locator('.ogrid-item').first().boundingBox(),
-      second = await page.locator('.ogrid-item').nth(1).boundingBox()
+    const first = await page.locator('.flexity-item').first().boundingBox(),
+      second = await page.locator('.flexity-item').nth(1).boundingBox()
     if (!(first && second)) return
     expect(second.y).toBeGreaterThanOrEqual(first.y + first.height - 1)
   })
   test('wide items capped to container', async ({ page }) => {
     await page.setViewportSize({ height: 800, width: 400 })
     await waitForGrid(page)
-    const containerWidth = await page.locator('.ogrid').evaluate(el => el.getBoundingClientRect().width),
-      itemWidth = await page.locator('[data-ogrid-key="bar"]').evaluate(el => el.getBoundingClientRect().width)
+    const containerWidth = await page.locator('.flexity').evaluate(el => el.getBoundingClientRect().width),
+      itemWidth = await page.locator('[data-flexity-key="bar"]').evaluate(el => el.getBoundingClientRect().width)
     expect(itemWidth).toBeLessThanOrEqual(containerWidth)
   })
 })
 test.describe('overflow', () => {
   test('scroll widget has height and overflow-y', async ({ page }) => {
     await waitForGrid(page)
-    const item = page.locator('[data-ogrid-key="scroll"]'),
+    const item = page.locator('[data-flexity-key="scroll"]'),
       overflowY = await item.evaluate(el => getComputedStyle(el).overflowY)
     expect(overflowY).toBe('auto')
     const maxH = await item.evaluate(el => el.style.height)
@@ -220,7 +220,7 @@ test.describe('overflow', () => {
 test.describe('accessibility', () => {
   test('drag handle has role=button', async ({ page }) => {
     await waitForGrid(page)
-    await expect(page.locator('.ogrid-item [role="button"]').first()).toBeAttached()
+    await expect(page.locator('.flexity-item [role="button"]').first()).toBeAttached()
   })
   test('resize handle has role=separator and aria-label', async ({ page }) => {
     await waitForGrid(page)
@@ -231,7 +231,7 @@ test.describe('accessibility', () => {
   })
   test('resize handle is keyboard focusable', async ({ page }) => {
     await waitForGrid(page)
-    const item = page.locator('[data-ogrid-key="bar"]')
+    const item = page.locator('[data-flexity-key="bar"]')
     await item.hover()
     const handle = item.locator('[role="separator"]')
     await handle.focus()
@@ -242,7 +242,7 @@ test.describe('accessibility', () => {
 test.describe('localStorage', () => {
   test('persists resize on reload', async ({ page }) => {
     await waitForGrid(page)
-    const item = page.locator('[data-ogrid-key="bar"]')
+    const item = page.locator('[data-flexity-key="bar"]')
     await item.hover()
     const handle = item.locator('[role="separator"]'),
       box = await handle.boundingBox()
@@ -254,9 +254,9 @@ test.describe('localStorage', () => {
     await page.waitForTimeout(300)
     const widthAfterResize = await item.evaluate(el => el.getBoundingClientRect().width)
     await page.reload()
-    await page.waitForSelector('.ogrid')
+    await page.waitForSelector('.flexity')
     await page.waitForTimeout(500)
-    const widthAfterReload = await page.locator('[data-ogrid-key="bar"]').evaluate(el => el.getBoundingClientRect().width)
+    const widthAfterReload = await page.locator('[data-flexity-key="bar"]').evaluate(el => el.getBoundingClientRect().width)
     expect(widthAfterReload).toBe(widthAfterResize)
   })
 })
@@ -294,7 +294,7 @@ test.describe('all widgets render', () => {
       'prose'
     ]
     for (const key of keys) {
-      const item = page.locator(`[data-ogrid-key="${key}"]`)
+      const item = page.locator(`[data-flexity-key="${key}"]`)
       await expect(item).toBeAttached()
       const height = await item.evaluate(el => el.getBoundingClientRect().height)
       expect(height).toBeGreaterThan(0)
@@ -304,7 +304,7 @@ test.describe('all widgets render', () => {
 test.describe('data table', () => {
   test('has filter, sort, pagination', async ({ page }) => {
     await waitForGrid(page)
-    const table = page.locator('[data-ogrid-key="table"]')
+    const table = page.locator('[data-flexity-key="table"]')
     await expect(table.locator('input[placeholder="Filter..."]')).toBeVisible()
     await expect(table.getByRole('button', { name: 'Next' })).toBeVisible()
     const header = table.locator('th').first(),
@@ -315,7 +315,7 @@ test.describe('data table', () => {
   })
   test('filter narrows results', async ({ page }) => {
     await waitForGrid(page)
-    const table = page.locator('[data-ogrid-key="table"]')
+    const table = page.locator('[data-flexity-key="table"]')
     await table.locator('input[placeholder="Filter..."]').fill('Alice')
     await expect(table.locator('tbody tr')).toHaveCount(1)
   })

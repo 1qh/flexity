@@ -10,32 +10,32 @@ const noop = () => undefined,
   els = (selector: string) => document.querySelectorAll(selector)
 afterEach(cleanup)
 describe('Grid rendering', () => {
-  it('renders flex container with ogrid class', () => {
+  it('renders flex container with flexity class', () => {
     const { Grid } = createGrid(),
       W = () => <span>hello</span>,
       { container } = render(<Grid items={{ a: <W /> }} />),
-      grid = container.querySelector('.ogrid')!
+      grid = container.querySelector('.flexity')!
     expect(grid).not.toBeNull()
     expect(grid.style.display).toBe('flex')
     expect(grid.style.flexWrap).toBe('wrap')
     expect(grid.style.alignItems).toBe('flex-start')
   })
-  it('renders items with ogrid-item class and data-ogrid-key', () => {
+  it('renders items with flexity-item class and data-flexity-key', () => {
     const { Grid } = createGrid(),
       A = () => <span>a</span>,
       B = () => <span>b</span>
     render(<Grid items={{ first: <A />, second: <B /> }} />)
-    const items = els('.ogrid-item')
+    const items = els('.flexity-item')
     expect(items.length).toBe(2)
-    expect(el('[data-ogrid-key="first"]')).not.toBeNull()
-    expect(el('[data-ogrid-key="second"]')).not.toBeNull()
+    expect(el('[data-flexity-key="first"]')).not.toBeNull()
+    expect(el('[data-flexity-key="second"]')).not.toBeNull()
   })
   it('renders empty items without error', () => {
     const { Grid } = createGrid(),
       { container } = render(<Grid items={{}} />),
-      grid = container.querySelector('.ogrid')
+      grid = container.querySelector('.flexity')
     expect(grid).not.toBeNull()
-    expect(els('.ogrid-item').length).toBe(0)
+    expect(els('.flexity-item').length).toBe(0)
   })
   it('renders string items', () => {
     const { Grid } = createGrid()
@@ -50,38 +50,37 @@ describe('Grid rendering', () => {
   it('renders null/false items as empty wrappers', () => {
     const { Grid } = createGrid()
     render(<Grid items={{ empty: null, off: false }} />)
-    expect(els('.ogrid-item').length).toBe(2)
+    expect(els('.flexity-item').length).toBe(2)
   })
   it('applies gap from config', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>,
       { container } = render(<Grid config={{ gap: 16 }} items={{ a: <W /> }} />)
-    expect(container.querySelector('.ogrid')!.style.gap).toBe('16px')
+    expect(container.querySelector('.flexity')!.style.gap).toBe('16px')
   })
   it('applies className to flex container', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>,
       { container } = render(<Grid className='p-4 bg-muted' items={{ a: <W /> }} />),
-      grid = container.querySelector('.ogrid')
+      grid = container.querySelector('.flexity')
     expect(grid?.classList.contains('p-4')).toBe(true)
     expect(grid?.classList.contains('bg-muted')).toBe(true)
   })
 })
 describe('width modes', () => {
-  it('w: number → width + maxWidth + overflowX', () => {
+  it('w: number → width + maxWidth', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ layout: [{ key: 'a', w: 320 }] }} items={{ a: <W /> }} />)
-    const item = el('[data-ogrid-key="a"]')
+    const item = el('[data-flexity-key="a"]')
     expect(item.style.width).toBe('320px')
     expect(item.style.maxWidth).toBe('100%')
-    expect(item.style.overflowX).toBe('auto')
   })
   it('w: auto → fit-content + maxWidth', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ layout: [{ key: 'a', w: 'auto' }] }} items={{ a: <W /> }} />)
-    const item = el('[data-ogrid-key="a"]')
+    const item = el('[data-flexity-key="a"]')
     expect(item.style.width).toBe('fit-content')
     expect(item.style.maxWidth).toBe('100%')
   })
@@ -89,7 +88,7 @@ describe('width modes', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid items={{ a: <W /> }} />)
-    const item = el('[data-ogrid-key="a"]')
+    const item = el('[data-flexity-key="a"]')
     expect(item.style.flex).toBe('1 1 0%')
     expect(item.style.overflow).toBe('visible')
   })
@@ -97,29 +96,29 @@ describe('width modes', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ layout: [{ key: 'a', w: 325 }], snap: 8 }} items={{ a: <W /> }} />)
-    expect(el('[data-ogrid-key="a"]').style.width).toBe('328px')
+    expect(el('[data-flexity-key="a"]').style.width).toBe('328px')
   })
-  it('h → height + overflowY', () => {
+  it('h → height', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ layout: [{ h: 200, key: 'a' }] }} items={{ a: <W /> }} />)
-    const item = el('[data-ogrid-key="a"]')
+    const item = el('[data-flexity-key="a"]')
     expect(item.style.height).toBe('200px')
-    expect(item.style.overflowY).toBe('auto')
   })
   it('enforces box-sizing: border-box', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid items={{ a: <W />, b: <W /> }} />)
-    for (const item of els('.ogrid-item')) expect((item as HTMLElement).style.boxSizing).toBe('border-box')
+    for (const item of els('.flexity-item')) expect((item as HTMLElement).style.boxSizing).toBe('border-box')
   })
 })
 describe('hidden items', () => {
-  it('display:none in production', () => {
+  it('hidden items render with reduced opacity', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ layout: [{ hidden: true, key: 'a' }] }} items={{ a: <W /> }} />)
-    expect(el('[data-ogrid-key="a"]').style.display).toBe('none')
+    expect(el('[data-flexity-key="a"]').style.opacity).toBe('0.4')
+    expect(el('[data-flexity-key="a"]').style.display).not.toBe('none')
   })
 })
 describe('layout ordering', () => {
@@ -129,10 +128,10 @@ describe('layout ordering', () => {
       B = () => <span>b</span>,
       C = () => <span>c</span>
     render(<Grid config={{ layout: [{ key: 'c' }, { key: 'a' }] }} items={{ a: <A />, b: <B />, c: <C /> }} />)
-    const items = els('.ogrid-item')
-    expect((items[0] as HTMLElement).dataset.ogridKey).toBe('c')
-    expect((items[1] as HTMLElement).dataset.ogridKey).toBe('a')
-    expect((items[2] as HTMLElement).dataset.ogridKey).toBe('b')
+    const items = els('.flexity-item')
+    expect((items[0] as HTMLElement).dataset.flexityKey).toBe('c')
+    expect((items[1] as HTMLElement).dataset.flexityKey).toBe('a')
+    expect((items[2] as HTMLElement).dataset.flexityKey).toBe('b')
   })
 })
 describe('className on items', () => {
@@ -140,7 +139,7 @@ describe('className on items', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ layout: [{ className: 'pt-3 rounded-lg', key: 'a' }] }} items={{ a: <W /> }} />)
-    const item = el('[data-ogrid-key="a"]')
+    const item = el('[data-flexity-key="a"]')
     expect(item.classList.contains('pt-3')).toBe(true)
     expect(item.classList.contains('rounded-lg')).toBe(true)
   })
@@ -150,13 +149,13 @@ describe('drag handle', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid items={{ a: <W /> }} />)
-    expect(document.querySelector('.ogrid-item svg')).not.toBeNull()
+    expect(document.querySelector('.flexity-item svg')).not.toBeNull()
   })
   it('hides default when dragHandle selector is set', () => {
     const { Grid } = createGrid(),
       W = () => <span className='my-handle'>drag</span>
     render(<Grid dragHandle='.my-handle' items={{ a: <W /> }} />)
-    expect(document.querySelector('.ogrid-item > div > svg')).toBeNull()
+    expect(document.querySelector('.flexity-item > div > svg')).toBeNull()
   })
 })
 describe('resize handle', () => {
@@ -201,7 +200,7 @@ describe('controlled mode', () => {
       { rerender } = render(
         <Grid config={{ layout: [{ key: 'a', w: 300 }] }} items={{ a: <W /> }} onConfigChange={onChange} />
       ),
-      item = el('[data-ogrid-key="a"]')
+      item = el('[data-flexity-key="a"]')
     expect(item.style.width).toBe('300px')
     rerender(<Grid config={{ layout: [{ key: 'a', w: 500 }] }} items={{ a: <W /> }} onConfigChange={onChange} />)
     expect(item.style.width).toBe('500px')
@@ -221,7 +220,7 @@ describe('reset', () => {
     const { Grid, reset } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ gap: 16 }} items={{ a: <W /> }} />)
-    expect(document.querySelector('.ogrid')!.style.gap).toBe('16px')
+    expect(document.querySelector('.flexity')!.style.gap).toBe('16px')
     reset()
   })
 })
@@ -236,7 +235,7 @@ describe('multiple grids', () => {
         <g2.Grid config={{ gap: 24 }} items={{ b: <W /> }} />
       </div>
     )
-    const grids = els('.ogrid')
+    const grids = els('.flexity')
     expect(grids.length).toBe(2)
     expect((grids[0] as HTMLElement).style.gap).toBe('8px')
     expect((grids[1] as HTMLElement).style.gap).toBe('24px')
@@ -247,17 +246,17 @@ describe('dynamic items', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>,
       { rerender } = render(<Grid items={{ a: <W /> }} />)
-    expect(els('.ogrid-item').length).toBe(1)
+    expect(els('.flexity-item').length).toBe(1)
     rerender(<Grid items={{ a: <W />, b: <W /> }} />)
-    expect(els('.ogrid-item').length).toBe(2)
+    expect(els('.flexity-item').length).toBe(2)
   })
   it('handles items removed at runtime', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>,
       { rerender } = render(<Grid items={{ a: <W />, b: <W /> }} />)
-    expect(els('.ogrid-item').length).toBe(2)
+    expect(els('.flexity-item').length).toBe(2)
     rerender(<Grid items={{ a: <W /> }} />)
-    expect(els('.ogrid-item').length).toBe(1)
+    expect(els('.flexity-item').length).toBe(1)
   })
   it('silently ignores layout entries for missing items', () => {
     const { Grid } = createGrid(),
@@ -275,7 +274,7 @@ describe('dynamic items', () => {
         />
       )
     ).not.toThrow()
-    expect(els('.ogrid-item').length).toBe(1)
+    expect(els('.flexity-item').length).toBe(1)
   })
 })
 describe('DOM validation in dev', () => {
@@ -329,7 +328,7 @@ describe('DOM validation in dev', () => {
     await new Promise(r => {
       setTimeout(r, 50)
     })
-    expect(spy.mock.calls.some(c => String(c[0]).includes('[ogrid]'))).toBe(false)
+    expect(spy.mock.calls.some(c => String(c[0]).includes('[flexity]'))).toBe(false)
     spy.mockRestore()
   })
   it('warns on banned className', async () => {
@@ -349,7 +348,7 @@ describe('accessibility', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid items={{ a: <W /> }} />)
-    expect(document.querySelector('.ogrid-item [role="button"]')).not.toBeNull()
+    expect(document.querySelector('.flexity-item [role="button"]')).not.toBeNull()
   })
   it('resize handle has aria-label', () => {
     const { Grid } = createGrid(),

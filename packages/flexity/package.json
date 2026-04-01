@@ -1,5 +1,5 @@
 {
-  "name": "ogrid",
+  "name": "flexity",
   "version": "0.0.1",
   "description": "A pixel-level resizable dashboard grid for React. Zero config. Full control.",
   "keywords": [
@@ -13,7 +13,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/1qh/ogrid"
+    "url": "https://github.com/1qh/flexity"
   },
   "license": "MIT",
   "author": "1qh",

@@ -110,15 +110,15 @@ const GridItemInner = ({
   }, [itemKey, userClassName, strict, devMode])
   useEffect(() => {
     if (!(resizeState && outerRef.current)) return
-    const el = outerRef.current
-    const measureMinH = () => {
-      const saved = el.style.height
-      el.style.height = 'auto'
-      const natural = el.getBoundingClientRect().height
-      el.style.height = saved
-      return natural
-    }
-    const minH = measureMinH(),
+    const el = outerRef.current,
+      measureMinH = () => {
+        const saved = el.style.height
+        el.style.height = 'auto'
+        const natural = el.getBoundingClientRect().height
+        el.style.height = saved
+        return natural
+      },
+      minH = measureMinH(),
       onMove = (e: PointerEvent) => {
         const dx = e.clientX - resizeState.startX,
           dy = e.clientY - resizeState.startY
@@ -209,14 +209,14 @@ const GridItemInner = ({
   }
   if (isHidden && !devMode) wrapperStyle.display = 'none'
   const mergedClassName = cn(
-    'ogrid-item group/item relative hover:outline hover:outline-1 hover:outline-border',
+    'flexity-item group/item relative hover:outline hover:outline-1 hover:outline-border',
     isHidden && devMode && 'border-dashed',
     userClassName,
     showDebugRings && 'outline outline-2 outline-foreground',
     showDebugBg && 'bg-muted/30'
   )
   return (
-    <div className={mergedClassName} data-ogrid-key={itemKey} ref={combinedRef} style={wrapperStyle}>
+    <div className={mergedClassName} data-flexity-key={itemKey} ref={combinedRef} style={wrapperStyle}>
       <div className='absolute right-1 top-1 z-10 flex items-center gap-0.5 opacity-0 transition-opacity group-hover/item:opacity-100'>
         {devMode ? (
           <button
@@ -246,7 +246,7 @@ const GridItemInner = ({
           </div>
         )}
       </div>
-      <div className='h-full w-full' data-ogrid-content='' ref={contentRef}>
+      <div className='h-full w-full' data-flexity-content='' ref={contentRef}>
         {content as React.ReactNode}
       </div>
       {isHidden ? null : (
@@ -403,7 +403,7 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
       }
     return (
       <GridContext value>
-        <div className={cn('ogrid', className)} ref={gridRef} style={containerStyle}>
+        <div className={cn('flexity', className)} ref={gridRef} style={containerStyle}>
           <DndContext
             accessibility={{ announcements }}
             collisionDetection={closestCenter}

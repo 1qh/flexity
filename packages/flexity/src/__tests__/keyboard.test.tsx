@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { createGrid } from '../index'
 const W = () => <span>widget</span>,
   getItem = (key: string): HTMLElement => {
-    const found = document.querySelector(`[data-ogrid-key="${key}"]`)
+    const found = document.querySelector(`[data-flexity-key="${key}"]`)
     if (!found) throw new Error(`Item ${key} not found`)
     return found as HTMLElement
   }

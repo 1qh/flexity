@@ -46,12 +46,12 @@ describe('storage', () => {
     clearConfig('clear-test')
     expect(loadConfig('clear-test')).toBeNull()
   })
-  it('uses ogrid- prefix for keys', () => {
+  it('uses flexity- prefix for keys', () => {
     original = globalThis.localStorage
     const storage = mockStorage()
     Object.defineProperty(globalThis, 'localStorage', { value: storage, writable: true })
     saveConfig('myid', { gap: 4 })
-    expect(storage.getItem('ogrid-myid')).not.toBeNull()
+    expect(storage.getItem('flexity-myid')).not.toBeNull()
     expect(storage.getItem('myid')).toBeNull()
   })
   it('handles quota exceeded gracefully', () => {
@@ -66,7 +66,7 @@ describe('storage', () => {
   it('loadConfig handles corrupted JSON', () => {
     original = globalThis.localStorage
     const storage = mockStorage()
-    storage.setItem('ogrid-bad', 'not valid json{{{')
+    storage.setItem('flexity-bad', 'not valid json{{{')
     Object.defineProperty(globalThis, 'localStorage', { value: storage, writable: true })
     expect(loadConfig('bad')).toBeNull()
   })

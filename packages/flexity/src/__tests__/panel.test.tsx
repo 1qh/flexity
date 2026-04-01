@@ -2,7 +2,7 @@
 /** biome-ignore-all lint/style/noProcessEnv: test env setup */
 /* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/no-unused-vars */
 /* oxlint-disable unicorn/consistent-function-scoping, react-perf/jsx-no-new-object-as-prop */
-import { cleanup, fireEvent, render } from '@testing-library/react'
+import { cleanup, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { createGrid } from '../index'
 const W = () => <span>widget</span>,
@@ -33,25 +33,13 @@ describe('Panel visibility', () => {
         <Panel />
       </div>
     )
-    expect(allText()).toContain('ogrid')
+    expect(allText()).toContain('gap')
+    expect(allText()).toContain('snap')
   })
 })
-describe('Panel widget list', () => {
+describe('Panel toolbar', () => {
   beforeEach(() => {
     process.env.NODE_ENV = 'development'
-  })
-  it('shows all widget keys', () => {
-    const { Grid, Panel } = createGrid()
-    render(
-      <div>
-        <Grid items={{ alpha: <W />, beta: <W />, gamma: <W /> }} />
-        <Panel />
-      </div>
-    )
-    const text = allText()
-    expect(text).toContain('alpha')
-    expect(text).toContain('beta')
-    expect(text).toContain('gamma')
   })
   it('shows container width indicator', () => {
     const { Grid, Panel } = createGrid()
@@ -125,7 +113,7 @@ describe('Panel debug toggles', () => {
   beforeEach(() => {
     process.env.NODE_ENV = 'development'
   })
-  it('shows debug border toggle', () => {
+  it('shows debug rings toggle', () => {
     const { Grid, Panel } = createGrid()
     render(
       <div>
@@ -134,12 +122,12 @@ describe('Panel debug toggles', () => {
       </div>
     )
     const labels = document.querySelectorAll('label'),
-      borderLabel = [...labels].find(l => l.textContent?.includes('borders'))
-    expect(borderLabel).not.toBeUndefined()
-    const checkbox = borderLabel?.querySelector('input[type="checkbox"]')
+      ringsLabel = [...labels].find(l => l.textContent?.includes('rings'))
+    expect(ringsLabel).not.toBeUndefined()
+    const checkbox = ringsLabel?.querySelector('input[type="checkbox"]')
     expect(checkbox).not.toBeNull()
   })
-  it('shows debug background toggle', () => {
+  it('shows debug bg toggle', () => {
     const { Grid, Panel } = createGrid()
     render(
       <div>
@@ -148,43 +136,10 @@ describe('Panel debug toggles', () => {
       </div>
     )
     const labels = document.querySelectorAll('label'),
-      bgLabel = [...labels].find(l => l.textContent?.includes('backgrounds'))
+      bgLabel = [...labels].find(l => l.textContent?.includes('bg'))
     expect(bgLabel).not.toBeUndefined()
     const checkbox = bgLabel?.querySelector('input[type="checkbox"]')
     expect(checkbox).not.toBeNull()
-  })
-})
-describe('Panel selected widget controls', () => {
-  beforeEach(() => {
-    process.env.NODE_ENV = 'development'
-  })
-  it('shows w, h, hidden, and visual controls when a widget is selected', () => {
-    const { Grid, Panel } = createGrid()
-    render(
-      <div>
-        <Grid items={{ myWidget: <W /> }} />
-        <Panel />
-      </div>
-    )
-    const widgetBtn = [...document.querySelectorAll('button')].find(b => b.textContent?.includes('myWidget'))
-    expect(widgetBtn).not.toBeUndefined()
-    fireEvent.click(widgetBtn!)
-    const text = allText()
-    expect(text).toContain('myWidget')
-    const labels = document.querySelectorAll('label'),
-      wLabel = [...labels].find(l => {
-        const span = l.querySelector('span')
-        return span?.textContent === 'w'
-      })
-    expect(wLabel).not.toBeUndefined()
-    const hLabel = [...labels].find(l => {
-      const span = l.querySelector('span')
-      return span?.textContent === 'h'
-    })
-    expect(hLabel).not.toBeUndefined()
-    const hiddenLabel = [...labels].find(l => l.textContent?.includes('hidden'))
-    expect(hiddenLabel).not.toBeUndefined()
-    expect(text).toContain('padding')
   })
 })
 describe('Panel render prop (children)', () => {
@@ -214,23 +169,6 @@ describe('Panel render prop (children)', () => {
     expect(typeof receivedProps!.onWidgetChange).toBe('function')
     expect(receivedProps!.gridConfig).toBeDefined()
     expect(allText()).toContain('custom panel')
-  })
-})
-describe('Panel renderWidgetControl', () => {
-  beforeEach(() => {
-    process.env.NODE_ENV = 'development'
-  })
-  it('uses custom widget control renderer', () => {
-    const { Grid, Panel } = createGrid()
-    render(
-      <div>
-        <Grid items={{ a: <W /> }} />
-        <Panel renderWidgetControl={(key, _layout, _onChange) => <div data-testid='custom-wc'>custom-{key}</div>} />
-      </div>
-    )
-    const widgetBtn = [...document.querySelectorAll('button')].find(b => b.textContent?.includes('a'))
-    fireEvent.click(widgetBtn!)
-    expect(allText()).toContain('custom-a')
   })
 })
 describe('Panel renderGridControl', () => {
@@ -268,53 +206,5 @@ describe('Panel renderCopyButton', () => {
     expect(exportBtn).not.toBeUndefined()
     const copyBtn = [...buttons].find(b => b.textContent === 'copy')
     expect(copyBtn).toBeUndefined()
-  })
-})
-describe('Panel custom layout indicator', () => {
-  beforeEach(() => {
-    process.env.NODE_ENV = 'development'
-  })
-  it('shows diamond indicator for widgets with custom layout', () => {
-    const { Grid, Panel } = createGrid()
-    render(
-      <div>
-        <Grid config={{ layout: [{ key: 'styled', w: 300 }] }} items={{ plain: <W />, styled: <W /> }} />
-        <Panel />
-      </div>
-    )
-    const buttons = document.querySelectorAll('button'),
-      styledBtn = [...buttons].find(b => b.textContent?.includes('styled'))
-    expect(styledBtn?.textContent).toContain('◆')
-    const plainBtn = [...buttons].find(b => b.textContent?.includes('plain'))
-    expect(plainBtn?.textContent).not.toContain('◆')
-  })
-})
-describe('Panel hide/show toggle', () => {
-  beforeEach(() => {
-    process.env.NODE_ENV = 'development'
-  })
-  it('shows hide/show toggle for each widget', () => {
-    const { Grid, Panel } = createGrid()
-    render(
-      <div>
-        <Grid items={{ a: <W />, b: <W /> }} />
-        <Panel />
-      </div>
-    )
-    const toggleButtons = [...document.querySelectorAll('button')].filter(b => b.title === 'Hide' || b.title === 'Show')
-    expect(toggleButtons.length).toBe(2)
-  })
-  it('shows circle indicator for visible widgets and empty circle for hidden', () => {
-    const { Grid, Panel } = createGrid()
-    render(
-      <div>
-        <Grid config={{ layout: [{ hidden: true, key: 'a' }] }} items={{ a: <W />, b: <W /> }} />
-        <Panel />
-      </div>
-    )
-    const showBtn = [...document.querySelectorAll('button')].find(b => b.title === 'Show')
-    expect(showBtn?.textContent).toContain('○')
-    const hideBtn = [...document.querySelectorAll('button')].find(b => b.title === 'Hide')
-    expect(hideBtn?.textContent).toContain('●')
   })
 })

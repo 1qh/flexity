@@ -2,7 +2,7 @@
 /* eslint-disable no-console, no-empty */
 import type { GridConfig } from './types'
 import { isDev } from './validation'
-const STORAGE_PREFIX = 'ogrid-',
+const STORAGE_PREFIX = 'flexity-',
   loadConfig = <K extends string>(id: string): GridConfig<K> | null => {
     try {
       const raw = localStorage.getItem(`${STORAGE_PREFIX}${id}`)
@@ -16,7 +16,7 @@ const STORAGE_PREFIX = 'ogrid-',
     try {
       localStorage.setItem(`${STORAGE_PREFIX}${id}`, JSON.stringify(config))
     } catch (saveError) {
-      if (isDev()) console.warn('[ogrid] localStorage quota exceeded, persistence disabled', saveError)
+      if (isDev()) console.warn('[flexity] localStorage quota exceeded, persistence disabled', saveError)
     }
   },
   clearConfig = (id: string) => {

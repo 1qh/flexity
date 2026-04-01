@@ -6,7 +6,7 @@ import type { ReactNode } from 'react'
 import './globals.css'
 import DarkToggle from './dark-toggle'
 const metadata: Metadata = {
-    title: 'ogrid demo'
+    title: 'flexity demo'
   },
   RootLayout = ({ children }: { children: ReactNode }) => (
     <html lang='en' suppressHydrationWarning>

@@ -1,4 +1,4 @@
-# ogrid
+# flexity
 
 A pixel-level resizable dashboard grid for React. Zero config. Full control.
 
@@ -38,7 +38,7 @@ Not using:
 ### Zero config
 
 ```tsx
-import { createGrid } from 'ogrid'
+import { createGrid } from 'flexity'
 
 const { Grid, Panel, reset } = createGrid()
 
@@ -202,7 +202,7 @@ Each `createGrid()` call creates an isolated instance. Panels only control their
 ### createGrid factory
 
 ```tsx
-import { createGrid } from 'ogrid'
+import { createGrid } from 'flexity'
 
 const { Grid, Panel } = createGrid()
 ```
@@ -620,7 +620,7 @@ Test categories:
 - Connected to Grid via shared store (closure from `createGrid()`)
 - User places it wherever — sidebar, drawer, floating, overlay
 - Activates automatically in `NODE_ENV === 'development'`
-- In production, Panel renders null (code is shipped but not executed — use separate import `ogrid/panel` for true tree-shaking if bundle size matters)
+- In production, Panel renders null (code is shipped but not executed — use separate import `flexity/panel` for true tree-shaking if bundle size matters)
 
 ### Customization
 
@@ -764,7 +764,7 @@ Array order reflects the current drag order. `className` is the merged result of
 ### localStorage persistence
 
 - User customizations (drag order, resize, style changes) persist in localStorage
-- Key format: `ogrid-<id>` where `id` is the Grid’s `id` prop
+- Key format: `flexity-<id>` where `id` is the Grid’s `id` prop
 - If `id` is not provided, localStorage is disabled — no persistence
 - Uncontrolled mode: localStorage overrides `config` prop. Reset button clears localStorage.
 - Controlled mode (`onConfigChange` provided): localStorage is ignored. `id` prop is ignored. All state comes from `config` prop.
@@ -794,22 +794,22 @@ Each item is wrapped in a single div by the grid:
 
 ```html
 <div
-  class="ogrid"
+  class="flexity"
   style="display:flex; flex-wrap:wrap; align-items:flex-start; gap:16px"
 >
-  <div class="ogrid-item pt-3 rounded-lg bg-muted" style="width:320px">
+  <div class="flexity-item pt-3 rounded-lg bg-muted" style="width:320px">
     <!-- drag handle (default or custom) -->
     <!-- resize handle (default or custom) -->
     <!-- consumer's component -->
     <KpiCard />
   </div>
-  <div class="ogrid-item" style="flex:1 1 0%">
+  <div class="flexity-item" style="flex:1 1 0%">
     <Chart />
   </div>
 </div>
 ```
 
-The `className` from layout is applied to the `ogrid-item` div via `cn()`. The grid’s internal classes are merged first, consumer’s classes come last (consumer wins on conflicts).
+The `className` from layout is applied to the `flexity-item` div via `cn()`. The grid’s internal classes are merged first, consumer’s classes come last (consumer wins on conflicts).
 
 ### Primitive items
 
@@ -824,23 +824,23 @@ Every violation produces a clear, actionable message:
 | Violation                       | Message                                                                                                                                |
 | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | Intrinsic element in items      | TypeScript type error (compile time only — no runtime check)                                                                           |
-| Root wrapper with no attributes | `[ogrid] Item 'kpi': root <div> has no attributes and has children. Use a fragment (<>...</>) instead.`                                |
-| Root single-child wrapper       | `[ogrid] Item 'kpi': root <div> wraps a single child. Remove the wrapper and pass content directly. Move styling to layout.className.` |
-| Root bare text wrapper          | `[ogrid] Item 'kpi': root <div> wraps only text with no attributes. Pass the text directly as a string.`                               |
-| Banned class in layout          | `[ogrid] Item 'kpi': 'w-[320px]' is not allowed in layout.className. Use layout.w instead.`                                            |
-| Banned class (variant)          | `[ogrid] Item 'kpi': 'sm:w-full' is not allowed in layout.className. Size classes are banned even with variant prefixes.`              |
-| Nested grid                     | `[ogrid] Nested grids are not supported. Remove the inner <Grid> from item 'main'.`                                                    |
-| Invalid snap                    | `[ogrid] snap must be >= 1. Received: 0` (throws — invalid config, cannot proceed)                                                     |
-| Invalid gap                     | `[ogrid] gap must be >= 0. Received: -10` (throws — invalid config, cannot proceed)                                                    |
-| Zero width                      | `[ogrid] Item 'kpi': w must be > 0 or 'auto'. Received: 0` (throws — invalid config)                                                   |
-| Empty key                       | `[ogrid] Item key must be a non-empty string. Found empty string key.` (throws — invalid config)                                       |
-| Duplicate layout key            | `[ogrid] Duplicate key 'kpi' in layout array. Each key must appear once.` (throws — invalid config)                                    |
+| Root wrapper with no attributes | `[flexity] Item 'kpi': root <div> has no attributes and has children. Use a fragment (<>...</>) instead.`                                |
+| Root single-child wrapper       | `[flexity] Item 'kpi': root <div> wraps a single child. Remove the wrapper and pass content directly. Move styling to layout.className.` |
+| Root bare text wrapper          | `[flexity] Item 'kpi': root <div> wraps only text with no attributes. Pass the text directly as a string.`                               |
+| Banned class in layout          | `[flexity] Item 'kpi': 'w-[320px]' is not allowed in layout.className. Use layout.w instead.`                                            |
+| Banned class (variant)          | `[flexity] Item 'kpi': 'sm:w-full' is not allowed in layout.className. Size classes are banned even with variant prefixes.`              |
+| Nested grid                     | `[flexity] Nested grids are not supported. Remove the inner <Grid> from item 'main'.`                                                    |
+| Invalid snap                    | `[flexity] snap must be >= 1. Received: 0` (throws — invalid config, cannot proceed)                                                     |
+| Invalid gap                     | `[flexity] gap must be >= 0. Received: -10` (throws — invalid config, cannot proceed)                                                    |
+| Zero width                      | `[flexity] Item 'kpi': w must be > 0 or 'auto'. Received: 0` (throws — invalid config)                                                   |
+| Empty key                       | `[flexity] Item key must be a non-empty string. Found empty string key.` (throws — invalid config)                                       |
+| Duplicate layout key            | `[flexity] Duplicate key 'kpi' in layout array. Each key must appear once.` (throws — invalid config)                                    |
 
 Config validation errors (snap, gap, w, keys) throw because the grid cannot function with invalid config. DOM and class violations use `console.error` because the grid can still render — they’re quality warnings, not fatal errors.
 
-All errors are prefixed with `[ogrid]` for easy filtering. Runtime errors only in `NODE_ENV === 'development'`.
+All errors are prefixed with `[flexity]` for easy filtering. Runtime errors only in `NODE_ENV === 'development'`.
 
-Violations in dev mode use `console.error` with the `[ogrid]` prefix — they do NOT throw. The grid still renders with the violating content visible. This allows iterative fixing without breaking the entire page. For strict enforcement (throw on violations), set `strict` prop on Grid.
+Violations in dev mode use `console.error` with the `[flexity]` prefix — they do NOT throw. The grid still renders with the violating content visible. This allows iterative fixing without breaking the entire page. For strict enforcement (throw on violations), set `strict` prop on Grid.
 
 ## Responsive Behavior
 
@@ -883,7 +883,7 @@ Violations in dev mode use `console.error` with the `[ogrid]` prefix — they do
 
 ```ts
 // Main export
-export { createGrid } from 'ogrid'
+export { createGrid } from 'flexity'
 
 // Types (for consumers who need them)
 export type {
@@ -894,7 +894,7 @@ export type {
   GridProps,
   PanelProps,
   PanelRenderProps
-} from 'ogrid'
+} from 'flexity'
 
 // Panel is not exported standalone — it's bound to a store via createGrid()
 // In production, Panel renders null. The code is shipped but not executed.
@@ -945,7 +945,7 @@ Single page, comprehensive stress test. Uses shadcn components from `lib/ui` (re
 - Scroll area with long content
 - Resizable text block (prose content)
 
-Every widget is a separate component in the demo. Each is a valid ogrid item — no bare divs, no single-child wrappers. The demo page uses zero config initially, then the README shows the copy-paste workflow.
+Every widget is a separate component in the demo. Each is a valid flexity item — no bare divs, no single-child wrappers. The demo page uses zero config initially, then the README shows the copy-paste workflow.
 
 ### Demo structure
 
@@ -990,9 +990,9 @@ apps/
 Monorepo (turborepo + bun), same structure as the monitor repo:
 
 ```
-ogrid/
+flexity/
   packages/
-    ogrid/          # the npm package
+    flexity/          # the npm package
       src/
         index.ts        # entry point, exports createGrid + types
         content.ts      # AllowedContent type (isolated JSXElementConstructor<any>)
@@ -1068,7 +1068,7 @@ These decisions are **deliberate, thoroughly debated, and final**. They reflect 
 
 **Why ban intrinsic elements as items (`<div>`, `<hr />`, `<canvas />`)?** Forces consumers to use components. Even `const MyCanvas = () => <canvas />` is one line. The friction is intentional — it catches bare wrappers at the type level before they reach the DOM check. If your widget is a bare HTML element, wrapping it in a component is trivially easy and makes the grid’s ownership boundary explicit. The type system is stricter than the runtime check on purpose — the type layer blocks ALL intrinsic elements, the runtime layer only blocks wasteful patterns. Two intentionally different strictness levels at two different boundaries.
 
-**Why throw on single-child root elements (even with attributes)?** If a component renders `<div className="p-4"><Content /></div>`, the `p-4` belongs in `layout.className`. The grid’s wrapper div provides the styling surface — consumers should not add their own. This forces one source of truth for widget styling. Yes, this means third-party components like shadcn’s `<Card>` will trigger a warning if used as a direct item. The consumer should either pass the Card’s content directly and style via `layout.className`, or accept the console.error. This is a feature, not a bug — it forces consumers to think about their component boundaries. ogrid is not for consumers who want to drop in arbitrary components without thought.
+**Why throw on single-child root elements (even with attributes)?** If a component renders `<div className="p-4"><Content /></div>`, the `p-4` belongs in `layout.className`. The grid’s wrapper div provides the styling surface — consumers should not add their own. This forces one source of truth for widget styling. Yes, this means third-party components like shadcn’s `<Card>` will trigger a warning if used as a direct item. The consumer should either pass the Card’s content directly and style via `layout.className`, or accept the console.error. This is a feature, not a bug — it forces consumers to think about their component boundaries. flexity is not for consumers who want to drop in arbitrary components without thought.
 
 **Why is `h` named `h` instead of `height`?** `h` keeps the config clean when pasted into source code. It sets `height` on the wrapper — growable content (charts, flex elements) fills the space, fixed content stays at natural height, overflowing content scrolls. We chose brevity because the config is pasted frequently and must be scannable.
 
@@ -1082,7 +1082,7 @@ These decisions are **deliberate, thoroughly debated, and final**. They reflect 
 
 **Why ban margins?** The grid controls spacing between items via `gap`. Margin on the wrapper would create inconsistent spacing that conflicts with the gap. Negative margins for bleed effects should be handled inside the component. Consumers should use `padding` for inner spacing on the wrapper via `layout.className`.
 
-**Why is the single-child rule not recursive?** Checking every node in the subtree would produce false positives on third-party components, icon wrappers, and standard internal patterns. The root check catches the most common anti-pattern: a component that exists only to wrap a single child in a styled div. Interior structure is the component’s own concern — ogrid does not audit component internals beyond the root.
+**Why is the single-child rule not recursive?** Checking every node in the subtree would produce false positives on third-party components, icon wrappers, and standard internal patterns. The root check catches the most common anti-pattern: a component that exists only to wrap a single child in a styled div. Interior structure is the component’s own concern — flexity does not audit component internals beyond the root.
 
 **Why no `minW` / `maxW` fields?** Width has three modes: fills available space (omit `w`), exact pixels (`w: number`), or content-driven (`w: 'auto'`). Adding min/max constraints creates combinatorial complexity (`w: 640, minW: 300, maxW: 800` — which wins?). Consumers who need min-width behavior should use the `w` field directly. Consumers who need max-width behavior get it for free via `max-width: 100%` (responsive capping). More complex constraints go inside the component.
 
@@ -1110,3 +1110,74 @@ These decisions are **deliberate, thoroughly debated, and final**. They reflect 
 - **`JSXElementConstructor<any>` in `AllowedContent`**: The only `any` in the codebase, isolated in `content.ts`. `JSXElementConstructor<any>` is React’s own pattern for “element created by any component constructor.” Alternatives (`never`, `unknown`) either require contravariance tricks that obscure intent or don’t cover all component types (exotic components like `memo`, `forwardRef`, `lazy`). Explicit intent wins over clever type tricks. The `any` is contained — it never leaks beyond the type parameter.
 - **No `React.memo` on item wrappers**: React elements are new references every render. `memo` on a component that receives JSX children as props is ineffective — the children are always “new” objects, defeating shallow comparison. Removing `memo` is honest: no false impression of optimization, no hidden behavior. Consumers who need perf control can `memo()` their own components.
 - **`reset()` calls `onConfigChange` in controlled mode**: Not a no-op. In controlled mode, the consumer is the source of truth. Silently doing nothing on `reset()` would violate fail-fast — the consumer calls a function and gets no feedback. Instead, `reset()` explicitly tells the consumer to revert by calling `onConfigChange(initialConfig)`. The consumer decides whether to act on it.
+
+## Migration History
+
+### ogrid → flexity rename
+
+The project was originally named "ogrid" (opinionated grid). Renamed to "flexity" to reflect the core technical decision: **flexbox layout, not CSS grid**. The name signals the implementation to consumers — this is a flex-based system with pixel-level control.
+
+### re-resizable → custom pointer resize
+
+**Why re-resizable was dropped:** re-resizable creates an inner wrapper div. The layout `className` (padding, bg, rounded) is applied to the ogrid-item div, but the hover ring and resize handles live on the re-resizable wrapper INSIDE it. This caused:
+- Ring appearing inside padding (wrong visual boundary)
+- className and ring on different elements (misalignment)
+- Extra DOM node per item (violates minimal DOM philosophy)
+
+**The fix:** Custom resize using pointer events directly on the flexity-item div. One div handles everything: className, ring, resize handles, drag handle, css button, content. No wrapper mismatch.
+
+### ResponsiveContainer vs custom useSize
+
+**Why ResponsiveContainer was kept:** We attempted replacing recharts' `ResponsiveContainer` with a custom `useSize` hook (ResizeObserver-based). This caused infinite re-render loops — the chart renders at measured size, which changes the container size, which triggers ResizeObserver, which re-renders the chart. Multiple attempts to break the loop (ref guards, tick counters, clientWidth integers) all failed or hit other issues (React 19 ref-during-render rules, eslint no-direct-set-state-in-useEffect).
+
+`ResponsiveContainer` handles all of this internally. The only downside is console.warn spam during SSR (`width(-1)`), suppressed via a `<script>` tag in `<head>` that filters `console.warn` calls containing "should be greater than 0".
+
+### h: max-height → height
+
+**Why `h` changed from `max-height` to `height`:** The original spec used `max-height` — "widget is shorter if content is shorter." But this prevents growable content (charts, flex elements) from filling available space. A chart inside `max-height: 350px` stays at its natural height (usually 0 without explicit dimensions), not 350px.
+
+With `height`, the container has explicit dimensions. Growable content fills it. Fixed content stays at natural height. Content taller than `h` is clipped (overflow managed by content, not the grid). The consumer's CSS decides the behavior — `h-full` fills, nothing means natural size.
+
+### Resize clamping: the height measurement technique
+
+**The problem:** During resize, the ring (outline) must never shrink below the content's natural size. Multiple approaches failed:
+
+1. **CSS `min-height: min-content`** — doesn't work because inline `style.height` set during drag overrides `min-height` in the cascade
+2. **`contentRef.scrollHeight`** — fails because flex children stretch to fill their container, so scrollHeight = current (possibly enlarged) container height, not the content's natural height. Once you increase height, you can never shrink back.
+3. **Zero-size measurement** (`width:0; height:0` + `scrollWidth/scrollHeight`) — fails because `ResponsiveContainer` reports its current rendered size, not its minimum
+4. **CSS `min-height: fit-content`** — prevents `h` from capping height at all (fit-content is always >= content height)
+5. **JS `Math.max(snap, ...)` clamp** — sets minimum to 8px, way too small, content overflows
+
+**The solution:** At resize start, temporarily set `el.style.height = 'auto'`, read `getBoundingClientRect().height` (the element's natural auto-sized height), restore the original height, use that measurement as the floor during drag.
+
+Why this works:
+- `height: auto` lets the element auto-size to content
+- Non-chart items: natural height = full content height → prevents shrinking below content
+- Chart items: chart container has `flex-1 min-h-0` which collapses to 0 when parent is `auto` → minH ≈ title height only → allows free shrinking
+- Width clamping uses CSS `min-width: min-content` which works correctly because inline `style.width` is overridden by `min-width` in the browser's constraint resolution
+
+**Baseline commit:** `a81760a`
+
+### Card wrappers removed from demo widgets
+
+**Why Cards were removed:** Every demo widget originally wrapped content in `<Card><CardHeader><CardTitle>...<CardContent>...`. This violated the "one source of truth for styling" philosophy — the Card provided border, padding, and rounded corners that couldn't be controlled from `layout.className`. The grid's wrapper div IS the styling surface.
+
+Widgets now render content directly. All visual styling (padding, rounded, border, background) comes from `layout.className` on the grid wrapper, controlled via the dev panel's css button.
+
+### Panel: sidebar → top toolbar + floating panels
+
+**Why the panel was redesigned:** The original Panel was a sidebar that showed a widget list, grid controls, and selected widget controls all in one column. This didn't match the legacy monitor repo's UX which had:
+- A horizontal top toolbar for grid-level controls
+- Per-item floating settings panels triggered by a "css" button on hover
+
+The new design:
+- `<Panel />` renders a horizontal toolbar above the grid (gap, snap, debug toggles, copy, reset)
+- Each grid item shows a "css" button (top-left on hover) that opens a floating settings panel via `createPortal(document.body)`
+- The floating panel has w, h, visual controls (padding, layout, visual, typography), custom className input
+- Click backdrop or press Escape to close
+
+### isDev() always returns true
+
+**Why dev features are always enabled:** The `isDev()` function checked `process.env.NODE_ENV === 'development'`. This doesn't work in pre-built library code — the library is bundled by tsdown, and `process.env.NODE_ENV` is NOT inlined (unlike webpack/Next.js which replace it at build time). In the browser, `process` doesn't exist.
+
+Instead of trying to detect the environment, all dev features (css button, drag handle, panel, validation) are always available. The consumer controls what's active by rendering `<Panel />` or not. The library is opinionated — all features always work.

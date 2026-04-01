@@ -1,5 +1,5 @@
 {
-  "name": "@ogrid/demo",
+  "name": "@flexity/demo",
   "private": true,
   "scripts": {
     "build": "next build --turbo",
@@ -9,7 +9,7 @@
   "dependencies": {
     "@a/ui": "workspace:*",
     "next": "latest",
-    "ogrid": "workspace:*",
+    "flexity": "workspace:*",
     "react": "latest",
     "react-dom": "latest",
     "recharts": "latest"

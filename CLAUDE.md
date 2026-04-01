@@ -42,7 +42,7 @@
 
 Every piece of data flows through exactly one definition:
 
-- **Package types** → defined once in `packages/ogrid/src/types.ts`, consumed everywhere
+- **Package types** → defined once in `packages/flexity/src/types.ts`, consumed everywhere
 - **Shared constants** → define once, import everywhere. If a value appears in 2+ files, extract it.
 - **`BANNED_PREFIXES`** → single array, shared by compile-time type and runtime regex check
 
@@ -162,11 +162,11 @@ Same UI, fewest DOM nodes. Every element must earn its place. If you can delete 
 
 ---
 
-## ogrid-specific
+## flexity-specific
 
 - All design decisions are documented in `IDEA.md` — read it before writing any code
 - The `Intentionally Opinionated (FAQ)` section in IDEA.md contains final decisions — do not reopen them
-- `packages/ogrid/` is the npm package. `apps/demo/` is the demo app.
+- `packages/flexity/` is the npm package. `apps/demo/` is the demo app.
 - `lib/ui/` is read-only — copied from `~/z/noboil/lib/ui`, used by the demo app
 - `BANNED_PREFIXES` is the single source of truth for both compile-time and runtime class validation
 - Every violation pattern must have a test. Every valid pattern must have a test proving it doesn’t throw.

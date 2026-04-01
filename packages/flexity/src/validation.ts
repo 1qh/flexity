@@ -40,40 +40,40 @@ const isDev = () => true,
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (hasTextContent && childElements === 0)
         report(
-          `[ogrid] Item '${key}': root <${tag}> wraps only text with no attributes. Pass the text directly as a string.`,
+          `[flexity] Item '${key}': root <${tag}> wraps only text with no attributes. Pass the text directly as a string.`,
           strict
         )
       else
         report(
-          `[ogrid] Item '${key}': root <${tag}> has no attributes and has children. Use a fragment (<>...</>) instead.`,
+          `[flexity] Item '${key}': root <${tag}> has no attributes and has children. Use a fragment (<>...</>) instead.`,
           strict
         )
       return
     }
     if (childElements === 1)
       report(
-        `[ogrid] Item '${key}': root <${tag}> wraps a single child. Remove the wrapper and pass content directly. Move styling to layout.className.`,
+        `[flexity] Item '${key}': root <${tag}> wraps a single child. Remove the wrapper and pass content directly. Move styling to layout.className.`,
         strict
       )
   },
   validateConfig = <K extends string>(config: GridConfig<K>) => {
     if (config.snap !== undefined && config.snap < 1)
-      throw new Error(`[ogrid] snap must be >= 1. Received: ${String(config.snap)}`)
+      throw new Error(`[flexity] snap must be >= 1. Received: ${String(config.snap)}`)
     if (config.gap !== undefined && config.gap < 0)
-      throw new Error(`[ogrid] gap must be >= 0. Received: ${String(config.gap)}`)
+      throw new Error(`[flexity] gap must be >= 0. Received: ${String(config.gap)}`)
     if (config.layout) {
       const snap = config.snap ?? 1,
         seen = new Set<string>()
       for (const entry of config.layout) {
-        if (entry.key === '') throw new Error('[ogrid] Item key must be a non-empty string. Found empty string key.')
+        if (entry.key === '') throw new Error('[flexity] Item key must be a non-empty string. Found empty string key.')
         if (seen.has(entry.key))
-          throw new Error(`[ogrid] Duplicate key '${entry.key}' in layout array. Each key must appear once.`)
+          throw new Error(`[flexity] Duplicate key '${entry.key}' in layout array. Each key must appear once.`)
         seen.add(entry.key)
         if (typeof entry.w === 'number') {
           const snapped = Math.round(entry.w / snap) * snap
           if (snapped <= 0)
             throw new Error(
-              `[ogrid] Item '${entry.key}': w must be > 0 or 'auto'. Received: ${String(entry.w)} (snaps to ${String(snapped)})`
+              `[flexity] Item '${entry.key}': w must be > 0 or 'auto'. Received: ${String(entry.w)} (snaps to ${String(snapped)})`
             )
         }
       }
@@ -142,19 +142,19 @@ const isDev = () => true,
             ? ' Size classes are banned even with variant prefixes.'
             : ' This class is banned even with variant prefixes.'
           : ''
-      report(`[ogrid] Item '${key}': '${matched}' is not allowed in layout.className. ${reason}${suffix}`, strict)
+      report(`[flexity] Item '${key}': '${matched}' is not allowed in layout.className. ${reason}${suffix}`, strict)
     }
     if (CONTAINER_EXACT.test(className))
       report(
-        `[ogrid] Item '${key}': 'container' (Tailwind max-width utility) is not allowed in layout.className. container-type-* for CSS containment is allowed.`,
+        `[flexity] Item '${key}': 'container' (Tailwind max-width utility) is not allowed in layout.className. container-type-* for CSS containment is allowed.`,
         strict
       )
   },
   validateDom = (key: string, wrapper: HTMLElement, strict: boolean) => {
     const root = wrapper.firstElementChild
     if (!root) return
-    if (root instanceof HTMLElement && root.dataset.ogridHandle !== undefined) {
-      const contentRoot = wrapper.querySelector('[data-ogrid-content]')?.firstElementChild
+    if (root instanceof HTMLElement && root.dataset.flexityHandle !== undefined) {
+      const contentRoot = wrapper.querySelector('[data-flexity-content]')?.firstElementChild
       if (!contentRoot) return
       validateRootElement(key, contentRoot as HTMLElement, strict)
       return
@@ -164,10 +164,10 @@ const isDev = () => true,
   validateNoNestedGrid = (element: HTMLElement) => {
     let current = element.parentElement
     while (current) {
-      if (current.classList.contains('ogrid')) {
-        const closest = element.closest<HTMLElement>('[data-ogrid-key]'),
-          itemKey = closest?.dataset.ogridKey ?? 'unknown'
-        throw new Error(`[ogrid] Nested grids are not supported. Remove the inner <Grid> from item '${itemKey}'.`)
+      if (current.classList.contains('flexity')) {
+        const closest = element.closest<HTMLElement>('[data-flexity-key]'),
+          itemKey = closest?.dataset.flexityKey ?? 'unknown'
+        throw new Error(`[flexity] Nested grids are not supported. Remove the inner <Grid> from item '${itemKey}'.`)
       }
       current = current.parentElement
     }

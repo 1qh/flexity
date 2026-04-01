@@ -2,7 +2,7 @@
 /* oxlint-disable react-perf/jsx-no-new-object-as-prop */
 'use client'
 import dynamic from 'next/dynamic'
-import { createGrid } from 'ogrid'
+import { createGrid } from 'flexity'
 import AccordionWidget from '~/widgets/accordion'
 import Avatars from '~/widgets/avatars'
 import Badges from '~/widgets/badges'

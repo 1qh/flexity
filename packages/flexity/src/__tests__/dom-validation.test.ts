@@ -29,18 +29,18 @@ const noop = () => undefined,
           contains: (cls: string) => (attrs.class ?? '').split(' ').includes(cls)
         },
         closest: (selector: string) => {
-          if (selector === '[data-ogrid-key]' && attrs['data-ogrid-key'] !== undefined) return element
+          if (selector === '[data-flexity-key]' && attrs['data-flexity-key'] !== undefined) return element
           return null
         },
-        dataset: attrs['data-ogrid-handle'] === undefined ? {} : { ogridHandle: '' },
+        dataset: attrs['data-flexity-handle'] === undefined ? {} : { flexityHandle: '' },
         firstElementChild: childElements[0] ?? null,
         getAttribute: (name: string) => attrs[name] ?? null,
         parentElement: null as unknown,
         querySelector: (selector: string) => {
-          if (selector === '[data-ogrid-content]')
+          if (selector === '[data-flexity-content]')
             for (const child of childElements) {
               const childData = (child as { dataset?: Record<string, string> }).dataset
-              if (childData?.ogridContent !== undefined) return child
+              if (childData?.flexityContent !== undefined) return child
             }
           return null
         },
@@ -135,18 +135,18 @@ describe('validateDom', () => {
   })
 })
 describe('validateNoNestedGrid', () => {
-  it('throws when parent has ogrid class', () => {
-    const parent = el('div', { attrs: { class: 'ogrid' } }),
-      child = el('div', { attrs: { 'data-ogrid-key': 'inner' } })
+  it('throws when parent has flexity class', () => {
+    const parent = el('div', { attrs: { class: 'flexity' } }),
+      child = el('div', { attrs: { 'data-flexity-key': 'inner' } })
     ;(child as { parentElement: unknown }).parentElement = parent
     ;(parent as { parentElement: unknown }).parentElement = null
     child.closest = (selector: string) => {
-      if (selector === '[data-ogrid-key]') return child
+      if (selector === '[data-flexity-key]') return child
       return null
     }
     expect(() => validateNoNestedGrid(child)).toThrow('Nested grids')
   })
-  it('does not throw when no ancestor has ogrid class', () => {
+  it('does not throw when no ancestor has flexity class', () => {
     const parent = el('div', { attrs: { class: 'some-class' } }),
       child = el('div')
     ;(child as { parentElement: unknown }).parentElement = parent

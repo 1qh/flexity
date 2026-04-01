@@ -1,7 +1,7 @@
 'use client'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@a/ui/accordion'
 const faqs = [
-    { a: 'A pixel-level resizable dashboard grid for React with zero config and full control.', q: 'What is ogrid?' },
+    { a: 'A pixel-level resizable dashboard grid for React with zero config and full control.', q: 'What is flexity?' },
     {
       a: 'Yes, fully typed with compile-time banned class checking and layout key inference.',
       q: 'Does it support TypeScript?'

@@ -1,5 +1,5 @@
 {
-  "name": "ogrid-monorepo",
+  "name": "flexity-monorepo",
   "private": true,
   "type": "module",
   "workspaces": [

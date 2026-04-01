@@ -1,10 +1,10 @@
 'use client'
 const Prose = () => (
   <>
-    <span className='text-sm font-medium'>About ogrid</span>
+    <span className='text-sm font-medium'>About flexity</span>
     <div className='flex flex-col gap-3 text-sm text-muted-foreground'>
       <p>
-        ogrid is a pixel-level resizable dashboard grid for React. It provides zero-config defaults that work out of the
+        flexity is a pixel-level resizable dashboard grid for React. It provides zero-config defaults that work out of the
         box, with every single thing overridable when you need control.
       </p>
       <p>
