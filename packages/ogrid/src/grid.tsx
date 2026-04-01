@@ -127,7 +127,7 @@ const GridItemInner = ({
     if (!(devMode && userClassName)) return
     validateClassName(itemKey, userClassName, strict)
   }, [itemKey, userClassName, strict, devMode])
-  const sizeTransition = isDragging || isResizing ? '' : 'width 200ms ease, height 200ms ease',
+  const sizeTransition = isDragging ? '' : 'all 200ms ease',
     dndTransition = transition ?? '',
     combinedTransition = [dndTransition, sizeTransition].filter(Boolean).join(', ') || undefined,
     wrapperStyle: CSSProperties = {
