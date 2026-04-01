@@ -324,7 +324,6 @@ describe('copy output format', () => {
     expect(result).not.toContain('"')
   })
 })
-
 describe('nested grids', () => {
   it('throws when Grid is rendered inside another Grid item', () => {
     const outer = createGrid(),
@@ -334,7 +333,6 @@ describe('nested grids', () => {
     expect(() => render(<outer.Grid items={{ a: <Nested /> }} />)).toThrow('Nested grids')
   })
 })
-
 describe('auto-height', () => {
   it('does not set maxHeight when h is omitted', () => {
     const { Grid } = createGrid(),
@@ -343,7 +341,6 @@ describe('auto-height', () => {
     const item = el('[data-ogrid-key="a"]')
     expect(item.style.maxHeight).toBe('')
   })
-
   it('does not set overflowY when h is omitted', () => {
     const { Grid } = createGrid(),
       W = () => <span>content</span>
@@ -352,26 +349,21 @@ describe('auto-height', () => {
     expect(item.style.overflowY).toBe('')
   })
 })
-
 describe('rapid store operations', () => {
   it('handles rapid resize updates without error', () => {
     const store = createStore<'a'>({ layout: [{ key: 'a', w: 100 }], snap: 8 })
     for (let i = 0; i < 100; i += 1) store.updateWidgetLayout('a', { w: 100 + i * 8 })
     expect(store.getState().config.layout![0]!.w).toBe(892)
   })
-
   it('handles rapid reorder without error', () => {
     const store = createStore<'a' | 'b' | 'c'>({
       layout: [{ key: 'a' }, { key: 'b' }, { key: 'c' }]
     })
-    for (let i = 0; i < 50; i += 1) {
-      store.reorderKeys(i % 2 === 0 ? ['c', 'b', 'a'] : ['a', 'b', 'c'])
-    }
+    for (let i = 0; i < 50; i += 1) store.reorderKeys(i % 2 === 0 ? ['c', 'b', 'a'] : ['a', 'b', 'c'])
     const keys = store.getState().config.layout!.map(e => e.key)
     expect(keys).toEqual(['a', 'b', 'c'])
   })
 })
-
 describe('Suspense fallback', () => {
   it('renders grid with Suspense wrapper', () => {
     const { Grid } = createGrid(),

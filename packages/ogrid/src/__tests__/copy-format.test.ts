@@ -72,4 +72,43 @@ describe('formatConfigForCopy', () => {
     expect(result).toContain('layout: [')
     expect(result).not.toContain('"')
   })
+  it('quotes non-identifier keys with hyphens', () => {
+    const result = formatConfigForCopy({ layout: [{ key: 'my-widget' as string, w: 100 }] }, ['my-widget'])
+    expect(result).toContain("key: 'my-widget'")
+  })
+  it('quotes keys starting with numbers', () => {
+    const result = formatConfigForCopy({ layout: [{ key: '123' as string, w: 100 }] }, ['123'])
+    expect(result).toContain("key: '123'")
+  })
+  it('includes hidden items with hidden: true', () => {
+    const result = formatConfigForCopy({ layout: [{ hidden: true, key: 'a' }] }, ['a'])
+    expect(result).toContain('hidden: true')
+    expect(result).toContain("key: 'a'")
+  })
+  it('omits properties at default values', () => {
+    const result = formatConfigForCopy({ layout: [{ key: 'a' }] }, ['a'])
+    expect(result).not.toContain('w:')
+    expect(result).not.toContain('h:')
+    expect(result).not.toContain('className:')
+    expect(result).not.toContain('hidden:')
+  })
+  it('returns no layout entries for empty itemKeys', () => {
+    const result = formatConfigForCopy({ layout: [{ key: 'a', w: 100 }] }, [])
+    expect(result).not.toContain('layout')
+    expect(result).toBe('{\n}')
+  })
+  it('returns no layout section when all entries are filtered out', () => {
+    const result = formatConfigForCopy(
+      {
+        gap: 8,
+        layout: [
+          { key: 'a', w: 100 },
+          { key: 'b', w: 200 }
+        ]
+      },
+      ['c']
+    )
+    expect(result).not.toContain('layout')
+    expect(result).toContain('gap: 8')
+  })
 })

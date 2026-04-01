@@ -1,4 +1,5 @@
-import { afterEach, describe, expect, it } from 'bun:test'
+/** biome-ignore-all lint/style/noProcessEnv: test env setup */
+import { afterEach, describe, expect, it, spyOn } from 'bun:test'
 import { clearConfig, loadConfig, saveConfig } from '../storage'
 const mockStorage = (): Storage => {
   const store = new Map<string, string>()
@@ -68,5 +69,21 @@ describe('storage', () => {
     storage.setItem('ogrid-bad', 'not valid json{{{')
     Object.defineProperty(globalThis, 'localStorage', { value: storage, writable: true })
     expect(loadConfig('bad')).toBeNull()
+  })
+  it('logs warning to console in dev mode when quota exceeded', () => {
+    original = globalThis.localStorage
+    const prevEnv = process.env.NODE_ENV
+    process.env.NODE_ENV = 'development'
+    const storage = mockStorage()
+    storage.setItem = () => {
+      throw new DOMException('QuotaExceededError')
+    }
+    Object.defineProperty(globalThis, 'localStorage', { value: storage, writable: true })
+    const spy = spyOn(console, 'warn').mockReturnValue(undefined)
+    saveConfig('quota-warn', { gap: 16 })
+    expect(spy).toHaveBeenCalled()
+    expect(String(spy.mock.calls[0]?.[0])).toContain('localStorage quota exceeded')
+    spy.mockRestore()
+    process.env.NODE_ENV = prevEnv
   })
 })
