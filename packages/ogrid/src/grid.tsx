@@ -195,10 +195,7 @@ const GridItemInner = ({
     wrapperStyle.minWidth = 0
     wrapperStyle.overflow = 'visible'
   }
-  if (typeof h === 'number') {
-    wrapperStyle.height = h
-    wrapperStyle.overflow = 'hidden'
-  }
+  if (typeof h === 'number') wrapperStyle.height = h
   if (isHidden && !devMode) wrapperStyle.display = 'none'
   const mergedClassName = cn(
     'ogrid-item group/item relative hover:outline hover:outline-1 hover:outline-border',
