@@ -17,7 +17,7 @@ const data = [
     return (
       <div className='flex h-full flex-col gap-2'>
         <span className='text-sm font-medium'>Radar Chart</span>
-        <div className='min-h-0 min-w-0 flex-1 overflow-hidden' ref={ref}>
+        <div className='min-h-32 min-w-0 flex-1 overflow-hidden' ref={ref}>
           {width > 0 && height > 0 ? (
             <RadarChart data={data} height={height} width={width}>
               <PolarGrid />
