@@ -1,7 +1,5 @@
 'use client'
-import type { ChartConfig } from '@a/ui/chart'
-import { ChartContainer } from '@a/ui/chart'
-import { Area, AreaChart } from 'recharts'
+import { Area, AreaChart, ResponsiveContainer } from 'recharts'
 const kpis = [
     {
       change: '+20.1%',
@@ -25,11 +23,8 @@ const kpis = [
       value: '573'
     }
   ],
-  chartConfig = {
-    v: { color: 'var(--chart-1)', label: 'Value' }
-  } satisfies ChartConfig,
   KpiCard = () => (
-    <>
+    <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Key Metrics</span>
       <div className='flex flex-col gap-4'>
         {kpis.map(k => (
@@ -39,23 +34,25 @@ const kpis = [
               <span className='text-2xl font-bold'>{k.value}</span>
             </div>
             <div className='flex items-center gap-2'>
-              <ChartContainer className='h-8 w-16' config={chartConfig}>
-                <AreaChart data={k.data}>
-                  <Area
-                    dataKey='v'
-                    fill='var(--color-v)'
-                    fillOpacity={0.2}
-                    stroke='var(--color-v)'
-                    strokeWidth={1.5}
-                    type='monotone'
-                  />
-                </AreaChart>
-              </ChartContainer>
+              <div className='h-8 w-16'>
+                <ResponsiveContainer height='100%' width='100%'>
+                  <AreaChart data={k.data}>
+                    <Area
+                      dataKey='v'
+                      fill='var(--chart-1)'
+                      fillOpacity={0.2}
+                      stroke='var(--chart-1)'
+                      strokeWidth={1.5}
+                      type='monotone'
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
               <span className='text-sm text-primary'>{k.change}</span>
             </div>
           </div>
         ))}
       </div>
-    </>
+    </div>
   )
 export default KpiCard

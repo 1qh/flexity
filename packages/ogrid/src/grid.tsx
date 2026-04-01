@@ -48,10 +48,6 @@ const GridContext = createContext(false),
       </svg>
     </div>
   )
-interface ResizeUpdates {
-  h?: number
-  w?: number
-}
 interface GridItemInnerProps {
   content: AllowedContent
   devMode: boolean
@@ -66,6 +62,10 @@ interface GridItemInnerProps {
   showDebugBorders: boolean
   snap: number
   strict: boolean
+}
+interface ResizeUpdates {
+  h?: number
+  w?: number
 }
 const GridItemInner = ({
   itemKey,
@@ -139,7 +139,6 @@ const GridItemInner = ({
     wrapperStyle.width = Math.round(w / snap) * snap
     wrapperStyle.maxWidth = '100%'
     wrapperStyle.flexShrink = 0
-    wrapperStyle.overflowX = 'auto'
   } else if (w === 'auto') {
     wrapperStyle.width = 'fit-content'
     wrapperStyle.maxWidth = '100%'
@@ -149,10 +148,7 @@ const GridItemInner = ({
     wrapperStyle.minWidth = 0
     wrapperStyle.overflow = 'visible'
   }
-  if (typeof h === 'number') {
-    wrapperStyle.height = h
-    wrapperStyle.overflowY = 'auto'
-  }
+  if (typeof h === 'number') wrapperStyle.height = h
   if (isHidden && !devMode) wrapperStyle.display = 'none'
   const handleResizeStart = () => {
       if (outerRef.current) {
@@ -202,7 +198,7 @@ const GridItemInner = ({
       userClassName
     ),
     inner = (
-      <div className='contents' data-ogrid-content='' ref={contentRef}>
+      <div className='h-full w-full' data-ogrid-content='' ref={contentRef}>
         {content as React.ReactNode}
       </div>
     )
@@ -276,8 +272,9 @@ const GridItemInner = ({
           }
           onResizeStart={handleResizeStart}
           onResizeStop={handleResizeStop}
-          size={{ height: 'auto', width: '100%' }}
-          snap={{ x: Array.from({ length: Math.ceil(10_000 / snap) }, (_, i) => (i + 1) * snap) }}>
+          size={{ height: '100%', width: '100%' }}
+          snap={{ x: Array.from({ length: Math.ceil(10_000 / snap) }, (_, i) => (i + 1) * snap) }}
+          style={{ display: 'block', height: '100%', width: '100%' }}>
           {inner}
         </Resizable>
       )}

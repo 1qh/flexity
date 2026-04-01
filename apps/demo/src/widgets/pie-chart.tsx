@@ -1,7 +1,6 @@
 'use client'
-import type { ChartConfig } from '@a/ui/chart'
-import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@a/ui/chart'
-import { Pie, PieChart } from 'recharts'
+import { ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@a/ui/chart'
+import { Pie, PieChart, ResponsiveContainer } from 'recharts'
 const data = [
     { fill: 'var(--chart-1)', name: 'Chrome', value: 275 },
     { fill: 'var(--chart-2)', name: 'Safari', value: 200 },
@@ -9,25 +8,20 @@ const data = [
     { fill: 'var(--chart-4)', name: 'Edge', value: 173 },
     { fill: 'var(--chart-5)', name: 'Other', value: 90 }
   ],
-  chartConfig = {
-    chrome: { color: 'var(--chart-1)', label: 'Chrome' },
-    edge: { color: 'var(--chart-4)', label: 'Edge' },
-    firefox: { color: 'var(--chart-3)', label: 'Firefox' },
-    other: { color: 'var(--chart-5)', label: 'Other' },
-    safari: { color: 'var(--chart-2)', label: 'Safari' }
-  } satisfies ChartConfig,
   tooltipContent = <ChartTooltipContent />,
   legendContent = <ChartLegendContent />,
   PieChartWidget = () => (
-    <>
+    <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Pie Chart</span>
-      <ChartContainer config={chartConfig}>
-        <PieChart>
-          <ChartTooltip content={tooltipContent} />
-          <ChartLegend content={legendContent} />
-          <Pie cx='50%' cy='50%' data={data} dataKey='value' innerRadius={60} label nameKey='name' outerRadius={80} />
-        </PieChart>
-      </ChartContainer>
-    </>
+      <div className='min-h-0 flex-1'>
+        <ResponsiveContainer height='100%' width='100%'>
+          <PieChart>
+            <ChartTooltip content={tooltipContent} />
+            <ChartLegend content={legendContent} />
+            <Pie data={data} dataKey='value' nameKey='name' />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   )
 export default PieChartWidget

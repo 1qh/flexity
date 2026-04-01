@@ -1,17 +1,12 @@
 'use client'
-import type { ChartConfig } from '@a/ui/chart'
-import { ChartContainer } from '@a/ui/chart'
-import { PolarAngleAxis, RadialBar, RadialBarChart } from 'recharts'
+import { PolarAngleAxis, RadialBar, RadialBarChart, ResponsiveContainer } from 'recharts'
 const POLAR_DOMAIN = [0, 100] as const,
   data = [{ fill: 'var(--chart-1)', value: 72 }],
-  chartConfig = {
-    value: { color: 'var(--chart-1)', label: 'Progress' }
-  } satisfies ChartConfig,
   RadialChartWidget = () => (
-    <>
+    <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Radial Progress</span>
-      <div className='flex items-center justify-center'>
-        <ChartContainer className='aspect-square' config={chartConfig}>
+      <div className='flex min-h-0 flex-1 items-center justify-center'>
+        <ResponsiveContainer height='100%' width='100%'>
           <RadialBarChart data={data} endAngle={90 + 360 * 0.72} innerRadius={80} outerRadius={110} startAngle={90}>
             <PolarAngleAxis angleAxisId={0} domain={POLAR_DOMAIN} tick={false} type='number' />
             <RadialBar cornerRadius={10} dataKey='value' />
@@ -24,8 +19,8 @@ const POLAR_DOMAIN = [0, 100] as const,
               72%
             </text>
           </RadialBarChart>
-        </ChartContainer>
+        </ResponsiveContainer>
       </div>
-    </>
+    </div>
   )
 export default RadialChartWidget

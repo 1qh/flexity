@@ -1,35 +1,26 @@
 'use client'
-import type { ChartConfig } from '@a/ui/chart'
-import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@a/ui/chart'
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 const data = [
-    { desktop: 186, mobile: 80, month: 'Jan' },
-    { desktop: 305, mobile: 200, month: 'Feb' },
-    { desktop: 237, mobile: 120, month: 'Mar' },
-    { desktop: 73, mobile: 190, month: 'Apr' },
-    { desktop: 209, mobile: 130, month: 'May' },
-    { desktop: 214, mobile: 140, month: 'Jun' }
+    { desktop: 186, month: 'Jan' },
+    { desktop: 305, month: 'Feb' },
+    { desktop: 237, month: 'Mar' },
+    { desktop: 73, month: 'Apr' },
+    { desktop: 209, month: 'May' },
+    { desktop: 214, month: 'Jun' }
   ],
-  chartConfig = {
-    desktop: { color: 'var(--chart-1)', label: 'Desktop' },
-    mobile: { color: 'var(--chart-2)', label: 'Mobile' }
-  } satisfies ChartConfig,
-  tooltipContent = <ChartTooltipContent />,
-  legendContent = <ChartLegendContent />,
   BarChartWidget = () => (
-    <>
+    <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Bar Chart</span>
-      <ChartContainer config={chartConfig}>
-        <BarChart data={data}>
-          <CartesianGrid vertical={false} />
-          <XAxis axisLine={false} dataKey='month' tickLine={false} />
-          <YAxis axisLine={false} tickLine={false} />
-          <ChartTooltip content={tooltipContent} />
-          <ChartLegend content={legendContent} />
-          <Bar dataKey='desktop' fill='var(--color-desktop)' radius={4} />
-          <Bar dataKey='mobile' fill='var(--color-mobile)' radius={4} />
-        </BarChart>
-      </ChartContainer>
-    </>
+      <div className='min-h-0 flex-1'>
+        <ResponsiveContainer height='100%' width='100%'>
+          <BarChart data={data}>
+            <CartesianGrid vertical={false} />
+            <XAxis dataKey='month' />
+            <YAxis />
+            <Bar dataKey='desktop' fill='var(--chart-1)' />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   )
 export default BarChartWidget

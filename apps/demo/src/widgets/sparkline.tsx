@@ -1,7 +1,5 @@
 'use client'
-import type { ChartConfig } from '@a/ui/chart'
-import { ChartContainer } from '@a/ui/chart'
-import { Area, AreaChart } from 'recharts'
+import { Area, AreaChart, ResponsiveContainer } from 'recharts'
 const data = [
     { v: 40 },
     { v: 30 },
@@ -21,28 +19,27 @@ const data = [
     { v: 92 },
     { v: 98 }
   ],
-  chartConfig = {
-    v: { color: 'var(--chart-1)', label: 'Value' }
-  } satisfies ChartConfig,
   Sparkline = () => (
-    <>
+    <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Sparkline</span>
-      <ChartContainer className='h-16' config={chartConfig}>
-        <AreaChart data={data}>
-          <Area
-            dataKey='v'
-            fill='var(--color-v)'
-            fillOpacity={0.2}
-            stroke='var(--color-v)'
-            strokeWidth={2}
-            type='monotone'
-          />
-        </AreaChart>
-      </ChartContainer>
+      <div className='h-16'>
+        <ResponsiveContainer height='100%' width='100%'>
+          <AreaChart data={data}>
+            <Area
+              dataKey='v'
+              fill='var(--chart-1)'
+              fillOpacity={0.2}
+              stroke='var(--chart-1)'
+              strokeWidth={2}
+              type='monotone'
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
       <div className='flex items-center justify-between pt-2 text-sm'>
         <span className='text-muted-foreground'>Last 17 days</span>
         <span className='font-medium'>+145%</span>
       </div>
-    </>
+    </div>
   )
 export default Sparkline
