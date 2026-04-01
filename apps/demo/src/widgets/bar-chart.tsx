@@ -12,14 +12,14 @@ const data = [
     <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Bar Chart</span>
       <div className='min-h-0 flex-1'>
-        <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
-          <BarChart data={data}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey='month' />
-            <YAxis />
-            <Bar dataKey='desktop' fill='var(--chart-1)' />
-          </BarChart>
-        </ResponsiveContainer>
+          <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
+            <BarChart data={data}>
+              <CartesianGrid vertical={false} />
+              <XAxis dataKey='month' />
+              <YAxis />
+              <Bar dataKey='desktop' fill='var(--chart-1)' />
+            </BarChart>
+          </ResponsiveContainer>
       </div>
     </div>
   )

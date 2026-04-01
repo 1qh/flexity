@@ -35,18 +35,18 @@ const kpis = [
             </div>
             <div className='flex items-center gap-2'>
               <div className='h-8 w-16'>
-                <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
-                  <AreaChart data={k.data}>
-                    <Area
-                      dataKey='v'
-                      fill='var(--chart-1)'
-                      fillOpacity={0.2}
-                      stroke='var(--chart-1)'
-                      strokeWidth={1.5}
-                      type='monotone'
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+                  <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
+                    <AreaChart data={k.data}>
+                      <Area
+                        dataKey='v'
+                        fill='var(--chart-1)'
+                        fillOpacity={0.2}
+                        stroke='var(--chart-1)'
+                        strokeWidth={1.5}
+                        type='monotone'
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
               </div>
               <span className='text-sm text-primary'>{k.change}</span>
             </div>

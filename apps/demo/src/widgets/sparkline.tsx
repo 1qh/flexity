@@ -23,18 +23,18 @@ const data = [
     <div className='flex h-full flex-col gap-2'>
       <span className='text-sm font-medium'>Sparkline</span>
       <div className='h-16'>
-        <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
-          <AreaChart data={data}>
-            <Area
-              dataKey='v'
-              fill='var(--chart-1)'
-              fillOpacity={0.2}
-              stroke='var(--chart-1)'
-              strokeWidth={2}
-              type='monotone'
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+          <ResponsiveContainer height='100%' minHeight={0} minWidth={0} width='100%'>
+            <AreaChart data={data}>
+              <Area
+                dataKey='v'
+                fill='var(--chart-1)'
+                fillOpacity={0.2}
+                stroke='var(--chart-1)'
+                strokeWidth={2}
+                type='monotone'
+              />
+            </AreaChart>
+          </ResponsiveContainer>
       </div>
       <div className='flex items-center justify-between pt-2 text-sm'>
         <span className='text-muted-foreground'>Last 17 days</span>
