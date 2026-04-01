@@ -1,12 +1,11 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: demo page */
 /* oxlint-disable react-perf/jsx-no-new-object-as-prop */
 'use client'
+import dynamic from 'next/dynamic'
 import { createGrid } from 'ogrid'
 import AccordionWidget from '~/widgets/accordion'
-import AreaChartWidget from '~/widgets/area-chart'
 import Avatars from '~/widgets/avatars'
 import Badges from '~/widgets/badges'
-import BarChartWidget from '~/widgets/bar-chart'
 import CalendarWidget from '~/widgets/calendar'
 import CheckboxWidget from '~/widgets/checkbox'
 import CommandWidget from '~/widgets/command'
@@ -14,23 +13,25 @@ import DataTableWidget from '~/widgets/data-table'
 import DatePicker from '~/widgets/date-picker'
 import EmptyState from '~/widgets/empty-state'
 import FormWidget from '~/widgets/form'
-import KpiCard from '~/widgets/kpi-card'
-import LineChartWidget from '~/widgets/line-chart'
-import PieChartWidget from '~/widgets/pie-chart'
 import ProgressBars from '~/widgets/progress-bars'
 import Prose from '~/widgets/prose'
-import RadarChartWidget from '~/widgets/radar-chart'
-import RadialChartWidget from '~/widgets/radial-chart'
 import ScrollContent from '~/widgets/scroll-content'
 import SeparatorWidget from '~/widgets/separator'
 import SkeletonWidget from '~/widgets/skeleton'
 import SliderWidget from '~/widgets/slider'
-import Sparkline from '~/widgets/sparkline'
 import StatsGrid from '~/widgets/stats-grid'
 import TabsPanel from '~/widgets/tabs-panel'
 import Timeline from '~/widgets/timeline'
 import ToggleGroupWidget from '~/widgets/toggle-group'
-const { Grid, Panel } = createGrid(),
+const AreaChartWidget = dynamic(() => import('~/widgets/area-chart'), { ssr: false }),
+  BarChartWidget = dynamic(() => import('~/widgets/bar-chart'), { ssr: false }),
+  KpiCard = dynamic(() => import('~/widgets/kpi-card'), { ssr: false }),
+  LineChartWidget = dynamic(() => import('~/widgets/line-chart'), { ssr: false }),
+  PieChartWidget = dynamic(() => import('~/widgets/pie-chart'), { ssr: false }),
+  RadarChartWidget = dynamic(() => import('~/widgets/radar-chart'), { ssr: false }),
+  RadialChartWidget = dynamic(() => import('~/widgets/radial-chart'), { ssr: false }),
+  Sparkline = dynamic(() => import('~/widgets/sparkline'), { ssr: false }),
+  { Grid, Panel } = createGrid(),
   demoConfig = {
     gap: 16,
     layout: [
