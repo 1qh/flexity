@@ -59,9 +59,7 @@ interface GridItemInnerProps {
   layout: undefined | WidgetLayoutEntry
   onCssClick: (key: string, rect: DOMRect) => void
   onResizeStop: (key: string, updates: ResizeUpdates) => void
-  onSelect: (key: string) => void
   resizeHandle?: ReactElement
-  selected: boolean
   showDebugBg: boolean
   showDebugBorders: boolean
   snap: number
@@ -77,12 +75,10 @@ const GridItemInner = ({
   layout,
   snap,
   strict,
-  onSelect,
   onCssClick,
   onResizeStop,
   resizeHandle,
   dragHandle,
-  selected,
   isDevPanelOpen,
   showDebugBorders,
   showDebugBg,
@@ -363,9 +359,6 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
         for (const key of iKeys) if (!result.includes(key)) result.push(key)
         return result
       }, [layoutKeyStr, itemKeyStr]),
-      handleSelect = useCallback((key: string) => {
-        store.setState({ selectedWidget: key as K })
-      }, []),
       handleCssClick = useCallback(
         (key: string, rect: DOMRect) => {
           store.setState({
@@ -432,9 +425,7 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
                     layout={entry}
                     onCssClick={handleCssClick}
                     onResizeStop={handleResizeStop}
-                    onSelect={handleSelect}
                     resizeHandle={resizeHandle}
-                    selected={state.selectedWidget === key}
                     showDebugBg={state.showDebugBg}
                     showDebugBorders={state.showDebugBorders}
                     snap={snap}

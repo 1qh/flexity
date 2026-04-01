@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@source 'ogrid';
+@source '../../../../packages/ogrid/src/**/*.tsx';
 @import '@a/ui/globals.css';
 :root {
   --chart-1: oklch(0.646 0.222 41.116);
