@@ -22,7 +22,7 @@ interface StoreState<K extends string = string> {
   openDevPanel: null | { key: K; x: number; y: number }
   selectedWidget: K | null
   showDebugBg: boolean
-  showDebugBorders: boolean
+  showDebugRings: boolean
 }
 const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> => {
   const listeners = new Set<Listener>()
@@ -34,7 +34,7 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
       openDevPanel: null,
       selectedWidget: null,
       showDebugBg: false,
-      showDebugBorders: false
+      showDebugRings: false
     },
     onUserChangeCb: ChangeCallback<K> | null = null,
     onResetCb: (() => void) | null = null
@@ -85,7 +85,7 @@ const createStore = <K extends string>(initialConfig: GridConfig<K>): Store<K> =
         openDevPanel: null,
         selectedWidget: null,
         showDebugBg: false,
-        showDebugBorders: false
+        showDebugRings: false
       })
       if (onResetCb) onResetCb()
     },

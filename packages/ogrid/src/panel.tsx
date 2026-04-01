@@ -334,7 +334,7 @@ const createPanelComponent = <K extends string>({ store }: CreatePanelComponentP
       state = useSyncExternalStore(store.subscribe, store.getState, store.getState),
       [copied, setCopied] = useState(false)
     if (!devMode) return null
-    const { config, showDebugBorders, showDebugBg, containerWidth, itemKeys } = state,
+    const { config, showDebugRings, showDebugBg, containerWidth, itemKeys } = state,
       gap = config.gap ?? 0,
       snap = config.snap ?? 1,
       handleWidgetChange = (key: K, updates: Partial<WidgetLayoutEntry<K>>) => {
@@ -389,8 +389,8 @@ const createPanelComponent = <K extends string>({ store }: CreatePanelComponentP
         )}
         <label className='flex items-center gap-1 text-[9px]'>
           <input
-            checked={showDebugBorders}
-            onChange={e => store.setState({ showDebugBorders: e.target.checked })}
+            checked={showDebugRings}
+            onChange={e => store.setState({ showDebugRings: e.target.checked })}
             type='checkbox'
           />
           <span className='text-muted-foreground'>rings</span>

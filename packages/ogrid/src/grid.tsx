@@ -2,9 +2,11 @@
 /** biome-ignore-all lint/a11y/noNoninteractiveElementInteractions: dev-only click handler on layout div */
 /** biome-ignore-all lint/a11y/noSvgWithoutTitle: decorative grip icon */
 /** biome-ignore-all lint/a11y/useSemanticElements: resize separator */
+/** biome-ignore-all lint/a11y/useAriaPropsForRole: resize handles */
+/** biome-ignore-all lint/nursery/useGlobalThis: window event listeners */
 /** biome-ignore-all lint/nursery/noInlineStyles: dynamic layout styles required */
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: intentional dep control */
-/* eslint-disable complexity, react-hooks/exhaustive-deps, @eslint-react/no-unnecessary-use-callback, @typescript-eslint/max-params */
+/* eslint-disable complexity, react-hooks/exhaustive-deps, @eslint-react/no-unnecessary-use-callback */
 /* oxlint-disable react-perf/jsx-no-new-object-as-prop, react-perf/jsx-no-new-array-as-prop, jsx-a11y/no-static-element-interactions */
 'use client'
 import type { Announcements, DragEndEvent } from '@dnd-kit/core'
@@ -36,13 +38,9 @@ interface GridItemInnerProps {
   onCssClick: (key: string, rect: DOMRect) => void
   onResizeStop: (key: string, updates: ResizeUpdates) => void
   showDebugBg: boolean
-  showDebugBorders: boolean
+  showDebugRings: boolean
   snap: number
   strict: boolean
-}
-interface ResizeUpdates {
-  h?: number
-  w?: number
 }
 interface ResizeState {
   direction: 'e' | 's' | 'se'
@@ -50,6 +48,10 @@ interface ResizeState {
   startW: number
   startX: number
   startY: number
+}
+interface ResizeUpdates {
+  h?: number
+  w?: number
 }
 const GridItemInner = ({
   itemKey,
@@ -61,12 +63,13 @@ const GridItemInner = ({
   onResizeStop,
   dragHandle,
   isDevPanelOpen,
+  showDebugRings,
   showDebugBg,
   devMode
 }: GridItemInnerProps) => {
   const contentRef = useRef<HTMLDivElement>(null),
     outerRef = useRef<HTMLDivElement>(null),
-    [resizeState, setResizeState] = useState<ResizeState | null>(null),
+    [resizeState, setResizeState] = useState<null | ResizeState>(null),
     { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
       id: itemKey
     }),
@@ -106,29 +109,29 @@ const GridItemInner = ({
     validateClassName(itemKey, userClassName, strict)
   }, [itemKey, userClassName, strict, devMode])
   useEffect(() => {
-    if (!resizeState || !outerRef.current) return
-    const el = outerRef.current
-    const onMove = (e: PointerEvent) => {
-      const dx = e.clientX - resizeState.startX
-      const dy = e.clientY - resizeState.startY
-      if (resizeState.direction === 'e' || resizeState.direction === 'se')
-        el.style.width = `${resizeState.startW + dx}px`
-      if (resizeState.direction === 's' || resizeState.direction === 'se')
-        el.style.height = `${resizeState.startH + dy}px`
-    }
-    const onUp = (e: PointerEvent) => {
-      setResizeState(null)
-      const dx = e.clientX - resizeState.startX
-      const dy = e.clientY - resizeState.startY
-      const updates: ResizeUpdates = {}
-      if (resizeState.direction === 'e' || resizeState.direction === 'se') {
-        const rawW = resizeState.startW + dx
-        updates.w = Math.max(snap, Math.round(rawW / snap) * snap)
+    if (!(resizeState && outerRef.current)) return
+    const el = outerRef.current,
+      onMove = (e: PointerEvent) => {
+        const dx = e.clientX - resizeState.startX,
+          dy = e.clientY - resizeState.startY
+        if (resizeState.direction === 'e' || resizeState.direction === 'se')
+          el.style.width = `${resizeState.startW + dx}px`
+        if (resizeState.direction === 's' || resizeState.direction === 'se')
+          el.style.height = `${resizeState.startH + dy}px`
+      },
+      onUp = (e: PointerEvent) => {
+        setResizeState(null)
+        const dx = e.clientX - resizeState.startX,
+          dy = e.clientY - resizeState.startY,
+          updates: ResizeUpdates = {}
+        if (resizeState.direction === 'e' || resizeState.direction === 'se') {
+          const rawW = resizeState.startW + dx
+          updates.w = Math.max(snap, Math.round(rawW / snap) * snap)
+        }
+        if (resizeState.direction === 's' || resizeState.direction === 'se')
+          updates.h = Math.max(snap, resizeState.startH + dy)
+        if (updates.w !== undefined || updates.h !== undefined) onResizeStop(itemKey, updates)
       }
-      if (resizeState.direction === 's' || resizeState.direction === 'se')
-        updates.h = Math.max(snap, resizeState.startH + dy)
-      if (updates.w !== undefined || updates.h !== undefined) onResizeStop(itemKey, updates)
-    }
     window.addEventListener('pointermove', onMove)
     window.addEventListener('pointerup', onUp)
     return () => {
@@ -142,11 +145,11 @@ const GridItemInner = ({
       const rect = outerRef.current?.getBoundingClientRect()
       if (!rect) return
       setResizeState({
-        startX: e.clientX,
-        startY: e.clientY,
-        startW: rect.width,
+        direction,
         startH: rect.height,
-        direction
+        startW: rect.width,
+        startX: e.clientX,
+        startY: e.clientY
       })
       ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
     },
@@ -198,24 +201,17 @@ const GridItemInner = ({
   if (isHidden && !devMode) wrapperStyle.display = 'none'
   const mergedClassName = cn(
     'ogrid-item group/item relative hover:outline hover:outline-1 hover:outline-border',
-    showDebugBorders && 'outline outline-2 outline-foreground',
+    showDebugRings && 'outline outline-2 outline-foreground',
     showDebugBg && 'bg-muted/30',
     isHidden && devMode && 'border-dashed',
     userClassName
   )
   return (
-    <div
-      className={mergedClassName}
-      data-ogrid-key={itemKey}
-      ref={combinedRef}
-      style={wrapperStyle}>
+    <div className={mergedClassName} data-ogrid-key={itemKey} ref={combinedRef} style={wrapperStyle}>
       <div className='absolute right-1 top-1 z-10 flex items-center gap-0.5 opacity-0 transition-opacity group-hover/item:opacity-100'>
         {devMode ? (
           <button
-            className={cn(
-              'rounded px-1 text-[9px] hover:bg-muted',
-              isDevPanelOpen && 'text-primary'
-            )}
+            className={cn('rounded px-1 text-[9px] hover:bg-muted', isDevPanelOpen && 'text-primary')}
             onClick={e => {
               e.stopPropagation()
               onCssClick(itemKey, e.currentTarget.getBoundingClientRect())
@@ -227,7 +223,7 @@ const GridItemInner = ({
         {dragHandle ? null : (
           <div
             className='flex cursor-grab items-center justify-center rounded hover:bg-muted'
-            style={{ width: 20, height: 20 }}
+            style={{ height: 20, width: 20 }}
             {...(listeners as Record<string, unknown>)}
             {...(attributes as Record<string, unknown>)}>
             <svg className='text-muted-foreground' fill='currentColor' height='10' viewBox='0 0 10 10' width='10'>
@@ -420,7 +416,7 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
                     onCssClick={handleCssClick}
                     onResizeStop={handleResizeStop}
                     showDebugBg={state.showDebugBg}
-                    showDebugBorders={state.showDebugBorders}
+                    showDebugRings={state.showDebugRings}
                     snap={snap}
                     strict={strict}
                   />

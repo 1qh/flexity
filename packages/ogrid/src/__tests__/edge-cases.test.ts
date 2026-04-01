@@ -60,12 +60,12 @@ describe('edge cases', () => {
   })
   it('reset clears debug flags', () => {
     const store = createStore({})
-    store.setState({ showDebugBg: true, showDebugBorders: true })
-    expect(store.getState().showDebugBorders).toBe(true)
+    store.setState({ showDebugBg: true, showDebugRings: true })
+    expect(store.getState().showDebugRings).toBe(true)
     store.reset()
     expect(store.getState().selectedWidget).toBeNull()
     expect(store.getState().showDebugBg).toBe(false)
-    expect(store.getState().showDebugBorders).toBe(false)
+    expect(store.getState().showDebugRings).toBe(false)
   })
   it('setConfig replaces entire config including layout', () => {
     const store = createStore<'a' | 'b'>({
@@ -113,9 +113,9 @@ describe('edge cases', () => {
     const store = createStore({})
     expect(store.getState().containerWidth).toBe(0)
   })
-  it('showDebugBorders and showDebugBg start false', () => {
+  it('showDebugRings and showDebugBg start false', () => {
     const store = createStore({})
-    expect(store.getState().showDebugBorders).toBe(false)
+    expect(store.getState().showDebugRings).toBe(false)
     expect(store.getState().showDebugBg).toBe(false)
   })
   it('updateWidgetLayout creates layout array if none exists', () => {
