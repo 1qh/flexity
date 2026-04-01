@@ -111,13 +111,14 @@ const GridItemInner = ({
   useEffect(() => {
     if (!(resizeState && outerRef.current)) return
     const el = outerRef.current,
+      minH = contentRef.current ? contentRef.current.scrollHeight : snap,
       onMove = (e: PointerEvent) => {
         const dx = e.clientX - resizeState.startX,
           dy = e.clientY - resizeState.startY
         if (resizeState.direction === 'e' || resizeState.direction === 'se')
           el.style.width = `${resizeState.startW + dx}px`
         if (resizeState.direction === 's' || resizeState.direction === 'se')
-          el.style.height = `${resizeState.startH + dy}px`
+          el.style.height = `${Math.max(minH, resizeState.startH + dy)}px`
       },
       onUp = () => {
         setResizeState(null)
@@ -126,7 +127,7 @@ const GridItemInner = ({
         if (resizeState.direction === 'e' || resizeState.direction === 'se')
           updates.w = Math.max(snap, Math.round(rect.width / snap) * snap)
         if (resizeState.direction === 's' || resizeState.direction === 'se')
-          updates.h = Math.max(snap, Math.round(rect.height))
+          updates.h = Math.max(minH, Math.round(rect.height))
         if (updates.w !== undefined || updates.h !== undefined) onResizeStop(itemKey, updates)
       }
     window.addEventListener('pointermove', onMove)
@@ -197,7 +198,6 @@ const GridItemInner = ({
   }
   if (typeof h === 'number') {
     wrapperStyle.height = h
-    wrapperStyle.minHeight = 'min-content'
   }
   if (isHidden && !devMode) wrapperStyle.display = 'none'
   const mergedClassName = cn(
