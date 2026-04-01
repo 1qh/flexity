@@ -1,6 +1,5 @@
 'use client'
 import type { ChartConfig } from '@a/ui/chart'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@a/ui/chart'
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 const data = [
@@ -18,37 +17,33 @@ const data = [
   tooltipContent = <ChartTooltipContent />,
   legendContent = <ChartLegendContent />,
   AreaChartWidget = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Area Chart</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <AreaChart data={data}>
-            <CartesianGrid vertical={false} />
-            <XAxis axisLine={false} dataKey='month' tickLine={false} />
-            <YAxis axisLine={false} tickLine={false} />
-            <ChartTooltip content={tooltipContent} />
-            <ChartLegend content={legendContent} />
-            <Area
-              dataKey='users'
-              fill='var(--color-users)'
-              fillOpacity={0.3}
-              stroke='var(--color-users)'
-              strokeWidth={2}
-              type='monotone'
-            />
-            <Area
-              dataKey='sessions'
-              fill='var(--color-sessions)'
-              fillOpacity={0.3}
-              stroke='var(--color-sessions)'
-              strokeWidth={2}
-              type='monotone'
-            />
-          </AreaChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <>
+      <span className='text-sm font-medium'>Area Chart</span>
+      <ChartContainer config={chartConfig}>
+        <AreaChart data={data}>
+          <CartesianGrid vertical={false} />
+          <XAxis axisLine={false} dataKey='month' tickLine={false} />
+          <YAxis axisLine={false} tickLine={false} />
+          <ChartTooltip content={tooltipContent} />
+          <ChartLegend content={legendContent} />
+          <Area
+            dataKey='users'
+            fill='var(--color-users)'
+            fillOpacity={0.3}
+            stroke='var(--color-users)'
+            strokeWidth={2}
+            type='monotone'
+          />
+          <Area
+            dataKey='sessions'
+            fill='var(--color-sessions)'
+            fillOpacity={0.3}
+            stroke='var(--color-sessions)'
+            strokeWidth={2}
+            type='monotone'
+          />
+        </AreaChart>
+      </ChartContainer>
+    </>
   )
 export default AreaChartWidget

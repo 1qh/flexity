@@ -1,5 +1,4 @@
 'use client'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { Progress } from '@a/ui/progress'
 const items = [
     { label: 'Storage', value: 72 },
@@ -8,11 +7,9 @@ const items = [
     { label: 'Network', value: 31 }
   ],
   ProgressBars = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>System Usage</CardTitle>
-      </CardHeader>
-      <CardContent className='flex flex-col gap-4'>
+    <>
+      <span className='text-sm font-medium'>System Usage</span>
+      <div className='flex flex-col gap-4'>
         {items.map(p => (
           <div className='flex flex-col gap-1.5' key={p.label}>
             <div className='flex items-center justify-between text-sm'>
@@ -22,7 +19,7 @@ const items = [
             <Progress value={p.value} />
           </div>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </>
   )
 export default ProgressBars

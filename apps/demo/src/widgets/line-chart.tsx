@@ -1,6 +1,5 @@
 'use client'
 import type { ChartConfig } from '@a/ui/chart'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@a/ui/chart'
 import { CartesianGrid, Line, LineChart, ReferenceLine, XAxis, YAxis } from 'recharts'
 const data = [
@@ -18,24 +17,20 @@ const data = [
   tooltipContent = <ChartTooltipContent />,
   legendContent = <ChartLegendContent />,
   LineChartWidget = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Line Chart</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray='3 3' />
-            <XAxis axisLine={false} dataKey='month' tickLine={false} />
-            <YAxis axisLine={false} tickLine={false} />
-            <ChartTooltip content={tooltipContent} />
-            <ChartLegend content={legendContent} />
-            <ReferenceLine stroke='var(--muted-foreground)' strokeDasharray='3 3' y={3000} />
-            <Line dataKey='revenue' dot stroke='var(--color-revenue)' strokeWidth={2} type='monotone' />
-            <Line dataKey='profit' dot stroke='var(--color-profit)' strokeWidth={2} type='monotone' />
-          </LineChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <>
+      <span className='text-sm font-medium'>Line Chart</span>
+      <ChartContainer config={chartConfig}>
+        <LineChart data={data}>
+          <CartesianGrid strokeDasharray='3 3' />
+          <XAxis axisLine={false} dataKey='month' tickLine={false} />
+          <YAxis axisLine={false} tickLine={false} />
+          <ChartTooltip content={tooltipContent} />
+          <ChartLegend content={legendContent} />
+          <ReferenceLine stroke='var(--muted-foreground)' strokeDasharray='3 3' y={3000} />
+          <Line dataKey='revenue' dot stroke='var(--color-revenue)' strokeWidth={2} type='monotone' />
+          <Line dataKey='profit' dot stroke='var(--color-profit)' strokeWidth={2} type='monotone' />
+        </LineChart>
+      </ChartContainer>
+    </>
   )
 export default LineChartWidget

@@ -1,5 +1,4 @@
 'use client'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 const events = [
     { desc: 'v2.4.0 rolling out to production', time: '09:00', title: 'Deployment started' },
     { desc: 'All instances healthy', time: '09:15', title: 'Health check passed' },
@@ -8,11 +7,9 @@ const events = [
     { desc: 'Daily snapshot stored', time: '14:00', title: 'Backup completed' }
   ],
   Timeline = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Activity</CardTitle>
-      </CardHeader>
-      <CardContent className='flex flex-col gap-4'>
+    <>
+      <span className='text-sm font-medium'>Activity</span>
+      <div className='flex flex-col gap-4'>
         {events.map(e => (
           <div className='flex gap-3' key={e.time}>
             <span className='shrink-0 text-xs text-muted-foreground'>{e.time}</span>
@@ -22,7 +19,7 @@ const events = [
             </div>
           </div>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </>
   )
 export default Timeline

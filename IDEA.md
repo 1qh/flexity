@@ -98,7 +98,7 @@ type WidgetLayoutEntry<K extends string> = {
 ```
 
 - `w` omitted = fills available space (alone on row = full width, sharing row = equal split). `w: 640` = exact 640px, horizontal scroll if content wider. `w: 'auto'` = content width.
-- `h` omitted = content height (auto). `h: 300` = capped at 300px, vertical scroll if content taller. `h` is intentionally short (not `maxH` or `height`) to keep the config clean — it acts as `max-height` under the hood, documented here and in JSDoc.
+- `h` omitted = content height (auto). `h: 300` = capped at 300px, vertical scroll if content taller. `h` is intentionally short (not `maxH` or `height`) to keep the config clean — It sets `height` on the wrapper. Content shorter than `h` stays at its natural height unless it uses flex/grid to fill space. Content taller than `h` scrolls (overflow-y: auto). Growable content (charts, flex-1 elements) expands to fill `h`.
 - No `x`, `y` — flexbox flow handles positioning from array order
 - Array order in `layout` = display order. Items with layout entries display first (in array order), then items without layout entries (in `items` key order). Array order is bulletproof across JS, JSON, databases, and ORMs.
 - `className` accepts any non-banned Tailwind class — full power for interior styling
@@ -129,7 +129,7 @@ type WidgetLayoutEntry<K extends string> = {
 - `id` — unique identifier for localStorage persistence. If omitted, localStorage is disabled. Multiple grids need distinct IDs.
 - `onConfigChange` — called only from user actions (resize stop, drag stop, dev panel edit). Never from internal normalization or prop changes. Receives the full `GridConfig` object. Use for backend persistence, undo/redo, analytics, etc. This prevents infinite loops in controlled mode.
 - `dragHandle` — CSS selector for the drag handle within each item. Default: built-in grip icon at top-right, visible on hover.
-- `resizeHandle` — custom React element for the width resize handle (right edge only — no height resize). Default: thin vertical bar, visible on hover.
+- `resizeHandle` — custom React element for resize handles. Default: thin bars on right edge and bottom edge, diagonal indicator on bottom-right corner. All visible on hover.
 - `className` — Tailwind classes on the flex container div.
 
 ### Controlled vs uncontrolled
@@ -654,7 +654,7 @@ Per-widget (selected by clicking a widget):
 - `hidden` — toggle
 - Tailwind class editor — common properties have visual controls, custom classes preserved via `cn()`
 
-No height resize handle — height is content-driven by design. Set `h` via the dev panel number input to cap it.
+Resize handles on right (width), bottom (height), and bottom-right corner (both). Height resize sets `h`. Content decides whether to grow or scroll.
 
 Visual controls for common Tailwind properties:
 
@@ -726,14 +726,14 @@ Array order reflects the current drag order. `className` is the merged result of
 - `w: number` → `width: <w>px; max-width: 100%; flex-shrink: 0; box-sizing: border-box; overflow-x: auto` (never wider than container — responsive by default)
 - `w: 'auto'` → `width: fit-content; max-width: 100%; flex-shrink: 0`
 - No `w` → `flex: 1 1 0%; min-width: 0` (if alone on row = full width, if sharing = equal split)
-- `h: number` → `max-height: <h>px; overflow-y: auto`
+- `h: number` → `height: <h>px; overflow-y: auto`
 - Items flow left-to-right, wrap to next row when they don’t fit
 - No coordinate system, no compaction algorithm
 - Drag reorder changes the item order, layout reflows automatically
 
 ### Width resize
 
-- Resize handle on the right edge of each widget (via re-resizable)
+- Resize handles on right edge (width), bottom edge (height), and bottom-right corner (both) of each widget (via re-resizable)
 - Snaps to the `snap` step size: `Math.round(w / snap) * snap`
 - `snap` must be >= 1. Values < 1 throw in dev.
 - Updates `w` in layout state
@@ -756,7 +756,7 @@ Array order reflects the current drag order. `className` is the merged result of
 
 ### Resize handle
 
-- Positioned at the right edge of each widget
+- Positioned at right edge, bottom edge, and bottom-right corner of each widget
 - Default: thin vertical bar, visible on hover, cursor changes to `col-resize`
 - Customizable via `resizeHandle` prop on Grid (ReactElement). re-resizable clones the element and forwards interaction props (drag state, direction). The consumer’s element receives these as props automatically.
 - re-resizable handles all interaction (mouse, touch, pointer events)
@@ -1070,7 +1070,7 @@ These decisions are **deliberate, thoroughly debated, and final**. They reflect 
 
 **Why throw on single-child root elements (even with attributes)?** If a component renders `<div className="p-4"><Content /></div>`, the `p-4` belongs in `layout.className`. The grid’s wrapper div provides the styling surface — consumers should not add their own. This forces one source of truth for widget styling. Yes, this means third-party components like shadcn’s `<Card>` will trigger a warning if used as a direct item. The consumer should either pass the Card’s content directly and style via `layout.className`, or accept the console.error. This is a feature, not a bug — it forces consumers to think about their component boundaries. ogrid is not for consumers who want to drop in arbitrary components without thought.
 
-**Why is `h` named `h` instead of `maxH` or `maxHeight`?** `h` keeps the config clean when pasted into source code. It acts as `max-height` under the hood — widget is shorter if content is shorter, scrolls when content exceeds the cap. This is explicitly documented in JSDoc, in the type comments, and in this spec. Every mention of `h` in the documentation clarifies its `max-height` semantics. We chose brevity because the config is pasted frequently and must be scannable. Two extra characters (`maxH`) save zero confusion when the documentation is clear. Consumers read docs before using a library.
+**Why is `h` named `h` instead of `height`?** `h` keeps the config clean when pasted into source code. It sets `height` on the wrapper — growable content (charts, flex elements) fills the space, fixed content stays at natural height, overflowing content scrolls. We chose brevity because the config is pasted frequently and must be scannable.
 
 **Why no responsive breakpoints?** Pixel-level control is the core value proposition. `max-width: 100%` on ALL items (including `w: number`) means they naturally cap to container width on small screens. Flexbox `flex-wrap: wrap` handles multi-column to single-column transitions automatically. A `w: 640` widget on a 320px screen becomes 320px — no config needed. Breakpoint-based layouts are a fundamentally different paradigm — consumers who need them should use CSS media queries inside their components or in `layout.className` with Tailwind responsive variants (e.g., `sm:flex-col`).
 

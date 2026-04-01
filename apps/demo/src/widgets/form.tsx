@@ -1,16 +1,13 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: demo static IDs */
 'use client'
 import { Button } from '@a/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { Input } from '@a/ui/input'
 import { Label } from '@a/ui/label'
 import { Switch } from '@a/ui/switch'
 const FormWidget = () => (
-  <Card>
-    <CardHeader>
-      <CardTitle>Settings</CardTitle>
-    </CardHeader>
-    <CardContent className='flex flex-col gap-4'>
+  <>
+    <span className='text-sm font-medium'>Settings</span>
+    <div className='flex flex-col gap-4'>
       <div className='flex flex-col gap-2'>
         <Label htmlFor='name'>Display Name</Label>
         <Input id='name' placeholder='Enter your name' />
@@ -28,7 +25,7 @@ const FormWidget = () => (
         <Switch id='darkMode' />
       </div>
       <Button className='self-end'>Save</Button>
-    </CardContent>
-  </Card>
+    </div>
+  </>
 )
 export default FormWidget

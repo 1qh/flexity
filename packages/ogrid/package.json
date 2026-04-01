@@ -2,7 +2,15 @@
   "name": "ogrid",
   "version": "0.0.1",
   "description": "A pixel-level resizable dashboard grid for React. Zero config. Full control.",
-  "keywords": ["react", "grid", "dashboard", "drag", "resize", "tailwind", "flexbox"],
+  "keywords": [
+    "react",
+    "grid",
+    "dashboard",
+    "drag",
+    "resize",
+    "tailwind",
+    "flexbox"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/1qh/ogrid"

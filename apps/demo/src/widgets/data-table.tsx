@@ -1,6 +1,5 @@
 'use client'
 import { Button } from '@a/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { Input } from '@a/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@a/ui/table'
 import { useState } from 'react'
@@ -47,11 +46,9 @@ const DataTableWidget = () => {
       setPage(0)
     }
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Users</CardTitle>
-      </CardHeader>
-      <CardContent className='flex flex-col gap-3'>
+    <>
+      <span className='text-sm font-medium'>Users</span>
+      <div className='flex flex-col gap-3'>
         <Input
           className='h-8 text-sm'
           onChange={e => {
@@ -99,8 +96,8 @@ const DataTableWidget = () => {
             </Button>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </>
   )
 }
 export default DataTableWidget

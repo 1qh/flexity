@@ -334,12 +334,12 @@ describe('nested grids', () => {
   })
 })
 describe('auto-height', () => {
-  it('does not set maxHeight when h is omitted', () => {
+  it('does not set height when h is omitted', () => {
     const { Grid } = createGrid(),
       W = () => <span>content</span>
     render(<Grid items={{ a: <W /> }} />)
     const item = el('[data-ogrid-key="a"]')
-    expect(item.style.maxHeight).toBe('')
+    expect(item.style.height).toBe('')
   })
   it('does not set overflowY when h is omitted', () => {
     const { Grid } = createGrid(),

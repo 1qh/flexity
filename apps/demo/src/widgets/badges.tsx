@@ -1,6 +1,5 @@
 'use client'
 import { Badge } from '@a/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 const tags = [
     { label: 'React', variant: 'default' as const },
     { label: 'TypeScript', variant: 'secondary' as const },
@@ -12,17 +11,15 @@ const tags = [
     { label: 'New', variant: 'default' as const }
   ],
   Badges = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Tags</CardTitle>
-      </CardHeader>
-      <CardContent className='flex flex-wrap gap-2'>
+    <>
+      <span className='text-sm font-medium'>Tags</span>
+      <div className='flex flex-wrap gap-2'>
         {tags.map(t => (
           <Badge key={t.label} variant={t.variant}>
             {t.label}
           </Badge>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </>
   )
 export default Badges

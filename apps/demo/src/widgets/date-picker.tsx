@@ -1,6 +1,5 @@
 'use client'
 import { Calendar } from '@a/ui/calendar'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { useState } from 'react'
 const DatePicker = () => {
   const [range, setRange] = useState<{ from: Date; to?: Date }>(() => ({
@@ -8,11 +7,9 @@ const DatePicker = () => {
     to: new Date(2026, 2, 25)
   }))
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Date Range</CardTitle>
-      </CardHeader>
-      <CardContent className='flex flex-col items-center gap-2'>
+    <>
+      <span className='text-sm font-medium'>Date Range</span>
+      <div className='flex flex-col items-center gap-2'>
         <Calendar
           mode='range'
           onSelect={r => {
@@ -23,8 +20,8 @@ const DatePicker = () => {
         <span className='text-xs text-muted-foreground'>
           {range.from.toLocaleDateString()} — {range.to?.toLocaleDateString() ?? '...'}
         </span>
-      </CardContent>
-    </Card>
+      </div>
+    </>
   )
 }
 export default DatePicker

@@ -1,6 +1,5 @@
 'use client'
 import type { ChartConfig } from '@a/ui/chart'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { ChartContainer } from '@a/ui/chart'
 import { Area, AreaChart } from 'recharts'
 const kpis = [
@@ -30,11 +29,9 @@ const kpis = [
     v: { color: 'var(--chart-1)', label: 'Value' }
   } satisfies ChartConfig,
   KpiCard = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Key Metrics</CardTitle>
-      </CardHeader>
-      <CardContent className='flex flex-col gap-4'>
+    <>
+      <span className='text-sm font-medium'>Key Metrics</span>
+      <div className='flex flex-col gap-4'>
         {kpis.map(k => (
           <div className='flex items-center justify-between' key={k.label}>
             <div className='flex flex-col gap-0.5'>
@@ -58,7 +55,7 @@ const kpis = [
             </div>
           </div>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </>
   )
 export default KpiCard

@@ -1,6 +1,5 @@
 'use client'
 import type { ChartConfig } from '@a/ui/chart'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@a/ui/chart'
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from 'recharts'
 const data = [
@@ -18,22 +17,18 @@ const data = [
   tooltipContent = <ChartTooltipContent />,
   legendContent = <ChartLegendContent />,
   RadarChartWidget = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Radar Chart</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <RadarChart data={data}>
-            <PolarGrid />
-            <PolarAngleAxis dataKey='subject' />
-            <ChartTooltip content={tooltipContent} />
-            <ChartLegend content={legendContent} />
-            <Radar dataKey='a' fill='var(--color-a)' fillOpacity={0.3} stroke='var(--color-a)' />
-            <Radar dataKey='b' fill='var(--color-b)' fillOpacity={0.3} stroke='var(--color-b)' />
-          </RadarChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <>
+      <span className='text-sm font-medium'>Radar Chart</span>
+      <ChartContainer config={chartConfig}>
+        <RadarChart data={data}>
+          <PolarGrid />
+          <PolarAngleAxis dataKey='subject' />
+          <ChartTooltip content={tooltipContent} />
+          <ChartLegend content={legendContent} />
+          <Radar dataKey='a' fill='var(--color-a)' fillOpacity={0.3} stroke='var(--color-a)' />
+          <Radar dataKey='b' fill='var(--color-b)' fillOpacity={0.3} stroke='var(--color-b)' />
+        </RadarChart>
+      </ChartContainer>
+    </>
   )
 export default RadarChartWidget

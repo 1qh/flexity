@@ -1,6 +1,5 @@
 'use client'
 import type { ChartConfig } from '@a/ui/chart'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@a/ui/chart'
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 const data = [
@@ -18,23 +17,19 @@ const data = [
   tooltipContent = <ChartTooltipContent />,
   legendContent = <ChartLegendContent />,
   BarChartWidget = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Bar Chart</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart data={data}>
-            <CartesianGrid vertical={false} />
-            <XAxis axisLine={false} dataKey='month' tickLine={false} />
-            <YAxis axisLine={false} tickLine={false} />
-            <ChartTooltip content={tooltipContent} />
-            <ChartLegend content={legendContent} />
-            <Bar dataKey='desktop' fill='var(--color-desktop)' radius={4} />
-            <Bar dataKey='mobile' fill='var(--color-mobile)' radius={4} />
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <>
+      <span className='text-sm font-medium'>Bar Chart</span>
+      <ChartContainer config={chartConfig}>
+        <BarChart data={data}>
+          <CartesianGrid vertical={false} />
+          <XAxis axisLine={false} dataKey='month' tickLine={false} />
+          <YAxis axisLine={false} tickLine={false} />
+          <ChartTooltip content={tooltipContent} />
+          <ChartLegend content={legendContent} />
+          <Bar dataKey='desktop' fill='var(--color-desktop)' radius={4} />
+          <Bar dataKey='mobile' fill='var(--color-mobile)' radius={4} />
+        </BarChart>
+      </ChartContainer>
+    </>
   )
 export default BarChartWidget

@@ -22,35 +22,35 @@ describe('keyboard resize interaction', () => {
   it('ArrowRight on resize handle increases width by snap', () => {
     const { Grid } = createGrid()
     render(<Grid config={{ layout: [{ key: 'a', w: 200 }], snap: 10 }} items={{ a: <W /> }} />)
-    const separator = document.querySelector('[role="separator"]')!
+    const separator = document.querySelector('[aria-label="Resize a"]')!
     fireEvent.keyDown(separator, { key: 'ArrowRight' })
     expect(getItem('a').style.width).toBe('210px')
   })
   it('ArrowLeft on resize handle decreases width by snap', () => {
     const { Grid } = createGrid()
     render(<Grid config={{ layout: [{ key: 'a', w: 200 }], snap: 10 }} items={{ a: <W /> }} />)
-    const separator = document.querySelector('[role="separator"]')!
+    const separator = document.querySelector('[aria-label="Resize a"]')!
     fireEvent.keyDown(separator, { key: 'ArrowLeft' })
     expect(getItem('a').style.width).toBe('190px')
   })
   it('Shift+ArrowRight increases width by 5x snap', () => {
     const { Grid } = createGrid()
     render(<Grid config={{ layout: [{ key: 'a', w: 200 }], snap: 10 }} items={{ a: <W /> }} />)
-    const separator = document.querySelector('[role="separator"]')!
+    const separator = document.querySelector('[aria-label="Resize a"]')!
     fireEvent.keyDown(separator, { key: 'ArrowRight', shiftKey: true })
     expect(getItem('a').style.width).toBe('250px')
   })
   it('Shift+ArrowLeft decreases width by 5x snap', () => {
     const { Grid } = createGrid()
     render(<Grid config={{ layout: [{ key: 'a', w: 200 }], snap: 10 }} items={{ a: <W /> }} />)
-    const separator = document.querySelector('[role="separator"]')!
+    const separator = document.querySelector('[aria-label="Resize a"]')!
     fireEvent.keyDown(separator, { key: 'ArrowLeft', shiftKey: true })
     expect(getItem('a').style.width).toBe('150px')
   })
   it('minimum width clamps to snap value', () => {
     const { Grid } = createGrid()
     render(<Grid config={{ layout: [{ key: 'a', w: 20 }], snap: 10 }} items={{ a: <W /> }} />)
-    const separator = document.querySelector('[role="separator"]')!
+    const separator = document.querySelector('[aria-label="Resize a"]')!
     fireEvent.keyDown(separator, { key: 'ArrowLeft' })
     expect(getItem('a').style.width).toBe('10px')
     fireEvent.keyDown(separator, { key: 'ArrowLeft' })

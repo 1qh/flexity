@@ -1,6 +1,5 @@
 'use client'
 import { Avatar, AvatarFallback } from '@a/ui/avatar'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 const people = [
     { initials: 'AJ', name: 'Alice' },
     { initials: 'BS', name: 'Bob' },
@@ -9,17 +8,15 @@ const people = [
     { initials: 'ED', name: 'Eve' }
   ],
   Avatars = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Team</CardTitle>
-      </CardHeader>
-      <CardContent className='flex gap-2'>
+    <>
+      <span className='text-sm font-medium'>Team</span>
+      <div className='flex gap-2'>
         {people.map(p => (
           <Avatar key={p.name}>
             <AvatarFallback>{p.initials}</AvatarFallback>
           </Avatar>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </>
   )
 export default Avatars

@@ -1,6 +1,5 @@
 'use client'
 import type { ChartConfig } from '@a/ui/chart'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { ChartContainer } from '@a/ui/chart'
 import { Area, AreaChart } from 'recharts'
 const data = [
@@ -26,28 +25,24 @@ const data = [
     v: { color: 'var(--chart-1)', label: 'Value' }
   } satisfies ChartConfig,
   Sparkline = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Sparkline</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer className='h-16' config={chartConfig}>
-          <AreaChart data={data}>
-            <Area
-              dataKey='v'
-              fill='var(--color-v)'
-              fillOpacity={0.2}
-              stroke='var(--color-v)'
-              strokeWidth={2}
-              type='monotone'
-            />
-          </AreaChart>
-        </ChartContainer>
-        <div className='flex items-center justify-between pt-2 text-sm'>
-          <span className='text-muted-foreground'>Last 17 days</span>
-          <span className='font-medium'>+145%</span>
-        </div>
-      </CardContent>
-    </Card>
+    <>
+      <span className='text-sm font-medium'>Sparkline</span>
+      <ChartContainer className='h-16' config={chartConfig}>
+        <AreaChart data={data}>
+          <Area
+            dataKey='v'
+            fill='var(--color-v)'
+            fillOpacity={0.2}
+            stroke='var(--color-v)'
+            strokeWidth={2}
+            type='monotone'
+          />
+        </AreaChart>
+      </ChartContainer>
+      <div className='flex items-center justify-between pt-2 text-sm'>
+        <span className='text-muted-foreground'>Last 17 days</span>
+        <span className='font-medium'>+145%</span>
+      </div>
+    </>
   )
 export default Sparkline

@@ -208,12 +208,12 @@ test.describe('responsive', () => {
   })
 })
 test.describe('overflow', () => {
-  test('scroll widget has max-height and overflow-y', async ({ page }) => {
+  test('scroll widget has height and overflow-y', async ({ page }) => {
     await waitForGrid(page)
     const item = page.locator('[data-ogrid-key="scroll"]'),
       overflowY = await item.evaluate(el => getComputedStyle(el).overflowY)
     expect(overflowY).toBe('auto')
-    const maxH = await item.evaluate(el => el.style.maxHeight)
+    const maxH = await item.evaluate(el => el.style.height)
     expect(maxH).toBe('350px')
   })
 })

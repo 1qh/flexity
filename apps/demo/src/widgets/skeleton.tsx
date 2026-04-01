@@ -1,19 +1,18 @@
 'use client'
 import { Button } from '@a/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { Skeleton } from '@a/ui/skeleton'
 import { useState } from 'react'
 const SkeletonWidget = () => {
   const [loading, setLoading] = useState(true)
   return (
-    <Card>
-      <CardHeader className='flex flex-row items-center justify-between'>
-        <CardTitle>Loading State</CardTitle>
+    <>
+      <div className='flex items-center justify-between'>
+        <span className='text-sm font-medium'>Loading State</span>
         <Button onClick={() => setLoading(!loading)} size='sm' variant='outline'>
           {loading ? 'Show' : 'Loading'}
         </Button>
-      </CardHeader>
-      <CardContent className='flex flex-col gap-3'>
+      </div>
+      <div className='flex flex-col gap-3'>
         {loading ? (
           <>
             <Skeleton className='h-4 w-3/4' />
@@ -31,8 +30,8 @@ const SkeletonWidget = () => {
             <span className='text-sm text-muted-foreground'>This demonstrates the skeleton loading state toggle.</span>
           </>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </>
   )
 }
 export default SkeletonWidget

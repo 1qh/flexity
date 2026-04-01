@@ -1,6 +1,5 @@
 'use client'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@a/ui/accordion'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 const faqs = [
     { a: 'A pixel-level resizable dashboard grid for React with zero config and full control.', q: 'What is ogrid?' },
     {
@@ -11,20 +10,16 @@ const faqs = [
     { a: 'Yes, via localStorage with the id prop or controlled mode with onConfigChange.', q: 'Can I persist layouts?' }
   ],
   AccordionWidget = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>FAQ</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Accordion>
-          {faqs.map((f, i) => (
-            <AccordionItem key={f.q} value={`item-${String(i)}`}>
-              <AccordionTrigger>{f.q}</AccordionTrigger>
-              <AccordionContent>{f.a}</AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </CardContent>
-    </Card>
+    <>
+      <span className='text-sm font-medium'>FAQ</span>
+      <Accordion>
+        {faqs.map((f, i) => (
+          <AccordionItem key={f.q} value={`item-${String(i)}`}>
+            <AccordionTrigger>{f.q}</AccordionTrigger>
+            <AccordionContent>{f.a}</AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </>
   )
 export default AccordionWidget

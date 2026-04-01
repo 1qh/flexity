@@ -1,5 +1,4 @@
 'use client'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { Checkbox } from '@a/ui/checkbox'
 import { Label } from '@a/ui/label'
 const tasks = [
@@ -10,11 +9,9 @@ const tasks = [
     { done: false, id: 'deploy', label: 'Deploy to production' }
   ],
   CheckboxWidget = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Tasks</CardTitle>
-      </CardHeader>
-      <CardContent className='flex flex-col gap-3'>
+    <>
+      <span className='text-sm font-medium'>Tasks</span>
+      <div className='flex flex-col gap-3'>
         {tasks.map(t => (
           <div className='flex items-center gap-2' key={t.id}>
             <Checkbox defaultChecked={t.done} id={t.id} />
@@ -23,7 +20,7 @@ const tasks = [
             </Label>
           </div>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </>
   )
 export default CheckboxWidget

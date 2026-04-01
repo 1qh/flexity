@@ -1,14 +1,11 @@
 'use client'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { ToggleGroup, ToggleGroupItem } from '@a/ui/toggle-group'
 const GRID_DEFAULT = ['grid'] as const,
   TIME_DEFAULT = ['7d'] as const,
   ToggleGroupWidget = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>View Mode</CardTitle>
-      </CardHeader>
-      <CardContent className='flex flex-col gap-4'>
+    <>
+      <span className='text-sm font-medium'>View Mode</span>
+      <div className='flex flex-col gap-4'>
         <div className='flex flex-col gap-2'>
           <span className='text-sm text-muted-foreground'>Layout</span>
           <ToggleGroup defaultValue={GRID_DEFAULT}>
@@ -26,7 +23,7 @@ const GRID_DEFAULT = ['grid'] as const,
             <ToggleGroupItem value='90d'>90D</ToggleGroupItem>
           </ToggleGroup>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </>
   )
 export default ToggleGroupWidget

@@ -99,12 +99,12 @@ describe('width modes', () => {
     render(<Grid config={{ layout: [{ key: 'a', w: 325 }], snap: 8 }} items={{ a: <W /> }} />)
     expect(el('[data-ogrid-key="a"]').style.width).toBe('328px')
   })
-  it('h → maxHeight + overflowY', () => {
+  it('h → height + overflowY', () => {
     const { Grid } = createGrid(),
       W = () => <span>w</span>
     render(<Grid config={{ layout: [{ h: 200, key: 'a' }] }} items={{ a: <W /> }} />)
     const item = el('[data-ogrid-key="a"]')
-    expect(item.style.maxHeight).toBe('200px')
+    expect(item.style.height).toBe('200px')
     expect(item.style.overflowY).toBe('auto')
   })
   it('enforces box-sizing: border-box', () => {

@@ -1,6 +1,5 @@
 'use client'
 import type { ChartConfig } from '@a/ui/chart'
-import { Card, CardContent, CardHeader, CardTitle } from '@a/ui/card'
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@a/ui/chart'
 import { Pie, PieChart } from 'recharts'
 const data = [
@@ -20,19 +19,15 @@ const data = [
   tooltipContent = <ChartTooltipContent />,
   legendContent = <ChartLegendContent />,
   PieChartWidget = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Pie Chart</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <PieChart>
-            <ChartTooltip content={tooltipContent} />
-            <ChartLegend content={legendContent} />
-            <Pie cx='50%' cy='50%' data={data} dataKey='value' innerRadius={60} label nameKey='name' outerRadius={80} />
-          </PieChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <>
+      <span className='text-sm font-medium'>Pie Chart</span>
+      <ChartContainer config={chartConfig}>
+        <PieChart>
+          <ChartTooltip content={tooltipContent} />
+          <ChartLegend content={legendContent} />
+          <Pie cx='50%' cy='50%' data={data} dataKey='value' innerRadius={60} label nameKey='name' outerRadius={80} />
+        </PieChart>
+      </ChartContainer>
+    </>
   )
 export default PieChartWidget

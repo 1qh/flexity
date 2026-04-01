@@ -19,7 +19,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Resizable } from 're-resizable'
-import { createContext, use, useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from 'react'
+import { createContext, use, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import type { Store } from './store'
 import type { AllowedContent, GridConfig, GridProps, WidgetLayoutEntry } from './types'
 import { cn } from './cn'
@@ -48,13 +48,17 @@ const GridContext = createContext(false),
       </svg>
     </div>
   )
+interface ResizeUpdates {
+  h?: number
+  w?: number
+}
 interface GridItemInnerProps {
   content: AllowedContent
   devMode: boolean
   dragHandle?: string
   itemKey: string
   layout: undefined | WidgetLayoutEntry
-  onResizeStop: (key: string, width: number) => void
+  onResizeStop: (key: string, updates: ResizeUpdates) => void
   onSelect: (key: string) => void
   resizeHandle?: ReactElement
   selected: boolean
@@ -81,6 +85,8 @@ const GridItemInner = ({
   const contentRef = useRef<HTMLDivElement>(null),
     outerRef = useRef<HTMLDivElement>(null),
     startWidthRef = useRef(0),
+    startHeightRef = useRef(0),
+    [isResizing, setIsResizing] = useState(false),
     { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
       id: itemKey
     }),
@@ -119,13 +125,16 @@ const GridItemInner = ({
     if (!(devMode && userClassName)) return
     validateClassName(itemKey, userClassName, strict)
   }, [itemKey, userClassName, strict, devMode])
-  const wrapperStyle: CSSProperties = {
-    boxSizing: 'border-box',
-    opacity: isDragging ? 0.5 : isHidden && devMode ? 0.4 : undefined,
-    transform: CSS.Transform.toString(transform),
-    transition: transition ?? undefined,
-    zIndex: isDragging ? 50 : undefined
-  }
+  const sizeTransition = isDragging || isResizing ? '' : 'width 200ms ease, height 200ms ease',
+    dndTransition = transition ?? '',
+    combinedTransition = [dndTransition, sizeTransition].filter(Boolean).join(', ') || undefined,
+    wrapperStyle: CSSProperties = {
+      boxSizing: 'border-box',
+      opacity: isDragging ? 0.5 : isHidden && devMode ? 0.4 : undefined,
+      transform: CSS.Transform.toString(transform),
+      transition: combinedTransition,
+      zIndex: isDragging ? 50 : undefined
+    }
   if (typeof w === 'number') {
     wrapperStyle.width = Math.round(w / snap) * snap
     wrapperStyle.maxWidth = '100%'
@@ -141,17 +150,27 @@ const GridItemInner = ({
     wrapperStyle.overflow = 'visible'
   }
   if (typeof h === 'number') {
-    wrapperStyle.maxHeight = h
+    wrapperStyle.height = h
     wrapperStyle.overflowY = 'auto'
   }
   if (isHidden && !devMode) wrapperStyle.display = 'none'
   const handleResizeStart = () => {
-      if (outerRef.current) startWidthRef.current = outerRef.current.getBoundingClientRect().width
+      if (outerRef.current) {
+        const rect = outerRef.current.getBoundingClientRect()
+        startWidthRef.current = rect.width
+        startHeightRef.current = rect.height
+      }
+      setIsResizing(true)
     },
-    handleResizeStop = (_e: unknown, _dir: unknown, _ref: unknown, d: { width: number }) => {
-      const rawWidth = startWidthRef.current + d.width,
-        snapped = Math.max(snap, Math.round(rawWidth / snap) * snap)
-      onResizeStop(itemKey, snapped)
+    handleResizeStop = (_e: unknown, _dir: unknown, _ref: HTMLElement, d: { height: number; width: number }) => {
+      setIsResizing(false)
+      const updates: ResizeUpdates = {}
+      if (d.width !== 0) {
+        const rawWidth = startWidthRef.current + d.width
+        updates.w = Math.max(snap, Math.round(rawWidth / snap) * snap)
+      }
+      if (d.height !== 0) updates.h = startHeightRef.current + d.height
+      if (updates.w !== undefined || updates.h !== undefined) onResizeStop(itemKey, updates)
     },
     handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.target !== e.currentTarget) return
@@ -159,15 +178,23 @@ const GridItemInner = ({
       if (e.key === 'ArrowRight') {
         e.preventDefault()
         const currentW = typeof w === 'number' ? w : (outerRef.current?.getBoundingClientRect().width ?? 200)
-        onResizeStop(itemKey, Math.max(snap, Math.round((currentW + step) / snap) * snap))
+        onResizeStop(itemKey, { w: Math.max(snap, Math.round((currentW + step) / snap) * snap) })
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault()
         const currentW = typeof w === 'number' ? w : (outerRef.current?.getBoundingClientRect().width ?? 200)
-        onResizeStop(itemKey, Math.max(snap, Math.round((currentW - step) / snap) * snap))
+        onResizeStop(itemKey, { w: Math.max(snap, Math.round((currentW - step) / snap) * snap) })
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        const currentH = typeof h === 'number' ? h : (outerRef.current?.getBoundingClientRect().height ?? 200)
+        onResizeStop(itemKey, { h: Math.max(snap, currentH + step) })
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        const currentH = typeof h === 'number' ? h : (outerRef.current?.getBoundingClientRect().height ?? 200)
+        onResizeStop(itemKey, { h: Math.max(snap, currentH - step) })
       }
     },
     mergedClassName = cn(
-      'ogrid-item group/item relative',
+      'ogrid-item group/item relative hover:ring-1 hover:ring-border',
       showDebugBorders && 'border border-foreground',
       showDebugBg && 'bg-muted/30',
       selected && devMode && 'ring-2 ring-primary',
@@ -214,11 +241,27 @@ const GridItemInner = ({
         inner
       ) : (
         <Resizable
-          enable={{ right: true }}
+          enable={{ bottom: true, bottomRight: true, right: true }}
           handleComponent={
             resizeHandle
               ? { right: resizeHandle }
               : {
+                  bottom: (
+                    <div
+                      aria-label={`Resize ${itemKey} height`}
+                      className='flex w-full h-2 cursor-row-resize items-center justify-center opacity-0 transition-opacity group-hover/item:opacity-100'
+                      role='separator'
+                      tabIndex={0}>
+                      <div className='w-8 h-0.5 rounded-full bg-border' />
+                    </div>
+                  ),
+                  bottomRight: (
+                    <div
+                      className='flex h-3 w-3 cursor-nwse-resize items-center justify-center opacity-0 transition-opacity group-hover/item:opacity-100'
+                      tabIndex={-1}>
+                      <div className='h-2 w-2 rounded-sm border-b-2 border-r-2 border-border' />
+                    </div>
+                  ),
                   right: (
                     <div
                       aria-label={`Resize ${itemKey}`}
@@ -325,8 +368,8 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
       handleSelect = useCallback((key: string) => {
         store.setState({ selectedWidget: key as K })
       }, []),
-      handleResizeStop = useCallback((key: string, width: number) => {
-        store.updateWidgetLayout(key as K, { w: width })
+      handleResizeStop = useCallback((key: string, updates: ResizeUpdates) => {
+        store.updateWidgetLayout(key as K, updates)
         store.userChange()
       }, []),
       handleDragEnd = useCallback(
