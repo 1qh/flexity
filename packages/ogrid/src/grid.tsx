@@ -196,7 +196,7 @@ const GridItemInner = ({
       }
     },
     mergedClassName = cn(
-      'ogrid-item group/item relative hover:ring-1 hover:ring-border',
+      'ogrid-item group/item relative hover:outline hover:outline-1 hover:outline-border',
       showDebugBorders && 'border border-foreground',
       showDebugBg && 'bg-muted/30',
       selected && devMode && 'ring-2 ring-primary',
