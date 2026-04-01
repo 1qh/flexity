@@ -1,7 +1,5 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: demo page */
-/** biome-ignore-all lint/nursery/useImportsFirst: console override must be before dynamic imports */
-/* eslint-disable no-console */
-/* oxlint-disable react-perf/jsx-no-new-object-as-prop, import/first */
+/* oxlint-disable react-perf/jsx-no-new-object-as-prop */
 'use client'
 import dynamic from 'next/dynamic'
 import { createGrid } from 'ogrid'
@@ -25,11 +23,6 @@ import StatsGrid from '~/widgets/stats-grid'
 import TabsPanel from '~/widgets/tabs-panel'
 import Timeline from '~/widgets/timeline'
 import ToggleGroupWidget from '~/widgets/toggle-group'
-const origError = console.error
-console.error = (...args: unknown[]) => {
-  if (typeof args[0] === 'string' && args[0].includes('width(-1)')) return
-  origError(...args)
-}
 const AreaChartWidget = dynamic(async () => import('~/widgets/area-chart'), { ssr: false }),
   BarChartWidget = dynamic(async () => import('~/widgets/bar-chart'), { ssr: false }),
   KpiCard = dynamic(async () => import('~/widgets/kpi-card'), { ssr: false }),
