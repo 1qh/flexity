@@ -468,14 +468,14 @@ const createGridComponent = <K extends string>({ store }: CreateGridComponentPro
         {state.openDevPanel && devMode
           ? createPortal(
               <>
-                <div
-                  className='fixed inset-0 z-[9998]'
+                <button
+                  className='fixed inset-0 z-[9998] cursor-default bg-transparent'
                   onClick={() => store.setState({ openDevPanel: null })}
                   onKeyDown={e => {
                     if (e.key === 'Escape') store.setState({ openDevPanel: null })
                   }}
-                  role='button'
                   tabIndex={-1}
+                  type='button'
                 />
                 <div
                   className='fixed z-[9999] w-48 max-h-[70vh] overflow-y-auto rounded-lg border border-border bg-background p-2 shadow-2xl'
