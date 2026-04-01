@@ -198,6 +198,7 @@ const GridItemInner = ({
   if (isHidden && !devMode) wrapperStyle.display = 'none'
   const mergedClassName = cn(
     'ogrid-item group/item relative hover:outline hover:outline-1 hover:outline-border',
+    showDebugBorders && 'outline outline-2 outline-foreground',
     showDebugBg && 'bg-muted/30',
     isHidden && devMode && 'border-dashed',
     userClassName
